@@ -1,0 +1,79 @@
+name: Update SLEPI
+
+on:
+  schedule:
+    - cron: "15 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-slepi
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      SLEPI_OBJECT_STORAGE_BUCKET: ${{ secrets.SLEPI_OBJECT_STORAGE_BUCKET }}
+      SLEPI_OBJECT_STORAGE_REGION: ${{ secrets.SLEPI_OBJECT_STORAGE_REGION }}
+      SLEPI_OBJECT_STORAGE_ENDPOINT: ${{ secrets.SLEPI_OBJECT_STORAGE_ENDPOINT }}
+      SLEPI_OBJECT_STORAGE_ACCESS_KEY_ID: ${{ secrets.SLEPI_OBJECT_STORAGE_ACCESS_KEY_ID }}
+      SLEPI_OBJECT_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.SLEPI_OBJECT_STORAGE_SECRET_ACCESS_KEY }}
+      SLEPI_OBJECT_STORAGE_SESSION_TOKEN: ${{ secrets.SLEPI_OBJECT_STORAGE_SESSION_TOKEN }}
+      SLEPI_OBJECT_STORAGE_KEY_PREFIX: ${{ secrets.SLEPI_OBJECT_STORAGE_KEY_PREFIX }}
+      SLEPI_OBJECT_STORAGE_CACHE_CONTROL: ${{ secrets.SLEPI_OBJECT_STORAGE_CACHE_CONTROL }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Refresh SLEPI data
+        run: |
+          if [ -n "${SLEPI_OBJECT_STORAGE_BUCKET}" ]; then
+            python3 scripts/build_slepi.py --publish-object-storage
+          else
+            python3 scripts/build_slepi.py
+          fi
+
+      - name: Verify production build
+        run: npm run build
+
+      - name: Commit updated artifacts
+        run: |
+          if [ -n "${SLEPI_OBJECT_STORAGE_BUCKET}" ]; then
+            echo "Object storage publish mode enabled; skipping git commit."
+            exit 0
+          fi
+
+          if git diff --quiet -- data/slepi; then
+            echo "No generated data changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/slepi
+          git commit -m "chore(data): refresh SLEPI outputs"
+          git push
