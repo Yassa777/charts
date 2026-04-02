@@ -99,6 +99,9 @@ export default async function HomePage() {
   const freshness = snapshot.freshness;
   const firstBlockingMonth = freshness.blocking_months_after_latest_complete?.[0];
   const hasDelta = snapshot.delta !== null && snapshot.delta !== undefined;
+  const enriched = snapshot.enriched;
+  const hasEnriched = enriched?.latest?.slepi_enriched != null;
+  const hasEnrichedDelta = enriched?.delta !== null && enriched?.delta !== undefined;
 
   return (
     <main className="page-shell">
@@ -129,7 +132,7 @@ export default async function HomePage() {
 
             <p className="hero-copy">
               A compact read on Sri Lanka’s external pressure using reserve adequacy, FX stress,
-              underlying external balance, and inflow support.
+              underlying external balance, inflow support, debt service, and portfolio flows.
             </p>
           </div>
 
@@ -142,6 +145,28 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
+
+        {hasEnriched ? (
+          <div className="enriched-banner">
+            <div className="enriched-meta">
+              <span className="eyebrow">Enriched SLEPI (6-block)</span>
+              <span className="enriched-date">Through {formatMonth(enriched.latest.date)}</span>
+            </div>
+            <div className="enriched-number-block">
+              <span className="enriched-number">{formatNumber(enriched.latest.slepi_enriched, 2)}</span>
+              <StatusPill score={enriched.latest.slepi_enriched} />
+              {hasEnrichedDelta ? (
+                <span className={`enriched-delta ${enriched.delta >= 0 ? "up" : "down"}`}>
+                  {enriched.delta >= 0 ? "+" : ""}{formatNumber(enriched.delta, 2)}
+                </span>
+              ) : null}
+            </div>
+            <p className="enriched-note">
+              Extends the adjusted index with debt service pressure and net portfolio flow pressure
+              from CBSL quarterly BOP data. Lags the headline by roughly one quarter.
+            </p>
+          </div>
+        ) : null}
       </section>
 
       <section className="stats-grid">
@@ -165,12 +190,22 @@ export default async function HomePage() {
           note="Remittances + tourism, USD mn"
           value={formatNumber(snapshot.latest.buffer_inflows_usd_m, 0)}
         />
+        <MetricRow
+          label="Debt service"
+          note="Primary income debit, USD mn (quarterly)"
+          value={formatNumber(snapshot.latest.primary_income_debit_usd_m, 0)}
+        />
+        <MetricRow
+          label="Portfolio flows"
+          note="Net portfolio investment, USD mn (quarterly)"
+          value={formatNumber(snapshot.latest.portfolio_investment_usd_m, 0)}
+        />
       </section>
 
       <section className="section-block">
         <div className="section-heading">
           <span className="eyebrow">Index construction</span>
-          <h2>Four blocks</h2>
+          <h2>Six blocks</h2>
         </div>
 
         <div className="components-grid">
@@ -197,6 +232,18 @@ export default async function HomePage() {
             score={snapshot.latest.buffer_inflow_support_z}
             value={formatPercent(-snapshot.latest.buffer_inflow_support_raw)}
             note="Higher remittance and tourism support pushes pressure down."
+          />
+          <ComponentCard
+            title="Debt service pressure"
+            score={snapshot.latest.debt_service_pressure_z}
+            value={formatPercent(snapshot.latest.debt_service_pressure_raw)}
+            note="Higher interest payments relative to imports increase pressure. Quarterly BOP data."
+          />
+          <ComponentCard
+            title="Portfolio flow pressure"
+            score={snapshot.latest.net_portfolio_pressure_z}
+            value={formatPercent(snapshot.latest.net_portfolio_pressure_raw)}
+            note="Net portfolio outflows increase pressure. Quarterly BOP data."
           />
         </div>
       </section>
@@ -226,6 +273,14 @@ export default async function HomePage() {
               <div className="stat-kicker">Proxy overlap</div>
               <div className="stat-number small">{snapshot.metrics.proxy_fit.overlap_months} months</div>
             </div>
+            {snapshot.metrics.slepi_enriched?.auc_for_top_15pct_future_stress_event != null ? (
+              <div>
+                <div className="stat-kicker">Enriched AUC</div>
+                <div className="stat-number">
+                  {formatNumber(snapshot.metrics.slepi_enriched.auc_for_top_15pct_future_stress_event, 3)}
+                </div>
+              </div>
+            ) : null}
           </div>
         </article>
 
@@ -239,6 +294,9 @@ export default async function HomePage() {
             <FreshnessRow label="Latest current account" date={freshness.latest_available_months.current_account} />
             <FreshnessRow label="Latest reserves" date={freshness.latest_available_months.gross_reserves} />
             <FreshnessRow label="Latest imports" date={freshness.latest_available_months.imports} />
+            <FreshnessRow label="Latest debt service (BOP)" date={freshness.latest_available_months.debt_service} />
+            <FreshnessRow label="Latest portfolio flows (BOP)" date={freshness.latest_available_months.portfolio_flows} />
+            <FreshnessRow label="Latest enriched index" date={freshness.latest_enriched_month?.date} />
           </div>
           {firstBlockingMonth ? (
             <p className="panel-copy subtle">

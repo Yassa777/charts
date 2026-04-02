@@ -186,6 +186,59 @@ a {
   line-height: 1.5;
 }
 
+.enriched-banner {
+  margin-top: 1.25rem;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+}
+
+.enriched-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.enriched-date {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.enriched-number-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.enriched-number {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.enriched-delta {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.enriched-delta.up {
+  color: var(--pressure);
+}
+
+.enriched-delta.down {
+  color: var(--support);
+}
+
+.enriched-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 .hero-chart-card,
 .panel-card {
   border-radius: 24px;

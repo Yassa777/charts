@@ -64,6 +64,13 @@ SOURCE_LABELS = {
     },
 }
 
+ENRICHMENT_SOURCE_KEYWORDS = {
+    "bop_quarterly": {
+        "keywords": ["balance of payments", "bpm6", "quarterly"],
+        "filename": "bop_quarterly_bpm6.xlsx",
+    },
+}
+
 LOCAL_BACKFILL_FILES = {
     "historical_fx": ROOT / "data" / "external" / "historical_fx.csv",
     "historical_reserves": ROOT / "data" / "external" / "D12_reserves_compiled.csv",
@@ -105,6 +112,18 @@ RELEASE_LAG_NOTES = {
         "examples": [
             "January 2026 reference period -> February 6, 2026 release",
             "February 2026 reference period -> March 6, 2026 release",
+        ],
+        "source": ADVANCE_RELEASE_CALENDAR_URL,
+    },
+    "bop_quarterly": {
+        "description": (
+            "CBSL publishes quarterly Balance of Payments (BPM6) data with approximately a "
+            "one-quarter lag. The table includes portfolio investment flows and primary income "
+            "(debt service interest) used for the enriched SLEPI variant."
+        ),
+        "examples": [
+            "2025 Q3 reference period -> approximately December 2025 / January 2026 release",
+            "2025 Q4 reference period -> approximately March / April 2026 release",
         ],
         "source": ADVANCE_RELEASE_CALENDAR_URL,
     },
@@ -197,11 +216,13 @@ def parse_number(value: Any) -> float | None:
         return None
 
 
-def discover_source_urls(session: requests.Session) -> dict[str, dict[str, Any]]:
+def fetch_external_sector_soup(session: requests.Session) -> BeautifulSoup:
     response = session.get(EXTERNAL_SECTOR_URL, timeout=60)
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
+    return BeautifulSoup(response.text, "html.parser")
 
+
+def discover_source_urls(soup: BeautifulSoup) -> dict[str, dict[str, Any]]:
     discovered: dict[str, dict[str, Any]] = {}
     for key, spec in SOURCE_LABELS.items():
         link = soup.find("a", string=spec["label"])
@@ -213,6 +234,23 @@ def discover_source_urls(session: requests.Session) -> dict[str, dict[str, Any]]
             "url": url,
             "filename": spec["filename"],
         }
+    return discovered
+
+
+def discover_enrichment_sources(soup: BeautifulSoup) -> dict[str, dict[str, Any]]:
+    """Discover optional enrichment sources using keyword matching on link text."""
+    discovered: dict[str, dict[str, Any]] = {}
+    for key, spec in ENRICHMENT_SOURCE_KEYWORDS.items():
+        for link in soup.find_all("a"):
+            text = normalize_text(link.get_text())
+            if all(kw in text for kw in spec["keywords"]) and link.get("href"):
+                url = requests.compat.urljoin(EXTERNAL_SECTOR_URL, link["href"])
+                discovered[key] = {
+                    "label": link.get_text().strip(),
+                    "url": url,
+                    "filename": spec["filename"],
+                }
+                break
     return discovered
 
 
@@ -242,11 +280,14 @@ def refresh_sources(session: requests.Session, force: bool) -> dict[str, Any]:
     previous_sources = previous.get("sources", {})
     checked_at = now_iso()
 
-    discovered = discover_source_urls(session)
+    soup = fetch_external_sector_soup(session)
+    discovered = discover_source_urls(soup)
+    enrichment = discover_enrichment_sources(soup)
+    all_discovered = {**discovered, **enrichment}
     manifest_sources: dict[str, Any] = {}
     changed_sources: list[str] = []
 
-    for key, spec in discovered.items():
+    for key, spec in all_discovered.items():
         metadata = head_metadata(session, spec["url"])
         raw_path = RAW_DIR / spec["filename"]
         current_entry = {
@@ -487,6 +528,113 @@ def parse_reserve_history(path: Path) -> pd.DataFrame:
     return result
 
 
+def parse_quarter_token(value: Any) -> pd.Timestamp | None:
+    """Parse a quarter identifier into a Timestamp for the first month of that quarter."""
+    if pd.isna(value):
+        return None
+    if isinstance(value, (pd.Timestamp, datetime)):
+        dt = pd.to_datetime(value)
+        quarter_month = ((dt.month - 1) // 3) * 3 + 1
+        return pd.Timestamp(year=dt.year, month=quarter_month, day=1)
+    text = str(value).strip()
+    # Match "2012 Q1", "2012Q1", "2012 1Q", "2012-Q1", etc.
+    m = re.match(r"(\d{4})\s*[-]?\s*Q?(\d)\s*Q?", text, re.I)
+    if m and 1 <= int(m.group(2)) <= 4:
+        year, q = int(m.group(1)), int(m.group(2))
+        return pd.Timestamp(year=year, month=(q - 1) * 3 + 1, day=1)
+    # Match "Q1 2012", "1Q 2012", etc.
+    m = re.match(r"Q?(\d)\s*Q?\s*(\d{4})", text, re.I)
+    if m and 1 <= int(m.group(1)) <= 4:
+        q, year = int(m.group(1)), int(m.group(2))
+        return pd.Timestamp(year=year, month=(q - 1) * 3 + 1, day=1)
+    return None
+
+
+def find_quarter_header_row(df: pd.DataFrame) -> int:
+    best_row = -1
+    best_count = 0
+    for idx in range(min(df.shape[0], 15)):
+        count = sum(parse_quarter_token(value) is not None for value in df.iloc[idx].tolist())
+        if count > best_count:
+            best_count = count
+            best_row = idx
+    if best_row == -1 or best_count < 4:
+        raise ValueError("Unable to locate quarter header row in BOP table")
+    return best_row
+
+
+def find_bop_row(df: pd.DataFrame, primary_needle: str, secondary_needle: str | None = None) -> int:
+    """Find a BOP row by keyword.  If secondary_needle is given, find primary first then
+    search below it for the secondary keyword."""
+    primary_norm = normalize_text(primary_needle)
+    if secondary_needle is None:
+        return find_row_containing(df, primary_needle)
+
+    secondary_norm = normalize_text(secondary_needle)
+    primary_idx = None
+    for idx in range(df.shape[0]):
+        row_text = " | ".join(normalize_text(v) for v in df.iloc[idx].tolist())
+        if primary_norm in row_text:
+            primary_idx = idx
+            break
+    if primary_idx is None:
+        raise ValueError(f"Unable to find '{primary_needle}' in BOP table")
+
+    for idx in range(primary_idx + 1, min(primary_idx + 10, df.shape[0])):
+        first_val = normalize_text(df.iloc[idx, 0]) if df.shape[1] > 0 else ""
+        row_text = " | ".join(normalize_text(v) for v in df.iloc[idx].tolist())
+        if secondary_norm in row_text or secondary_norm in first_val:
+            return idx
+    raise ValueError(f"Unable to find '{secondary_needle}' below '{primary_needle}' in BOP table")
+
+
+def parse_bop_quarterly(path: Path) -> pd.DataFrame:
+    """Parse CBSL BOP (BPM6) quarterly Excel to extract portfolio investment and primary income debit."""
+    df = pd.read_excel(path, sheet_name=0, header=None)
+    quarter_row = find_quarter_header_row(df)
+
+    quarters: dict[int, pd.Timestamp] = {}
+    for col in range(df.shape[1]):
+        q = parse_quarter_token(df.iloc[quarter_row, col])
+        if q is not None:
+            quarters[col] = q
+
+    portfolio_row = find_row_containing(df, "Portfolio Investment")
+    primary_income_debit_row = find_bop_row(df, "Primary Income", "Debit")
+
+    records: list[dict[str, Any]] = []
+    for col, quarter_date in quarters.items():
+        portfolio = parse_number(df.iloc[portfolio_row, col])
+        pi_debit = parse_number(df.iloc[primary_income_debit_row, col])
+        records.append(
+            {
+                "date": quarter_date,
+                "portfolio_investment_usd_m": portfolio,
+                "primary_income_debit_usd_m": abs(pi_debit) if pi_debit is not None else None,
+            }
+        )
+
+    result = pd.DataFrame(records).sort_values("date").drop_duplicates("date")
+    if result.empty:
+        raise ValueError(f"Failed to parse BOP quarterly workbook: {path.name}")
+    return result
+
+
+def expand_quarterly_to_monthly(df: pd.DataFrame, value_columns: list[str]) -> pd.DataFrame:
+    """Expand quarterly flow data to monthly by distributing evenly (dividing by 3)."""
+    rows: list[dict[str, Any]] = []
+    for _, row in df.iterrows():
+        quarter_start = pd.Timestamp(row["date"])
+        for month_offset in range(3):
+            month_date = quarter_start + pd.DateOffset(months=month_offset)
+            monthly_row: dict[str, Any] = {"date": month_date}
+            for col in value_columns:
+                val = row[col]
+                monthly_row[col] = val / 3.0 if pd.notna(val) else None
+            rows.append(monthly_row)
+    return pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+
+
 def combine_series(
     official_df: pd.DataFrame,
     fallback_df: pd.DataFrame | None,
@@ -651,6 +799,23 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         how="left",
     )
 
+    # Enrichment: debt service and portfolio flows from BOP quarterly (optional)
+    if "bop_quarterly" in raw_paths:
+        try:
+            bop_quarterly = parse_bop_quarterly(raw_paths["bop_quarterly"])
+            bop_monthly = expand_quarterly_to_monthly(
+                bop_quarterly,
+                ["portfolio_investment_usd_m", "primary_income_debit_usd_m"],
+            )
+            panel = panel.merge(bop_monthly, on="date", how="left")
+        except Exception as exc:
+            print(f"Warning: Failed to parse BOP quarterly data: {exc}")
+            panel["portfolio_investment_usd_m"] = np.nan
+            panel["primary_income_debit_usd_m"] = np.nan
+    else:
+        panel["portfolio_investment_usd_m"] = np.nan
+        panel["primary_income_debit_usd_m"] = np.nan
+
     panel = panel.sort_values("date").reset_index(drop=True)
 
     panel["imports_trailing_3m_avg_usd_m"] = panel["imports_usd_m"].rolling(3, min_periods=3).mean()
@@ -682,12 +847,18 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     panel["external_balance_pressure_adjusted_raw"] = -panel["underlying_balance_filled_usd_m"] / panel["imports_usd_m"]
     panel["buffer_inflow_support_raw"] = -panel["buffer_inflows_share_imports"]
 
+    # Enrichment block raw indicators (quarterly BOP data distributed to monthly)
+    panel["debt_service_pressure_raw"] = panel["primary_income_debit_usd_m"] / panel["imports_usd_m"]
+    panel["net_portfolio_pressure_raw"] = -panel["portfolio_investment_usd_m"] / panel["imports_usd_m"]
+
     for column in [
         "reserve_block_raw",
         "fx_market_pressure_raw",
         "external_balance_pressure_user_raw",
         "external_balance_pressure_adjusted_raw",
         "buffer_inflow_support_raw",
+        "debt_service_pressure_raw",
+        "net_portfolio_pressure_raw",
     ]:
         panel[column.replace("_raw", "_z")] = realtime_zscore(panel[column].astype(float))
 
@@ -703,8 +874,17 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         "external_balance_pressure_adjusted_z",
         "buffer_inflow_support_z",
     ]
+    enriched_columns = [
+        "reserve_block_z",
+        "fx_market_pressure_z",
+        "external_balance_pressure_adjusted_z",
+        "buffer_inflow_support_z",
+        "debt_service_pressure_z",
+        "net_portfolio_pressure_z",
+    ]
     panel["slepi_user_spec"] = mean_if_complete(panel, user_columns)
     panel["slepi_adjusted"] = mean_if_complete(panel, adjusted_columns)
+    panel["slepi_enriched"] = mean_if_complete(panel, enriched_columns)
 
     panel.attrs["proxy_intercept"] = float(intercept)
     panel.attrs["proxy_slope"] = float(slope)
@@ -774,7 +954,7 @@ def run_backtest(panel: pd.DataFrame) -> dict[str, Any]:
         (sample["date"] >= pd.Timestamp("2021-07-01")) & (sample["date"] <= pd.Timestamp("2022-06-01"))
     ].copy()
 
-    for column in ["slepi_user_spec", "slepi_adjusted"]:
+    for column in ["slepi_user_spec", "slepi_adjusted", "slepi_enriched"]:
         valid = sample[[column, "future_external_stress_3m", "future_stress_event_3m"]].dropna()
         peak_row = crisis_window.loc[crisis_window[column].idxmax()] if crisis_window[column].notna().any() else None
         metrics[column] = {
@@ -810,6 +990,14 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
     )
     latest_complete_value = float(latest_complete["slepi_adjusted"].iloc[0]) if not latest_complete.empty else None
 
+    latest_enriched = panel.loc[panel["slepi_enriched"].notna()].tail(1)
+    latest_enriched_date = (
+        pd.to_datetime(latest_enriched["date"].iloc[0]).strftime("%Y-%m-%d")
+        if not latest_enriched.empty
+        else None
+    )
+    latest_enriched_value = float(latest_enriched["slepi_enriched"].iloc[0]) if not latest_enriched.empty else None
+
     latest_available = {
         "fx_market_pressure": latest_non_null_month(panel, "usd_lkr"),
         "current_account": latest_non_null_month(panel, "current_account_filled_usd_m"),
@@ -818,6 +1006,8 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
         "tourism": latest_non_null_month(panel, "tourism_earnings_usd_m"),
         "remittances": latest_non_null_month(panel, "remittances_usd_m"),
         "buffer_inflows": latest_non_null_month(panel, "buffer_inflows_usd_m"),
+        "debt_service": latest_non_null_month(panel, "primary_income_debit_usd_m"),
+        "portfolio_flows": latest_non_null_month(panel, "portfolio_investment_usd_m"),
     }
 
     required_columns = {
@@ -849,6 +1039,10 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
         "latest_complete_month": {
             "date": latest_complete_date,
             "slepi_adjusted": latest_complete_value,
+        },
+        "latest_enriched_month": {
+            "date": latest_enriched_date,
+            "slepi_enriched": latest_enriched_value,
         },
         "latest_available_months": latest_available,
         "latest_partial_month": max((value for value in latest_available.values() if value is not None), default=None),
@@ -882,6 +1076,15 @@ def build_snapshot(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict
     if latest is not None and previous is not None:
         delta = float(latest["slepi_adjusted"] - previous["slepi_adjusted"])
 
+    # Enriched sparkline (may be shorter due to quarterly BOP lag)
+    enriched_complete = panel.loc[panel["slepi_enriched"].notna()].copy()
+    enriched_sparkline_rows = enriched_complete.tail(24)
+    enriched_latest = enriched_complete.iloc[-1] if not enriched_complete.empty else None
+    enriched_previous = enriched_complete.iloc[-2] if len(enriched_complete) >= 2 else None
+    enriched_delta = None
+    if enriched_latest is not None and enriched_previous is not None:
+        enriched_delta = float(enriched_latest["slepi_enriched"] - enriched_previous["slepi_enriched"])
+
     return {
         "built_at": freshness["artifact_built_at"],
         "pipeline_checked_at": freshness["pipeline_checked_at"],
@@ -900,6 +1103,22 @@ def build_snapshot(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict
             if not sparkline_rows.empty
             else None
         ),
+        "enriched": {
+            "latest": row_to_dict(enriched_latest),
+            "previous": row_to_dict(enriched_previous),
+            "delta": enriched_delta,
+            "sparklineValues": [json_ready(v) for v in enriched_sparkline_rows["slepi_enriched"].tolist()],
+            "sparklineStart": (
+                pd.to_datetime(enriched_sparkline_rows["date"].iloc[0]).strftime("%Y-%m-%d")
+                if not enriched_sparkline_rows.empty
+                else None
+            ),
+            "sparklineEnd": (
+                pd.to_datetime(enriched_sparkline_rows["date"].iloc[-1]).strftime("%Y-%m-%d")
+                if not enriched_sparkline_rows.empty
+                else None
+            ),
+        },
         "metrics": metrics,
         "freshness": freshness,
     }
@@ -919,8 +1138,11 @@ def write_outputs(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict[
         "current_account_filled_usd_m",
         "underlying_balance_filled_usd_m",
         "buffer_inflows_usd_m",
+        "portfolio_investment_usd_m",
+        "primary_income_debit_usd_m",
         "slepi_user_spec",
         "slepi_adjusted",
+        "slepi_enriched",
     ]
     panel[index_columns].to_csv(INDEX_PATH, index=False)
     write_json(BACKTEST_PATH, metrics)
@@ -1031,6 +1253,7 @@ def publish_to_object_storage() -> list[str]:
 def build_methodology_note(panel: pd.DataFrame, metrics: dict[str, Any]) -> str:
     user_metrics = metrics["slepi_user_spec"]
     adjusted_metrics = metrics["slepi_adjusted"]
+    enriched_metrics = metrics.get("slepi_enriched", {})
 
     latest = panel.dropna(subset=["slepi_adjusted"]).tail(1)
     latest_line = "No complete adjusted SLEPI observation was produced."
@@ -1041,28 +1264,54 @@ def build_methodology_note(panel: pd.DataFrame, metrics: dict[str, Any]) -> str:
             f"with a value of {row['slepi_adjusted']:.2f}."
         )
 
+    enriched_latest = panel.dropna(subset=["slepi_enriched"]).tail(1)
+    enriched_line = "No complete enriched SLEPI observation was produced (BOP quarterly data may not be available)."
+    if not enriched_latest.empty:
+        erow = enriched_latest.iloc[0]
+        enriched_line = (
+            f"The latest complete enriched SLEPI observation is {erow['date'].strftime('%Y-%m-%d')} "
+            f"with a value of {erow['slepi_enriched']:.2f}."
+        )
+
+    enriched_backtest_block = ""
+    if enriched_metrics:
+        corr = enriched_metrics.get("correlation_with_future_external_stress_3m")
+        auc = enriched_metrics.get("auc_for_top_15pct_future_stress_event")
+        peak_date = enriched_metrics.get("crisis_window_peak_date")
+        peak_val = enriched_metrics.get("crisis_window_peak_value")
+        if corr is not None and auc is not None:
+            enriched_backtest_block = f"""- Enriched SLEPI correlation with future 3-month external stress: `{corr:.3f}`
+- Enriched SLEPI AUC for top-15% future stress events: `{auc:.3f}`"""
+            if peak_date and peak_val is not None:
+                enriched_backtest_block += f"\n- Enriched SLEPI crisis window peak: `{peak_date}` at `{peak_val:.2f}`"
+
     return f"""# SLEPI methodology assessment
 
 ## Recommendation
 
 Use `slepi_adjusted` as the headline series and keep `slepi_user_spec` as a shadow series.
+Use `slepi_enriched` as the extended variant when debt service and portfolio flow data is available.
 
 Reason:
 
 - the raw user specification counts remittances and tourism twice: once inside monthly current account balance and again inside the buffer-inflow support block
 - the adjusted version strips those inflows out of the external-balance block first, which makes the four blocks economically cleaner
+- the enriched version adds debt service pressure and net portfolio flow pressure from CBSL's quarterly BOP (BPM6), extending the adjusted variant to six blocks
 - in the rough historical backtest here, the adjusted variant is only marginally weaker than the raw variant, so the loss from de-duplication is small
 
 ## Current design verdict
 
-The four-block structure is defensible, but the clean implementation is:
+The four-block structure is defensible, and the enriched six-block version adds:
 
 1. reserve adequacy via import cover
 2. FX market pressure via monthly USD/LKR depreciation
 3. underlying external-balance pressure via current account excluding remittances and tourism
 4. buffer-inflow support via remittances plus tourism, scaled by imports
+5. debt service pressure via primary income debit (interest payments) from BOP, scaled by imports
+6. net portfolio flow pressure via portfolio investment outflows from BOP, scaled by imports
 
-That preserves the intent of your design while reducing overlap.
+Blocks 5 and 6 are sourced from CBSL's quarterly Balance of Payments (BPM6) table and converted to
+monthly frequency by distributing quarterly flows evenly across the three constituent months.
 
 ## Data sufficiency
 
@@ -1072,6 +1321,7 @@ That preserves the intent of your design while reducing overlap.
 - Monthly exports and imports are available from `2007-01`.
 - Monthly remittances and tourism earnings are available from `2009-01`.
 - Monthly FX history is available from `2005-01`.
+- Quarterly BOP (BPM6) data starts from `2012 Q1`, providing portfolio investment and primary income debit.
 
 This means the folder is enough for a useful long proxy backtest, but not for a purely official monthly-current-account backtest before 2023.
 
@@ -1086,8 +1336,11 @@ This means the folder is enough for a useful long proxy backtest, but not for a 
 - FX intervention disclosure: {RELEASE_LAG_NOTES['fx_intervention']['description']}
   - {RELEASE_LAG_NOTES['fx_intervention']['examples'][0]}
   - {RELEASE_LAG_NOTES['fx_intervention']['examples'][1]}
+- BOP quarterly: {RELEASE_LAG_NOTES['bop_quarterly']['description']}
+  - {RELEASE_LAG_NOTES['bop_quarterly']['examples'][0]}
+  - {RELEASE_LAG_NOTES['bop_quarterly']['examples'][1]}
 
-Source for all three timing notes: [{ADVANCE_RELEASE_CALENDAR_URL}]({ADVANCE_RELEASE_CALENDAR_URL})
+Source for all timing notes: [{ADVANCE_RELEASE_CALENDAR_URL}]({ADVANCE_RELEASE_CALENDAR_URL})
 
 ## Backtest snapshot
 
@@ -1096,6 +1349,7 @@ Source for all three timing notes: [{ADVANCE_RELEASE_CALENDAR_URL}]({ADVANCE_REL
 - Raw user-spec SLEPI AUC for top-15% future stress events: `{user_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
 - Adjusted SLEPI correlation with future 3-month external stress: `{adjusted_metrics['correlation_with_future_external_stress_3m']:.3f}`
 - Adjusted SLEPI AUC for top-15% future stress events: `{adjusted_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
+{enriched_backtest_block}
 - Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `{metrics['proxy_fit']['slope']:.3f}`, correlation `{metrics['proxy_fit']['overlap_correlation']:.3f}`, overlap months `{metrics['proxy_fit']['overlap_months']}`
 
 Both variants spike sharply into the 2021-2022 external crisis window, with crisis peaks on:
@@ -1107,11 +1361,14 @@ Both variants spike sharply into the 2021-2022 external crisis window, with cris
 
 - If you want a clean policy dashboard, publish `slepi_adjusted`.
 - If you want a simple continuity check against the original idea, keep `slepi_user_spec` beside it.
+- If you want the fullest picture including debt service and portfolio flows, use `slepi_enriched` (note: it lags `slepi_adjusted` by roughly one quarter due to BOP release cadence).
 - If you later want a true daily nowcast, the next upgrade should be a daily FX sub-index plus step-held monthly external blocks, rather than forcing all four blocks into a fake daily frequency.
 
 ## Latest observation
 
 {latest_line}
+
+{enriched_line}
 """
 
 
