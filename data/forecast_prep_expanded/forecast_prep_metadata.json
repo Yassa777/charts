@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-02-10 07:33:48.638327",
+  "source": "data/merged/reserves_forecasting_panel.csv",
+  "varset": "expanded",
+  "missing_strategy": {
+    "method": "ffill_limit",
+    "limit": 3,
+    "drop_remaining": true
+  },
+  "splits": {
+    "train_end": "2019-12-01",
+    "validation_end": "2022-12-01",
+    "test_start": "2023-01-01"
+  },
+  "arima": {
+    "rows": 138,
+    "train_rows": 96,
+    "validation_rows": 27,
+    "test_rows": 15,
+    "d_recommendation": 1,
+    "arima_exog_vars": [
+      "exports_usd_m",
+      "imports_usd_m",
+      "remittances_usd_m",
+      "usd_lkr",
+      "trade_balance_usd_m",
+      "m2_usd_m",
+      "tourism_usd_m",
+      "cse_net_usd_m"
+    ],
+    "varset": "expanded",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  },
+  "vecm": {
+    "variables": [
+      "gross_reserves_usd_m",
+      "exports_usd_m",
+      "imports_usd_m",
+      "remittances_usd_m",
+      "usd_lkr",
+      "trade_balance_usd_m",
+      "m2_usd_m"
+    ],
+    "rows_levels": 177,
+    "rows_state": 176,
+    "suitable_for_vecm": true,
+    "ect_metadata": {
+      "error": "Matrix is not positive definite",
+      "k_ar_diff": 11
+    },
+    "varset": "expanded",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  },
+  "ms_var": {
+    "variables": [
+      "gross_reserves_usd_m",
+      "usd_lkr",
+      "exports_usd_m",
+      "imports_usd_m",
+      "trade_balance_usd_m",
+      "m2_usd_m"
+    ],
+    "rows": 200,
+    "suitable_for_ms_var": true,
+    "standardized_on": "train_split",
+    "varset": "expanded",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  }
+}

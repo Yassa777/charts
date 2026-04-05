@@ -1,0 +1,16 @@
+country,output_name,flow,indicator,transform,n_obs,start_date,end_date,status,months_stale,source_url
+argentina,gross_reserves_usd_m,IL,TRGMV_REVS,USD,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/IL/ARG.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01
+argentina,exports_usd_m,ITG,XG,FOB_USD,239,2006-01-01,2025-11-01,ok,4,https://api.imf.org/external/sdmx/2.1/data/ITG/ARG.XG.FOB_USD.M?detail=full&startPeriod=2000-01
+argentina,imports_usd_m,ITG,MG,CIF_USD,239,2006-01-01,2025-11-01,ok,4,https://api.imf.org/external/sdmx/2.1/data/ITG/ARG.MG.CIF_USD.M?detail=full&startPeriod=2000-01
+argentina,usd_lcy,ER,XDC_USD,EOP_RT,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/ER/ARG.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01
+argentina,m2_lcy_m,MFS_MA,BM_MAI,XDC,191,2010-01-01,2025-11-01,ok,4,https://api.imf.org/external/sdmx/2.1/data/MFS_MA/ARG.BM_MAI.XDC.M?detail=full&startPeriod=2000-01
+egypt,gross_reserves_usd_m,IL,TRGMV_REVS,USD,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/IL/EGY.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01
+egypt,exports_usd_m,ITG,XG,FOB_USD,214,2008-01-01,2025-10-01,ok,5,https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.XG.FOB_USD.M?detail=full&startPeriod=2000-01
+egypt,imports_usd_m,ITG,MG,CIF_USD,214,2008-01-01,2025-10-01,ok,5,https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.MG.CIF_USD.M?detail=full&startPeriod=2000-01
+egypt,usd_lcy,ER,XDC_USD,EOP_RT,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/ER/EGY.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01
+egypt,m2_lcy_m,MFS_MA,BM_MAI,XDC,264,2004-01-01,2025-12-01,ok,3,https://api.imf.org/external/sdmx/2.1/data/MFS_MA/EGY.BM_MAI.XDC.M?detail=full&startPeriod=2000-01
+pakistan,gross_reserves_usd_m,IL,TRGMV_REVS,USD,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/IL/PAK.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01
+pakistan,exports_usd_m,ITG+PBS,XG+summary_trade_usd,FOB_USD,217,2008-01-01,2026-02-01,ok,1,https://www.pbs.gov.pk/external-trade-statistics/
+pakistan,imports_usd_m,ITG+PBS,MG+summary_trade_usd,CIF_USD,217,2008-01-01,2026-02-01,ok,1,https://www.pbs.gov.pk/external-trade-statistics/
+pakistan,usd_lcy,ER,XDC_USD,EOP_RT,313,2000-01-01,2026-01-01,ok,2,https://api.imf.org/external/sdmx/2.1/data/ER/PAK.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01
+pakistan,m2_lcy_m,MFS_MA,BM_MAI,XDC,288,2001-12-01,2025-11-01,ok,4,https://api.imf.org/external/sdmx/2.1/data/MFS_MA/PAK.BM_MAI.XDC.M?detail=full&startPeriod=2000-01

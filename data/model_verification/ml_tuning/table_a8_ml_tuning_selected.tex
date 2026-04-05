@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Selected machine-learning hyperparameters}
+\label{tab:ml_tuning_selected}
+\begin{tabular}{llccccccccccccc}
+\toprule
+Model & Varset & Search & LR & Depth & Trees & Min child & Subsample & Colsample & Seq len & Epochs & Batch & Units & Dropout & Mean CV RMSE \\
+\midrule
+XGBoost & parsimonious & grid & 0.030 & 3 & 400 & 1 & 0.8 & 1.0 & -- & -- & -- & -- & -- & 662.6 \\
+XGBoost & bop & grid & 0.100 & 5 & 400 & 3 & 0.8 & 1.0 & -- & -- & -- & -- & -- & 872.5 \\
+XGBoost & monetary & grid & 0.030 & 5 & 400 & 1 & 0.8 & 1.0 & -- & -- & -- & -- & -- & 1544.9 \\
+XGBoost & pca & grid & 0.100 & 5 & 200 & 1 & 0.8 & 0.8 & -- & -- & -- & -- & -- & 950.3 \\
+XGBoost & full & grid & 0.030 & 5 & 200 & 1 & 0.8 & 1.0 & -- & -- & -- & -- & -- & 885.1 \\
+LSTM & parsimonious & grid & 0.001 & -- & -- & -- & -- & -- & 6 & 60 & 8 & 16 & 0.1 & 684.1 \\
+LSTM & bop & grid & 0.001 & -- & -- & -- & -- & -- & 6 & 60 & 16 & 64 & 0.1 & 684.9 \\
+LSTM & monetary & grid & 0.001 & -- & -- & -- & -- & -- & 6 & 60 & 8 & 64 & 0.3 & 1027.7 \\
+LSTM & pca & grid & 0.001 & -- & -- & -- & -- & -- & 6 & 60 & 16 & 32 & 0.1 & 842.3 \\
+LSTM & full & grid & 0.001 & -- & -- & -- & -- & -- & 6 & 60 & 16 & 32 & 0.3 & 835.6 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item Notes: LR = learning rate. Dashes indicate parameters not applicable to the given model family. 
+Mean CV RMSE is the selection objective reported in Tables~\ref{tab:ml_tuning_design} and~\ref{tab:ml_tuning_selected}.
+\end{tablenotes}
+\end{table}

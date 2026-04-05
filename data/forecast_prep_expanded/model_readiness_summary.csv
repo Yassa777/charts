@@ -1,0 +1,5 @@
+model,ready,rows,note
+ARIMA,True,138,Univariate stationary transforms prepared
+VECM,True,177,Level system + ECT state prepared
+MS-VAR,True,200,Differenced standardized system prepared
+MS-VECM,True,176,ECT-augmented state prepared for regime switching

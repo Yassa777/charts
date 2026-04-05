@@ -1,0 +1,89 @@
+{
+  "All Share Price Index.xls": {
+    "stream": "D3_ASPI",
+    "description": "All Share Price Index (CSE)",
+    "items_to_extract": [
+      "EQUITY- All share price index"
+    ]
+  },
+  "Average Weighted Call Money Rate .xls": {
+    "stream": "D2_AWCMR",
+    "description": "Average Weighted Call Money Rate (Interbank)",
+    "items_to_extract": [
+      "Average Weighted Call Money Rate"
+    ]
+  },
+  "Data (1).xls": {
+    "stream": "MISC_rice_prices",
+    "description": "Rice Prices (not in 18 streams)",
+    "items_to_extract": []
+  },
+  "Data (2).xls": {
+    "stream": "D4_equity_turnover",
+    "description": "Daily Equity Turnover (CSE)",
+    "items_to_extract": [
+      "EQUITY- Daily Turnover"
+    ]
+  },
+  "Data-2.xls": {
+    "stream": "D8_tbill_yields",
+    "description": "Treasury Bill Yields (91d, 182d, 364d)",
+    "items_to_extract": [
+      "Treasury Bill Primary Market Auction Weighted Average Yield Rate -91 days",
+      "Treasury Bill Primary Market Auction Weighted Average Yield Rate -182 days",
+      "Treasury Bill Primary Market Auction Weighted Average Yield Rate -364 days"
+    ]
+  },
+  "Data.xls": {
+    "stream": "D5_market_cap",
+    "description": "Equity Market Capitalization (CSE)",
+    "items_to_extract": [
+      "EQUITY-Market Capitalization"
+    ]
+  },
+  "ISB.xls": {
+    "stream": "D15_isb_yields",
+    "description": "International Sovereign Bond Yields",
+    "items_to_extract": [
+      "Secondary Market Yield Rates - ISBs (Maturity : 3/28/2030, Coupon Rate : 7.55%)"
+    ]
+  },
+  "REER and Net Foreign Assets.xls": {
+    "stream": "D14_reer_nfa",
+    "description": "REER Index + Net Foreign Assets (Monthly)",
+    "items_to_extract": [
+      "Real Effective Exchange Rate Index",
+      "Net Foreign Assets of the Monetary Authorities",
+      "Net Foreign Assets of the Commercial Banks - Total"
+    ]
+  },
+  "SL20 & Gold Price.xls": {
+    "stream": "D6_D7_gold_sl20",
+    "description": "S&P SL20 Index + Gold Price (LKR)",
+    "items_to_extract": [
+      "EQUITY-S&P SL20 Index",
+      "Gold Price"
+    ]
+  },
+  "Treasury Bills.xls": {
+    "stream": "DUPLICATE_equity_turnover",
+    "description": "MISLABELED - Contains Equity Turnover (duplicate)",
+    "items_to_extract": []
+  },
+  "Treasury Bonds.xls": {
+    "stream": "D9_tbond_yields",
+    "description": "Treasury Bond Yields (2y, 5y, 10y)",
+    "items_to_extract": [
+      "Secondary Market Yield Rates - Treasury Bonds - 2 years (avgRate)",
+      "Secondary Market Yield Rates - Treasury Bonds - 5 years (avgRate)",
+      "Secondary Market Yield Rates - Treasury Bonds - 10 years (avgRate)"
+    ]
+  },
+  "USD Spot Rate.xls": {
+    "stream": "D1_usd_lkr",
+    "description": "USD/LKR Exchange Rate",
+    "items_to_extract": [
+      "USD Spot Rate"
+    ]
+  }
+}

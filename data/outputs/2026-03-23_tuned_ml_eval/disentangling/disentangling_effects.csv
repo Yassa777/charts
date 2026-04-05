@@ -1,0 +1,8 @@
+effect,value,definition,ci_lower,ci_upper,boot_std,n_bootstrap,block_length,ci_level,bootstrap_method,ci_excludes_zero
+architecture_effect_at_parsimonious,384.7644006698587,"RMSE(XGBoost,parsimonious) - RMSE(MS-VAR,parsimonious)",180.10750535501006,538.9259496440665,91.94298194098188,1000,3,0.95,stationary_block,True
+architecture_effect_at_bop,570.8873563029625,"RMSE(XGBoost,bop) - RMSE(MS-VAR,bop)",244.681280135011,838.1348976157957,149.81345931100432,1000,3,0.95,stationary_block,True
+architecture_effect_avg,477.8258784864106,Average architecture contrast across varsets,221.32691976224592,676.077010486269,115.94813506007193,1000,3,0.95,stationary_block,True
+information_effect_at_MS-VAR,-14.923925323100889,"RMSE(MS-VAR,bop) - RMSE(MS-VAR,parsimonious)",-54.92615246762281,21.56197195925842,19.290058407530612,1000,3,0.95,stationary_block,False
+information_effect_at_XGBoost,171.19903031000297,"RMSE(XGBoost,bop) - RMSE(XGBoost,parsimonious)",-5.343053118597535,315.52364835311425,81.4239536547364,1000,3,0.95,stationary_block,False
+information_effect_avg,78.13755249345104,Average information contrast across models,-3.073700428680165,149.41295265749267,38.6802411511504,1000,3,0.95,stationary_block,False
+interaction_did,186.12295563310386,Difference-in-differences interaction term,-9.367537263410966,345.0272313945892,89.55048264651963,1000,3,0.95,stationary_block,False

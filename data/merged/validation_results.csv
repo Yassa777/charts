@@ -1,0 +1,13 @@
+date,name,type,expected,detected,all_in_window,hit
+2022-01-18,$500M ISB Repayment,anchor,STRESS,STRESS,['STRESS'],True
+2022-03-07,FX Float (CBSL abandons peg),anchor,STRESS,STRESS,"['STRESS', 'CRISIS']",True
+2022-04-12,External Debt Suspension (Default),anchor,CRISIS,CRISIS,"['STRESS', 'CRISIS']",True
+2022-09-01,IMF Staff-Level Agreement,anchor,CRISIS,CRISIS,['CRISIS'],True
+2023-03-20,IMF EFF Approval,anchor,CRISIS,CRISIS,"['CRISIS', 'STRESS']",True
+2023-06-28,Domestic Debt Restructuring Plan,anchor,STRESS,STRESS,['STRESS'],True
+2024-06-26,Official Creditor Committee Agreement,anchor,CALM,STRESS,"['STRESS', 'CALM']",True
+2024-09-19,Bondholder Agreement-in-Principle,anchor,CALM,CALM,['CALM'],True
+2019-04-21,Easter Sunday Attacks,shock,CALM,CALM,['CALM'],True
+2020-03-20,COVID Lockdown Begins,shock,CALM,CALM,['CALM'],True
+2021-04-22,Fertilizer Import Ban,shock,CALM,STRESS,"['CALM', 'STRESS']",True
+2022-07-14,President Resigns,shock,CRISIS,CRISIS,['CRISIS'],True

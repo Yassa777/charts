@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-03-24T07:18:29.465358Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "389988113d891a4dbeed06ae800d9d2a428227cca71ae589cf52d41d41be63ef",
+  "config": {
+    "aggregated_varset": "parsimonious",
+    "disaggregated_varset": "bop",
+    "models_requested": null,
+    "models_tested": [
+      "ARIMA",
+      "BVAR",
+      "MS-VAR",
+      "MS-VECM",
+      "Naive",
+      "VECM",
+      "XGBoost"
+    ],
+    "horizon": 1,
+    "split": "test",
+    "loss": "squared",
+    "segments": [
+      "all",
+      "crisis",
+      "tranquil"
+    ],
+    "min_obs_per_model": 12,
+    "component_signs": {
+      "exports_usd_m": 1.0,
+      "imports_usd_m": -1.0,
+      "remittances_usd_m": 1.0,
+      "tourism_usd_m": 1.0,
+      "cse_net_usd_m": 1.0
+    },
+    "rolling_window": 12,
+    "hac_lags": 3,
+    "forecast_link_loss": "squared",
+    "n_aligned_rows": 196,
+    "n_forecast_link_dates": 27,
+    "output_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/outputs/2026-03-23_tuned_ml_eval/information_loss"
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/run_information_loss_tests.py",
+    "--run-id",
+    "2026-03-23_tuned_ml_eval"
+  ]
+}

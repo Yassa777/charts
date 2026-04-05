@@ -1,0 +1,131 @@
+{
+  "generated_at_utc": "2026-03-17T07:52:07.090716+00:00",
+  "series": {
+    "gross_reserves_usd_m": {
+      "output_name": "gross_reserves_usd_m",
+      "description": "Total reserves including gold at market value",
+      "flow": "IL",
+      "indicator": "TRGMV_REVS",
+      "transform": "USD",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/IL/EGY.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01",
+      "n_obs": 313,
+      "start_date": "2000-01-01",
+      "end_date": "2026-01-01",
+      "attempts": [
+        {
+          "indicator": "TRGMV_REVS",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/IL/EGY.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 313
+        }
+      ]
+    },
+    "exports_usd_m": {
+      "output_name": "exports_usd_m",
+      "description": "Goods exports, FOB basis",
+      "flow": "ITG",
+      "indicator": "XG",
+      "transform": "FOB_USD",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.XG.FOB_USD.M?detail=full&startPeriod=2000-01",
+      "n_obs": 214,
+      "start_date": "2008-01-01",
+      "end_date": "2025-10-01",
+      "attempts": [
+        {
+          "indicator": "XG",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.XG.FOB_USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 214
+        }
+      ]
+    },
+    "imports_usd_m": {
+      "output_name": "imports_usd_m",
+      "description": "Goods imports, CIF basis",
+      "flow": "ITG",
+      "indicator": "MG",
+      "transform": "CIF_USD",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.MG.CIF_USD.M?detail=full&startPeriod=2000-01",
+      "n_obs": 214,
+      "start_date": "2008-01-01",
+      "end_date": "2025-10-01",
+      "attempts": [
+        {
+          "indicator": "MG",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ITG/EGY.MG.CIF_USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 214
+        }
+      ]
+    },
+    "usd_lcy": {
+      "output_name": "usd_lcy",
+      "description": "End-of-period domestic currency per U.S. dollar",
+      "flow": "ER",
+      "indicator": "XDC_USD",
+      "transform": "EOP_RT",
+      "scale_to_millions": false,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/ER/EGY.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01",
+      "n_obs": 313,
+      "start_date": "2000-01-01",
+      "end_date": "2026-01-01",
+      "attempts": [
+        {
+          "indicator": "XDC_USD",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ER/EGY.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01",
+          "n_obs": 313
+        }
+      ]
+    },
+    "m2_lcy_m": {
+      "output_name": "m2_lcy_m",
+      "description": "Broad money in domestic currency",
+      "flow": "MFS_MA",
+      "indicator": "BM_MAI",
+      "transform": "XDC",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/MFS_MA/EGY.BM_MAI.XDC.M?detail=full&startPeriod=2000-01",
+      "n_obs": 264,
+      "start_date": "2004-01-01",
+      "end_date": "2025-12-01",
+      "attempts": [
+        {
+          "indicator": "BM_MAI",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/MFS_MA/EGY.BM_MAI.XDC.M?detail=full&startPeriod=2000-01",
+          "n_obs": 264
+        }
+      ]
+    }
+  },
+  "merged_panel": {
+    "n_rows": 313,
+    "start_date": "2000-01-01",
+    "end_date": "2026-01-01",
+    "columns": [
+      "date",
+      "gross_reserves_usd_m",
+      "exports_usd_m",
+      "imports_usd_m",
+      "usd_lcy",
+      "m2_lcy_m",
+      "country",
+      "country_code",
+      "trade_balance_usd_m",
+      "m2_usd_m",
+      "reserve_change_usd_m",
+      "reserve_change_pct"
+    ]
+  },
+  "varset_windows": {
+    "parsimonious": {
+      "n_obs": 214,
+      "start_date": "2008-01-01",
+      "end_date": "2025-10-01"
+    },
+    "monetary": {
+      "n_obs": 264,
+      "start_date": "2004-01-01",
+      "end_date": "2025-12-01"
+    }
+  }
+}

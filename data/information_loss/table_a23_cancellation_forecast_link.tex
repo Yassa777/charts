@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Link Between Information Loss and Disaggregation Gains}
+\label{tab:cancellation_forecast_link}
+\begin{tabular}{lcccccc}
+\toprule
+Group & $n$ dates & Pearson $r$ & HAC slope & $p$-value & Mean gain low-loss q & Mean gain high-loss q \\
+\midrule
+All models & 27 & 0.131 & 836,839.5 & 0.379 & -90,672.7 & 116,981.1 \\
+Regime-switching & 27 & 0.273 & 547,689.8 & 0.021 & -3,778.3 & 36,646.9 \\
+Other models & 27 & 0.106 & 952,499.4 & 0.486 & -125,430.4 & 149,114.8 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Rows use the aligned forecast panel merged with the cancellation series on common dates (2023:01--2025:03; 27 monthly observations). For each group, the dependent variable is the date-level mean squared-loss differential, $\ell_{\mathrm{agg}} - \ell_{\mathrm{disagg}}$, so positive values indicate that disaggregation lowers forecast loss. The HAC slope comes from a regression of that date-level mean loss gain on information-loss potential; low/high quartiles split dates by the 25th and 75th percentiles of information-loss potential within the same sample.
+\end{tablenotes}
+\end{table}

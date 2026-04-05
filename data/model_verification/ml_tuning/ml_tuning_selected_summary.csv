@@ -1,0 +1,11 @@
+Model,Varset,search_method,learning_rate,max_depth,n_estimators,min_child_weight,subsample,colsample_bytree,seq_length,epochs,batch_size,hidden_units,dropout,early_stopping,mean_cv_rmse
+XGBoost,parsimonious,grid,0.03,3.0,400.0,1.0,0.8,1.0,,,,,,none,662.555419773383
+XGBoost,bop,grid,0.1,5.0,400.0,3.0,0.8,1.0,,,,,,none,872.5026081244481
+XGBoost,monetary,grid,0.03,5.0,400.0,1.0,0.8,1.0,,,,,,none,1544.9285015462585
+XGBoost,pca,grid,0.1,5.0,200.0,1.0,0.8,0.8,,,,,,none,950.2921745492118
+XGBoost,full,grid,0.03,5.0,200.0,1.0,0.8,1.0,,,,,,none,885.140031702931
+LSTM,parsimonious,grid,0.001,,,,,,6.0,60.0,8.0,16.0,0.1,"val_loss, patience=10",684.089112698588
+LSTM,bop,grid,0.0005,,,,,,6.0,60.0,16.0,64.0,0.1,"val_loss, patience=10",684.8884088342894
+LSTM,monetary,grid,0.001,,,,,,6.0,60.0,8.0,64.0,0.3,"val_loss, patience=10",1027.7120659011457
+LSTM,pca,grid,0.0005,,,,,,6.0,60.0,16.0,32.0,0.1,"val_loss, patience=10",842.2788269484741
+LSTM,full,grid,0.001,,,,,,6.0,60.0,16.0,32.0,0.3,"val_loss, patience=10",835.6003672379892

@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-03-26T03:11:03.088857Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "9ff496c6df2dac87153d7d72ab287516921c4c51da8f38ffb0fe92c89eebc628",
+  "config": {
+    "varset": "bop_fx",
+    "base_varsets": [
+      "bop",
+      "parsimonious"
+    ],
+    "horizon": 12,
+    "ar_order": 2,
+    "exog_forecast": "arima",
+    "regime_mode": "locked",
+    "endog_cols": [
+      "gross_reserves_usd_m"
+    ],
+    "exog_cols": [
+      "exports_usd_m",
+      "imports_usd_m",
+      "remittances_usd_m",
+      "tourism_usd_m",
+      "usd_lkr"
+    ],
+    "output_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/scenario_analysis/bop_fx",
+    "table_path": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/scenario_analysis/tables/policy_impacts_bop_fx.tex",
+    "source_data": [
+      "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/forecast_prep_academic/varset_bop/vecm_levels.csv",
+      "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/forecast_prep_academic/varset_parsimonious/vecm_levels.csv"
+    ]
+  },
+  "argv": [
+    "manuscript/.tools/run_bop_fx_scenarios.py"
+  ]
+}

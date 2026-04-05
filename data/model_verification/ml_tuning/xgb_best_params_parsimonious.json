@@ -1,0 +1,13 @@
+{
+  "best_params": {
+    "n_estimators": 400,
+    "max_depth": 3,
+    "learning_rate": 0.03,
+    "subsample": 0.8,
+    "colsample_bytree": 1.0,
+    "min_child_weight": 1,
+    "random_state": 42
+  },
+  "best_rmse": 662.555419773383,
+  "selection_criterion": "mean_validation_rmse"
+}

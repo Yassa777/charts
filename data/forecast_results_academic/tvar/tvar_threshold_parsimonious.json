@@ -1,0 +1,760 @@
+{
+  "varset": "parsimonious",
+  "timestamp": "2026-02-10T09:40:05.255926",
+  "tvar": {
+    "model": "Threshold VAR",
+    "n_lags": 2,
+    "delay": 1,
+    "threshold": -0.0113697888467712,
+    "threshold_variable": "usd_lkr_pct_change",
+    "n_variables": 3,
+    "variables": [
+      "gross_reserves_usd_m",
+      "trade_balance_usd_m",
+      "usd_lkr"
+    ],
+    "total_observations": 215,
+    "regime_stats": {
+      "regime1": {
+        "name": "Stable",
+        "condition": "usd_lkr_pct_change <= -0.0114",
+        "n_obs": 79,
+        "pct": 36.74418604651163,
+        "mean_threshold_var": -0.7846899525412832,
+        "std_threshold_var": 1.2848610344520086,
+        "start_date": "2007-11-01",
+        "end_date": "2024-12-01"
+      },
+      "regime2": {
+        "name": "Crisis",
+        "condition": "usd_lkr_pct_change > -0.0114",
+        "n_obs": 136,
+        "pct": 63.25581395348837,
+        "mean_threshold_var": 1.2502608171055798,
+        "std_threshold_var": 3.3391202957260404,
+        "start_date": "2007-02-01",
+        "end_date": "2024-10-01"
+      },
+      "threshold": -0.0113697888467712,
+      "threshold_var": "usd_lkr_pct_change",
+      "total_obs": 215,
+      "n_transitions": 59,
+      "avg_regime_duration": 3.5833333333333335
+    },
+    "regime1_aic": 28.79152802426923,
+    "regime1_bic": 29.43074768477478,
+    "regime2_aic": 27.072817443676012,
+    "regime2_bic": 27.52695651680265
+  },
+  "threshold_ci": {
+    "point_estimate": -0.0113697888467712,
+    "lower": -0.21442046748004762,
+    "upper": 0.011247140985548576,
+    "confidence_level": 0.95,
+    "n_grid_points_in_ci": 11
+  },
+  "linearity_test": {
+    "f_statistic": -2.5504676169236955,
+    "df1": 21,
+    "df2": 173,
+    "ssr_linear": 49716546.02987936,
+    "ssr_tvar": 72010628.75120653,
+    "ssr_reduction_pct": -44.84238045806431,
+    "optimal_threshold": -0.0113697888467712,
+    "asymptotic_p_value": 1.0,
+    "note": "Use bootstrap_linearity_test for accurate p-value (Davies problem)"
+  },
+  "tvar_improves": false,
+  "bootstrap_test": {
+    "skipped": true
+  },
+  "regime_persistence": {
+    "p_00": 0.6282051282051282,
+    "p_01": 0.3717948717948718,
+    "p_10": 0.22058823529411764,
+    "p_11": 0.7794117647058824,
+    "persistence_index": 0.7038084464555052,
+    "test_statistic": 33.63772413181075,
+    "p_value": 6.639255329813671e-09,
+    "transition_counts": {
+      "n_00": 49,
+      "n_01": 29,
+      "n_10": 30,
+      "n_11": 106
+    }
+  },
+  "forecasts": {
+    "gross_reserves_usd_m": {
+      "2025-01-01 00:00:00": 5870.882332372294,
+      "2025-02-01 00:00:00": 5884.239590062308,
+      "2025-03-01 00:00:00": 5903.257580969963,
+      "2025-04-01 00:00:00": 5910.261474764206,
+      "2025-05-01 00:00:00": 5909.3605208571025,
+      "2025-06-01 00:00:00": 5902.103899823509,
+      "2025-07-01 00:00:00": 5891.7134374150555,
+      "2025-08-01 00:00:00": 5879.729925184105,
+      "2025-09-01 00:00:00": 5867.13719345929,
+      "2025-10-01 00:00:00": 5854.457352945843,
+      "2025-11-01 00:00:00": 5841.9642723435845,
+      "2025-12-01 00:00:00": 5829.790088468692
+    },
+    "trade_balance_usd_m": {
+      "2025-01-01 00:00:00": -638.4811246478282,
+      "2025-02-01 00:00:00": -622.9690731108001,
+      "2025-03-01 00:00:00": -600.8500420880941,
+      "2025-04-01 00:00:00": -589.6112860287969,
+      "2025-05-01 00:00:00": -582.9971942114998,
+      "2025-06-01 00:00:00": -578.7138398419967,
+      "2025-07-01 00:00:00": -575.9362677299121,
+      "2025-08-01 00:00:00": -573.9751828328904,
+      "2025-09-01 00:00:00": -572.5111320080488,
+      "2025-10-01 00:00:00": -571.3443956197322,
+      "2025-11-01 00:00:00": -570.3632648200171,
+      "2025-12-01 00:00:00": -569.5022648157237
+    },
+    "usd_lkr": {
+      "2025-01-01 00:00:00": 299.81589446627834,
+      "2025-02-01 00:00:00": 306.1281083436083,
+      "2025-03-01 00:00:00": 307.9519882791034,
+      "2025-04-01 00:00:00": 310.3143350518702,
+      "2025-05-01 00:00:00": 312.230917103333,
+      "2025-06-01 00:00:00": 314.11562134820906,
+      "2025-07-01 00:00:00": 315.9440873744416,
+      "2025-08-01 00:00:00": 317.743223444053,
+      "2025-09-01 00:00:00": 319.521524301824,
+      "2025-10-01 00:00:00": 321.28369010237634,
+      "2025-11-01 00:00:00": 323.0326497231679,
+      "2025-12-01 00:00:00": 324.76998747179647
+    }
+  },
+  "forecast_scenarios": {
+    "regime1": [
+      [
+        5870.882332372294,
+        -638.4811246478282,
+        299.81589446627834
+      ],
+      [
+        5884.239590062308,
+        -622.9690731108001,
+        306.1281083436083
+      ],
+      [
+        5903.257580969963,
+        -600.8500420880941,
+        307.9519882791034
+      ],
+      [
+        5910.261474764206,
+        -589.6112860287969,
+        310.3143350518702
+      ],
+      [
+        5909.3605208571025,
+        -582.9971942114998,
+        312.230917103333
+      ],
+      [
+        5902.103899823509,
+        -578.7138398419967,
+        314.11562134820906
+      ],
+      [
+        5891.7134374150555,
+        -575.9362677299121,
+        315.9440873744416
+      ],
+      [
+        5879.729925184105,
+        -573.9751828328904,
+        317.743223444053
+      ],
+      [
+        5867.13719345929,
+        -572.5111320080488,
+        319.521524301824
+      ],
+      [
+        5854.457352945843,
+        -571.3443956197322,
+        321.28369010237634
+      ],
+      [
+        5841.9642723435845,
+        -570.3632648200171,
+        323.0326497231679
+      ],
+      [
+        5829.790088468692,
+        -569.5022648157237,
+        324.76998747179647
+      ]
+    ],
+    "regime2": [
+      [
+        6112.890723063514,
+        -701.2916855411906,
+        290.92929074459175
+      ],
+      [
+        6165.7287586679195,
+        -710.032309485395,
+        290.2901537864774
+      ],
+      [
+        6180.353494577809,
+        -689.2216349920009,
+        289.25835440924516
+      ],
+      [
+        6219.710588791246,
+        -682.8820728247686,
+        287.9083374940915
+      ],
+      [
+        6255.547472249956,
+        -676.8797839950125,
+        286.26993060303585
+      ],
+      [
+        6295.745528478664,
+        -674.1862269735179,
+        284.41591666855777
+      ],
+      [
+        6336.044298638647,
+        -672.9763500726041,
+        282.406744373581
+      ],
+      [
+        6376.565563754488,
+        -673.0687261673927,
+        280.2955173914974
+      ],
+      [
+        6416.374966880598,
+        -673.9748182178931,
+        278.1235812580387
+      ],
+      [
+        6455.132897097999,
+        -675.4430519472438,
+        275.92259692526176
+      ],
+      [
+        6492.518499344413,
+        -677.2611498327975,
+        273.71598238686965
+      ],
+      [
+        6528.355107195097,
+        -679.2873657637449,
+        271.5207719933244
+      ]
+    ]
+  },
+  "backtest_metrics": {
+    "overall": {
+      "rmse": 10773.95578178356,
+      "mae": 3034.3354203825315,
+      "mape": 79.0856437985958,
+      "n_forecasts": 492
+    },
+    "by_horizon": {
+      "1": {
+        "rmse": 893.5905163281914,
+        "mae": 622.7760673005,
+        "n_forecasts": 41
+      },
+      "2": {
+        "rmse": 1214.6912357887948,
+        "mae": 874.5153954430601,
+        "n_forecasts": 41
+      },
+      "3": {
+        "rmse": 1783.4864499728142,
+        "mae": 1198.107167916839,
+        "n_forecasts": 41
+      },
+      "4": {
+        "rmse": 2449.727300397121,
+        "mae": 1524.1193750986085,
+        "n_forecasts": 41
+      },
+      "5": {
+        "rmse": 3366.1256827985476,
+        "mae": 1880.2064835215197,
+        "n_forecasts": 41
+      },
+      "6": {
+        "rmse": 4550.900795055852,
+        "mae": 2327.0153366890936,
+        "n_forecasts": 41
+      },
+      "7": {
+        "rmse": 6051.330214586273,
+        "mae": 2804.8615581432155,
+        "n_forecasts": 41
+      },
+      "8": {
+        "rmse": 8090.671070650571,
+        "mae": 3346.5612213588583,
+        "n_forecasts": 41
+      },
+      "9": {
+        "rmse": 10712.268123337002,
+        "mae": 3897.6004837762484,
+        "n_forecasts": 41
+      },
+      "10": {
+        "rmse": 14107.574268019403,
+        "mae": 4896.158045251428,
+        "n_forecasts": 41
+      },
+      "11": {
+        "rmse": 18507.027983367676,
+        "mae": 5910.653462802356,
+        "n_forecasts": 41
+      },
+      "12": {
+        "rmse": 24312.055259312096,
+        "mae": 7129.450447288646,
+        "n_forecasts": 41
+      }
+    },
+    "by_regime": {
+      "stable": {
+        "rmse": 21451.515097003317,
+        "mae": 7471.9475921843095,
+        "n_forecasts": 120
+      },
+      "crisis": {
+        "rmse": 2254.2293664341046,
+        "mae": 1602.8476230271187,
+        "n_forecasts": 372
+      }
+    }
+  },
+  "regime_periods": [
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2007-02-01",
+      "end_date": "2007-10-01",
+      "duration_months": 9
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2007-11-01",
+      "end_date": "2008-04-01",
+      "duration_months": 14
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2008-05-01",
+      "end_date": "2008-07-01",
+      "duration_months": 16
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2008-08-01",
+      "end_date": "2008-08-01",
+      "duration_months": 16
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2008-09-01",
+      "end_date": "2009-05-01",
+      "duration_months": 24
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2009-06-01",
+      "end_date": "2009-07-01",
+      "duration_months": 25
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2009-08-01",
+      "end_date": "2009-08-01",
+      "duration_months": 25
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2009-09-01",
+      "end_date": "2009-09-01",
+      "duration_months": 25
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2009-10-01",
+      "end_date": "2009-11-01",
+      "duration_months": 26
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2009-12-01",
+      "end_date": "2010-01-01",
+      "duration_months": 27
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2010-02-01",
+      "end_date": "2010-03-01",
+      "duration_months": 28
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2010-04-01",
+      "end_date": "2011-08-01",
+      "duration_months": 44
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2011-09-01",
+      "end_date": "2012-08-01",
+      "duration_months": 55
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2012-09-01",
+      "end_date": "2012-11-01",
+      "duration_months": 57
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2012-12-01",
+      "end_date": "2012-12-01",
+      "duration_months": 57
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2013-01-01",
+      "end_date": "2013-02-01",
+      "duration_months": 58
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2013-03-01",
+      "end_date": "2013-03-01",
+      "duration_months": 58
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2013-04-01",
+      "end_date": "2013-05-01",
+      "duration_months": 59
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2013-06-01",
+      "end_date": "2013-10-01",
+      "duration_months": 63
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2013-11-01",
+      "end_date": "2013-11-01",
+      "duration_months": 63
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2013-12-01",
+      "end_date": "2013-12-01",
+      "duration_months": 63
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2014-01-01",
+      "end_date": "2014-02-01",
+      "duration_months": 64
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2014-03-01",
+      "end_date": "2014-03-01",
+      "duration_months": 64
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2014-04-01",
+      "end_date": "2014-04-01",
+      "duration_months": 64
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2014-05-01",
+      "end_date": "2014-05-01",
+      "duration_months": 64
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2014-06-01",
+      "end_date": "2014-09-01",
+      "duration_months": 67
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2014-10-01",
+      "end_date": "2015-04-01",
+      "duration_months": 73
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2015-05-01",
+      "end_date": "2015-05-01",
+      "duration_months": 73
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2015-06-01",
+      "end_date": "2015-07-01",
+      "duration_months": 74
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2015-08-01",
+      "end_date": "2015-08-01",
+      "duration_months": 74
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2015-09-01",
+      "end_date": "2016-06-01",
+      "duration_months": 83
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2016-07-01",
+      "end_date": "2016-09-01",
+      "duration_months": 85
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2016-10-01",
+      "end_date": "2017-08-01",
+      "duration_months": 95
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2017-09-01",
+      "end_date": "2017-10-01",
+      "duration_months": 96
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2017-11-01",
+      "end_date": "2017-12-01",
+      "duration_months": 97
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2018-01-01",
+      "end_date": "2018-01-01",
+      "duration_months": 97
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2018-02-01",
+      "end_date": "2019-02-01",
+      "duration_months": 109
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2019-03-01",
+      "end_date": "2019-05-01",
+      "duration_months": 111
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2019-06-01",
+      "end_date": "2019-07-01",
+      "duration_months": 112
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2019-08-01",
+      "end_date": "2019-08-01",
+      "duration_months": 112
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2019-09-01",
+      "end_date": "2019-11-01",
+      "duration_months": 114
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2019-12-01",
+      "end_date": "2019-12-01",
+      "duration_months": 114
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2020-01-01",
+      "end_date": "2020-05-01",
+      "duration_months": 118
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2020-06-01",
+      "end_date": "2020-09-01",
+      "duration_months": 121
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2020-10-01",
+      "end_date": "2020-10-01",
+      "duration_months": 121
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2020-11-01",
+      "end_date": "2020-11-01",
+      "duration_months": 121
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2020-12-01",
+      "end_date": "2021-04-01",
+      "duration_months": 125
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2021-05-01",
+      "end_date": "2021-05-01",
+      "duration_months": 125
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2021-06-01",
+      "end_date": "2022-01-01",
+      "duration_months": 132
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2022-02-01",
+      "end_date": "2022-02-01",
+      "duration_months": 132
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2022-03-01",
+      "end_date": "2022-08-01",
+      "duration_months": 137
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2022-09-01",
+      "end_date": "2022-09-01",
+      "duration_months": 137
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2022-10-01",
+      "end_date": "2023-02-01",
+      "duration_months": 141
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2023-03-01",
+      "end_date": "2023-07-01",
+      "duration_months": 145
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2023-08-01",
+      "end_date": "2023-12-01",
+      "duration_months": 149
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2024-01-01",
+      "end_date": "2024-05-01",
+      "duration_months": 153
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2024-06-01",
+      "end_date": "2024-07-01",
+      "duration_months": 154
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2024-08-01",
+      "end_date": "2024-09-01",
+      "duration_months": 155
+    },
+    {
+      "regime": 1,
+      "regime_name": "Crisis",
+      "start_date": "2024-10-01",
+      "end_date": "2024-10-01",
+      "duration_months": 155
+    },
+    {
+      "regime": 0,
+      "regime_name": "Stable",
+      "start_date": "2024-11-01",
+      "end_date": "2024-12-01",
+      "duration_months": -4760
+    }
+  ]
+}

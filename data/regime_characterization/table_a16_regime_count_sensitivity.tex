@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Regime-Count Sensitivity for the BoP MS-VAR}
+\label{tab:regime_count_sensitivity}
+\begin{tabular}{ccccccc}
+\toprule
+$K$ & Runs & Conv. & Med. BIC & Med. shortest dur. & Share shortest $<6$m & Med. max $\Pr$ \\
+\midrule
+1 & 1 & 100\% & 12088.8 & inf & 0\% & 1.000 \\
+2 & 48 & 100\% & 11908.1 & 13.2 & 0\% & 0.996 \\
+3 & 40 & 100\% & 11723.3 & 2.0 & 95\% & 0.979 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Rows pool all initialization schemes available for each regime count. ``Shortest duration'' is the minimum expected regime duration within a run after ordering regimes by the implied mean reserve change. Large shares below six months indicate poorly separated, short-lived states.
+\end{tablenotes}
+\end{table}

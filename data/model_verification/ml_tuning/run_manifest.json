@@ -1,0 +1,114 @@
+{
+  "timestamp": "2026-03-23T05:37:16.161864Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "765c1bad188e3fd19e39beb5105de8f2f7dc4f268128a156eb151008b40db5b1",
+  "config": {
+    "varsets": [
+      "parsimonious",
+      "bop",
+      "monetary",
+      "pca",
+      "full"
+    ],
+    "model": "all",
+    "n_splits": 3,
+    "seed": 42,
+    "search_method": "grid",
+    "n_trials": null,
+    "skip_xgb": false,
+    "skip_lstm": false,
+    "selection_criterion": "mean_validation_rmse",
+    "output_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning",
+    "artifact_paths": {
+      "per_varset": {
+        "parsimonious": {
+          "xgb": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_tuning_summary_parsimonious.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_cv_results_parsimonious.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_fold_design_parsimonious.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_best_params_parsimonious.json"
+          },
+          "lstm": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_tuning_summary_parsimonious.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_cv_results_parsimonious.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_fold_design_parsimonious.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_best_params_parsimonious.json"
+          }
+        },
+        "bop": {
+          "xgb": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_tuning_summary_bop.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_cv_results_bop.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_fold_design_bop.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_best_params_bop.json"
+          },
+          "lstm": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_tuning_summary_bop.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_cv_results_bop.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_fold_design_bop.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_best_params_bop.json"
+          }
+        },
+        "monetary": {
+          "xgb": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_tuning_summary_monetary.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_cv_results_monetary.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_fold_design_monetary.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_best_params_monetary.json"
+          },
+          "lstm": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_tuning_summary_monetary.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_cv_results_monetary.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_fold_design_monetary.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_best_params_monetary.json"
+          }
+        },
+        "pca": {
+          "xgb": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_tuning_summary_pca.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_cv_results_pca.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_fold_design_pca.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_best_params_pca.json"
+          },
+          "lstm": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_tuning_summary_pca.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_cv_results_pca.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_fold_design_pca.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_best_params_pca.json"
+          }
+        },
+        "full": {
+          "xgb": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_tuning_summary_full.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_cv_results_full.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_fold_design_full.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/xgb_best_params_full.json"
+          },
+          "lstm": {
+            "summary_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_tuning_summary_full.json",
+            "cv_results_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_cv_results_full.csv",
+            "fold_design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_fold_design_full.csv",
+            "best_params_json": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/lstm_best_params_full.json"
+          }
+        }
+      },
+      "appendix_tables": {
+        "design_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/ml_tuning_design_summary.csv",
+        "selected_csv": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/ml_tuning_selected_summary.csv",
+        "design_tex": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/table_a7_ml_tuning_design.tex",
+        "selected_tex": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/model_verification/ml_tuning/table_a8_ml_tuning_selected.tex"
+      }
+    }
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/tune_ml_models.py",
+    "--varsets",
+    "parsimonious,bop,monetary,pca,full",
+    "--model",
+    "all",
+    "--search-method",
+    "grid"
+  ]
+}

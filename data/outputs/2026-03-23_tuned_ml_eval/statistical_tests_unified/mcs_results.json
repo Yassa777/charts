@@ -1,0 +1,30 @@
+{
+  "mcs": [
+    "DMA",
+    "DMS",
+    "LSTM",
+    "MS-VAR",
+    "MS-VECM"
+  ],
+  "eliminated": [
+    "VECM",
+    "LocalLevelSV",
+    "BVAR",
+    "Naive",
+    "ARIMA",
+    "BoPIdentity",
+    "XGBoost"
+  ],
+  "p_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.006,
+    0.668
+  ],
+  "alpha": 0.1,
+  "n_obs": 27
+}

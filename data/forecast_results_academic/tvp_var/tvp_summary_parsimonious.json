@@ -1,0 +1,47 @@
+{
+  "varset": "parsimonious",
+  "execution_time": "2026-02-10T11:37:53.264714",
+  "config": {
+    "n_lags": 1,
+    "stochastic_vol": false,
+    "n_draws": 500,
+    "n_burn": 0,
+    "random_state": 42,
+    "fast_mode": true
+  },
+  "system_vars": [
+    "gross_reserves_usd_m",
+    "trade_balance_usd_m",
+    "usd_lkr"
+  ],
+  "n_obs": 218,
+  "convergence": {
+    "effective_sample_size": [
+      477.1577894966855,
+      524.677523093731,
+      447.96257731225944,
+      501.49136718593826,
+      526.0688617058495,
+      496.6322619473776,
+      436.79419794567787,
+      506.2909158036357,
+      447.3031059263633,
+      508.9554339858324,
+      474.61314757148057,
+      471.42555691790113
+    ],
+    "mean_ess": 484.947728241061,
+    "min_ess": 436.79419794567787,
+    "mean_autocorr_lag1": 0.01617538064210156,
+    "n_draws": 500,
+    "n_states": 12
+  },
+  "break_dates": [
+    "2009-10-01",
+    "2012-12-01",
+    "2016-01-01",
+    "2021-01-01"
+  ],
+  "backtest_metrics": {},
+  "backtest_n_forecasts": 0
+}

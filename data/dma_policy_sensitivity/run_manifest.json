@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-03-13T06:25:23.862761Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "28cf83ad47b0d10b82b6134dd5f20bb7b67a19721d88e446c4715e9239b48000",
+  "config": {
+    "varset": "bop",
+    "horizon": 1,
+    "split": "test",
+    "input_dir": "data/forecast_results_unified",
+    "alpha_grid": [
+      0.9,
+      0.95,
+      0.97,
+      0.99,
+      0.995
+    ],
+    "pool_specs": {
+      "full7": [
+        "Naive",
+        "ARIMA",
+        "VECM",
+        "BVAR",
+        "XGBoost",
+        "MS-VAR",
+        "MS-VECM"
+      ],
+      "regime_only": [
+        "MS-VAR",
+        "MS-VECM"
+      ],
+      "no_regime": [
+        "Naive",
+        "ARIMA",
+        "VECM",
+        "BVAR",
+        "XGBoost"
+      ],
+      "linear_only": [
+        "Naive",
+        "ARIMA",
+        "VECM",
+        "BVAR"
+      ]
+    },
+    "policy_ratios": [
+      1.0,
+      1.5,
+      2.0,
+      3.0
+    ],
+    "mcs_block_lengths": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "bootstrap_reps": 1000,
+    "random_seed": 42,
+    "output_dir": "data/dma_policy_sensitivity"
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/run_dma_policy_sensitivity.py",
+    "--varset",
+    "bop",
+    "--horizon",
+    "1",
+    "--split",
+    "test",
+    "--input-dir",
+    "data/forecast_results_unified",
+    "--output-dir",
+    "data/dma_policy_sensitivity",
+    "--alpha-grid",
+    "0.90,0.95,0.97,0.99,0.995",
+    "--policy-ratios",
+    "1.0,1.5,2.0,3.0",
+    "--mcs-block-lengths",
+    "2,3,4,5,6",
+    "--bootstrap-reps",
+    "1000",
+    "--random-seed",
+    "42"
+  ],
+  "extra": {
+    "n_base_models": 7
+  }
+}

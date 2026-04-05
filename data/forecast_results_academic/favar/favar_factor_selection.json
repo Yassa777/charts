@@ -1,0 +1,25 @@
+{
+  "n_factors_used": 3,
+  "eigenvalues": [
+    3.686442876610112,
+    1.6596290431524168,
+    1.0117914485659552
+  ],
+  "variance_explained": [
+    0.460805359576264,
+    0.2074536303940521,
+    0.1264739310707444
+  ],
+  "cumulative_variance": [
+    0.460805359576264,
+    0.6682589899703161,
+    0.7947329210410605
+  ],
+  "recommendations": {
+    "Kaiser": 3,
+    "Elbow": 2,
+    "70pct_variance": 3,
+    "80pct_variance": 3
+  },
+  "note": "Factor selection based on pre-extracted PCA from Phase 1"
+}

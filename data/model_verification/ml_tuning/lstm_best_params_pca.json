@@ -1,0 +1,12 @@
+{
+  "best_params": {
+    "seq_length": 6,
+    "units": 32,
+    "dropout": 0.1,
+    "learning_rate": 0.0005,
+    "epochs": 60,
+    "batch_size": 16
+  },
+  "best_rmse": 842.2788269484741,
+  "selection_criterion": "mean_validation_rmse"
+}

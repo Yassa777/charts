@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Policy-Loss Ranking Sensitivity to the Under-Prediction Penalty}
+\label{tab:policy_loss_sensitivity}
+\begin{tabular}{lccccc}
+\toprule
+Model & Rank 1.0:1 & Rank 1.5:1 & Rank 2.0:1 & Rank 3.0:1 & Loss (2.0:1) \\
+\midrule
+MS-VAR & 1 & 1 & 1 & 1 & 409.6 \\
+DMA & 2 & 2 & 2 & 2 & 421.0 \\
+MS-VECM & 3 & 3 & 3 & 3 & 427.5 \\
+DMS & 4 & 4 & 4 & 4 & 432.2 \\
+XGBoost & 5 & 5 & 5 & 5 & 1303.1 \\
+ARIMA & 6 & 6 & 6 & 6 & 2159.1 \\
+Naive & 7 & 7 & 7 & 7 & 2352.2 \\
+BVAR & 8 & 8 & 8 & 8 & 2366.2 \\
+VECM & 9 & 9 & 9 & 9 & 2767.0 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Policy loss is a weighted absolute-error loss on reserve levels, with the stated under-prediction penalty and over-prediction weight normalised to one. Rankings use the BoP $h=1$ common-support test window under the baseline DMA configuration ($\alpha=0.99$, full seven-model pool).
+\end{tablenotes}
+\end{table}

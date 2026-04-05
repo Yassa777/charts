@@ -1,0 +1,197 @@
+{
+  "built_at": "2026-04-01T03:46:54.649259+00:00",
+  "delta": -0.22162338622997432,
+  "freshness": {
+    "artifact_built_at": "2026-04-01T03:46:54.649259+00:00",
+    "blocking_months_after_latest_complete": [
+      {
+        "date": "2025-12-01",
+        "missing_requirements": [
+          "import_cover"
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "missing_requirements": [
+          "import_cover"
+        ]
+      },
+      {
+        "date": "2026-02-01",
+        "missing_requirements": [
+          "import_cover"
+        ]
+      },
+      {
+        "date": "2026-03-01",
+        "missing_requirements": [
+          "import_cover",
+          "current_account",
+          "buffer_inflows"
+        ]
+      }
+    ],
+    "latest_available_months": {
+      "buffer_inflows": "2026-02-01",
+      "current_account": "2026-02-01",
+      "fx_market_pressure": "2026-03-01",
+      "gross_reserves": "2025-12-01",
+      "imports": "2025-11-01",
+      "remittances": "2026-02-01",
+      "tourism": "2026-02-01"
+    },
+    "latest_complete_month": {
+      "date": "2025-11-01",
+      "slepi_adjusted": -0.04335063848253465
+    },
+    "latest_partial_month": "2026-03-01",
+    "pipeline_checked_at": "2026-04-01T03:46:54.649259+00:00",
+    "source_last_modified": {
+      "current_account": "Tue, 31 Mar 2026 15:15:53 GMT",
+      "exports": "Tue, 31 Mar 2026 15:21:25 GMT",
+      "imports": "Tue, 31 Mar 2026 15:20:03 GMT",
+      "remittances": "Tue, 31 Mar 2026 18:08:42 GMT",
+      "reserve_history": "Tue, 31 Mar 2026 18:10:29 GMT",
+      "services": "Tue, 31 Mar 2026 18:11:48 GMT",
+      "tourism": "Tue, 31 Mar 2026 18:07:58 GMT"
+    }
+  },
+  "latest": {
+    "buffer_inflow_support_raw": -0.5200731566145442,
+    "buffer_inflow_support_z": -0.6939254011985937,
+    "buffer_inflows_share_imports": 0.5200731566145442,
+    "buffer_inflows_usd_m": 924.9454005250558,
+    "current_account_filled_usd_m": 67.10394482384709,
+    "current_account_plus_capital_usd_m": 66.19131469384683,
+    "current_account_proxy_usd_m": 6.713162375593015,
+    "current_account_usd_m": 67.10394482384709,
+    "date": "2025-11-01",
+    "exports_usd_m": 1047.8267117693351,
+    "external_balance_pressure_adjusted_raw": 0.4823423236529277,
+    "external_balance_pressure_adjusted_z": -0.2785602696091054,
+    "external_balance_pressure_user_raw": -0.03773083296161651,
+    "external_balance_pressure_user_z": -0.6369735195595873,
+    "fx_market_pressure_raw": 0.010554854504317035,
+    "fx_market_pressure_z": 0.24111396666251414,
+    "fx_reserves_usd_m": 5943.526708888716,
+    "gold_usd_m": 84.54849345997191,
+    "gross_reserves_usd_m": 6034.0,
+    "imf_position_usd_m": 3.87911269387,
+    "import_cover_months": 3.0251473409969205,
+    "imports_trailing_3m_avg_usd_m": 1994.6135906264747,
+    "imports_usd_m": 1778.490946439263,
+    "remittances_usd_m": 673.3688153518558,
+    "reserve_block_raw": -1.106959798064197,
+    "reserve_block_z": 0.5579691502150463,
+    "sdrs_usd_m": 2.054464878540633,
+    "slepi_adjusted": -0.04335063848253465,
+    "slepi_user_spec": -0.1329539509701551,
+    "tourism_earnings_usd_m": 251.57658517319996,
+    "trade_balance_usd_m": -730.664234669928,
+    "underlying_balance_filled_usd_m": -857.8414557012087,
+    "underlying_balance_official_usd_m": -857.8414557012087,
+    "underlying_balance_proxy_usd_m": -918.2322381494628,
+    "usd_lkr": 306.3469526315789
+  },
+  "metrics": {
+    "data_sufficiency": {
+      "long_backtest_end": "2026-03-01",
+      "long_backtest_start": "2005-01-01",
+      "official_current_account_non_null_months": 38,
+      "official_reserve_non_null_months": 146
+    },
+    "proxy_fit": {
+      "intercept": -101.54381652876403,
+      "official_overlap_end": "2025-11-01",
+      "official_overlap_start": "2023-01-01",
+      "overlap_correlation": 0.8831377174943505,
+      "overlap_months": 35,
+      "slope": 1.11773422437959
+    },
+    "sample_end": "2025-12-01",
+    "sample_start": "2014-01-01",
+    "slepi_adjusted": {
+      "auc_for_top_15pct_future_stress_event": 0.5781578947368421,
+      "available_months": 138,
+      "correlation_with_future_external_stress_3m": 0.26280238418017243,
+      "crisis_window_peak_date": "2022-04-01",
+      "crisis_window_peak_value": 2.7977424458159486
+    },
+    "slepi_user_spec": {
+      "auc_for_top_15pct_future_stress_event": 0.5678947368421052,
+      "available_months": 138,
+      "correlation_with_future_external_stress_3m": 0.29023901266963326,
+      "crisis_window_peak_date": "2022-04-01",
+      "crisis_window_peak_value": 3.172402956155143
+    },
+    "stress_event_quantile": 0.85,
+    "stress_event_threshold": 0.552758208194665
+  },
+  "pipeline_checked_at": "2026-04-01T03:46:54.649259+00:00",
+  "previous": {
+    "buffer_inflow_support_raw": -0.4164323779918415,
+    "buffer_inflow_support_z": 0.27225032688004036,
+    "buffer_inflows_share_imports": 0.4164323779918415,
+    "buffer_inflows_usd_m": 898.142969350859,
+    "current_account_filled_usd_m": -218.57497446257412,
+    "current_account_plus_capital_usd_m": -219.03373909257425,
+    "current_account_proxy_usd_m": -328.8690816905944,
+    "current_account_usd_m": -218.57497446257412,
+    "date": "2025-10-01",
+    "exports_usd_m": 1149.8364906123213,
+    "external_balance_pressure_adjusted_raw": 0.5177767067803222,
+    "external_balance_pressure_adjusted_z": 0.052029774900608214,
+    "external_balance_pressure_user_raw": 0.10134432878848068,
+    "external_balance_pressure_user_z": 0.2178948835956978,
+    "fx_market_pressure_raw": 0.0030892468328538314,
+    "fx_market_pressure_z": -0.056146404632476714,
+    "fx_reserves_usd_m": 6101.557919268492,
+    "gold_usd_m": 79.81000681996687,
+    "gross_reserves_usd_m": 6216.0,
+    "imf_position_usd_m": 3.87859874149,
+    "import_cover_months": 3.159694489631066,
+    "imports_trailing_3m_avg_usd_m": 1967.2788050865627,
+    "imports_usd_m": 2156.755854772788,
+    "remittances_usd_m": 712.0074615828589,
+    "reserve_block_raw": -1.1504753424284622,
+    "reserve_block_z": 0.44495729384158683,
+    "sdrs_usd_m": 31.233535983191004,
+    "slepi_adjusted": 0.17827274774743967,
+    "slepi_user_spec": 0.21973902492121208,
+    "tourism_earnings_usd_m": 186.135507768,
+    "trade_balance_usd_m": -1006.9193641604668,
+    "underlying_balance_filled_usd_m": -1116.717943813433,
+    "underlying_balance_official_usd_m": -1116.717943813433,
+    "underlying_balance_proxy_usd_m": -1227.0120510414533,
+    "usd_lkr": 303.13050952380956
+  },
+  "recommended_headline": "slepi_adjusted",
+  "sparklineEnd": "2025-11-01",
+  "sparklineStart": "2023-12-01",
+  "sparklineValues": [
+    -0.4086422803678935,
+    -0.4103704433524713,
+    -1.061784132644693,
+    -0.7968528701662295,
+    -0.5527883914445426,
+    -0.46092647676188425,
+    -0.4538538851465176,
+    -0.41081551487394263,
+    -0.8062423664232753,
+    0.08283186378530175,
+    -0.6472127329478231,
+    -0.5727230432964467,
+    0.42856594645750945,
+    -0.15993325741829412,
+    -0.7394474473330063,
+    -0.9685772586559449,
+    -0.40196800029066515,
+    -0.4687253450018687,
+    -0.3946875883971649,
+    -0.4240294869521263,
+    -0.6651322343313901,
+    0.12130278415493935,
+    0.17827274774743967,
+    -0.04335063848253465
+  ]
+}

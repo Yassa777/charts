@@ -1,0 +1,34 @@
+{
+  "validation": {
+    "BVAR_mon": 0.4166666666666667,
+    "ARIMA": 0.3333333333333333,
+    "Naive": 0.19444444444444445,
+    "MS-VECM": 0.027777777777777776,
+    "BVAR_par": 0.027777777777777776,
+    "MS-VAR": 0.0,
+    "VECM": 0.0,
+    "BVAR_bop": 0.0,
+    "BVAR_ful": 0.0,
+    "EqualWeight": 0.0,
+    "MSE-Weight": 0.0,
+    "GR-Convex": 0.0,
+    "TrimmedMean": 0.0,
+    "Median": 0.0
+  },
+  "test": {
+    "BVAR_mon": 0.3888888888888889,
+    "Naive": 0.3055555555555556,
+    "BVAR_ful": 0.3055555555555556,
+    "ARIMA": 0.0,
+    "MS-VAR": 0.0,
+    "MS-VECM": 0.0,
+    "VECM": 0.0,
+    "BVAR_par": 0.0,
+    "BVAR_bop": 0.0,
+    "EqualWeight": 0.0,
+    "MSE-Weight": 0.0,
+    "GR-Convex": 0.0,
+    "TrimmedMean": 0.0,
+    "Median": 0.0
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "gross_reserves_usd_m": {
+    "variable": "gross_reserves_usd_m",
+    "n_tests": 4,
+    "significance_level": 0.05,
+    "tests": [
+      {
+        "f_statistic": 157.74216527164361,
+        "p_value": 1.1102230246251565e-16,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 250,
+        "ssr_full": 1112608199.2032971,
+        "ssr_unrestricted": 682176319.9680746,
+        "n_pre_break": 53,
+        "n_post_break": 199,
+        "interpretation": "Structural break detected at index 53 (p=0.0000)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2009-06-01",
+        "break_index": 53,
+        "pre_break_period": "2005-01-01 to 2009-05-01",
+        "post_break_period": "2009-06-01 to 2025-12-01",
+        "event_name": "Post-war recovery begins"
+      },
+      {
+        "f_statistic": 4.662379965397575,
+        "p_value": 0.031781917065249354,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 250,
+        "ssr_full": 1112608199.2032971,
+        "ssr_unrestricted": 1092238476.0505984,
+        "n_pre_break": 165,
+        "n_post_break": 87,
+        "interpretation": "Structural break detected at index 165 (p=0.0318)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2018-10-01",
+        "break_index": 165,
+        "pre_break_period": "2005-01-01 to 2018-09-01",
+        "post_break_period": "2018-10-01 to 2025-12-01",
+        "event_name": "Currency crisis onset"
+      },
+      {
+        "f_statistic": 22.936394692186923,
+        "p_value": 2.8709296252538152e-06,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 250,
+        "ssr_full": 1112608199.2032971,
+        "ssr_unrestricted": 1019109416.003386,
+        "n_pre_break": 182,
+        "n_post_break": 70,
+        "interpretation": "Structural break detected at index 182 (p=0.0000)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2020-03-01",
+        "break_index": 182,
+        "pre_break_period": "2005-01-01 to 2020-02-01",
+        "post_break_period": "2020-03-01 to 2025-12-01",
+        "event_name": "COVID-19 lockdown"
+      },
+      {
+        "f_statistic": 14.431063014375919,
+        "p_value": 0.00018261467805480436,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 250,
+        "ssr_full": 1112608199.2032971,
+        "ssr_unrestricted": 1051888710.1614927,
+        "n_pre_break": 207,
+        "n_post_break": 45,
+        "interpretation": "Structural break detected at index 207 (p=0.0002)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2022-04-01",
+        "break_index": 207,
+        "pre_break_period": "2005-01-01 to 2022-03-01",
+        "post_break_period": "2022-04-01 to 2025-12-01",
+        "event_name": "Sovereign default"
+      }
+    ],
+    "summary": {
+      "n_significant": 4,
+      "significant_breaks": [
+        {
+          "event": "Post-war recovery begins",
+          "date": "2009-06-01",
+          "p_value": 1.1102230246251565e-16,
+          "f_statistic": 157.74216527164361
+        },
+        {
+          "event": "Currency crisis onset",
+          "date": "2018-10-01",
+          "p_value": 0.031781917065249354,
+          "f_statistic": 4.662379965397575
+        },
+        {
+          "event": "COVID-19 lockdown",
+          "date": "2020-03-01",
+          "p_value": 2.8709296252538152e-06,
+          "f_statistic": 22.936394692186923
+        },
+        {
+          "event": "Sovereign default",
+          "date": "2022-04-01",
+          "p_value": 0.00018261467805480436,
+          "f_statistic": 14.431063014375919
+        }
+      ]
+    }
+  },
+  "trade_balance_usd_m": {
+    "variable": "trade_balance_usd_m",
+    "n_tests": 4,
+    "significance_level": 0.05,
+    "tests": [
+      {
+        "f_statistic": 40.495057287523984,
+        "p_value": 1.1138272526522996e-09,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 222,
+        "ssr_full": 11570984.852747902,
+        "ssr_unrestricted": 9785931.452782916,
+        "n_pre_break": 29,
+        "n_post_break": 195,
+        "interpretation": "Structural break detected at index 29 (p=0.0000)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2009-06-01",
+        "break_index": 29,
+        "pre_break_period": "2007-01-01 to 2009-05-01",
+        "post_break_period": "2009-06-01 to 2025-11-01",
+        "event_name": "Post-war recovery begins"
+      },
+      {
+        "f_statistic": 2.667358012170033,
+        "p_value": 0.10384336106632097,
+        "reject_null": false,
+        "df1": 1,
+        "df2": 222,
+        "ssr_full": 11570984.852747902,
+        "ssr_unrestricted": 11433608.602683114,
+        "n_pre_break": 141,
+        "n_post_break": 83,
+        "interpretation": "No structural break at index 141 (p=0.1038)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2018-10-01",
+        "break_index": 141,
+        "pre_break_period": "2007-01-01 to 2018-09-01",
+        "post_break_period": "2018-10-01 to 2025-11-01",
+        "event_name": "Currency crisis onset"
+      },
+      {
+        "f_statistic": 7.334324518732482,
+        "p_value": 0.007292043108558133,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 222,
+        "ssr_full": 11570984.852747902,
+        "ssr_unrestricted": 11200934.019365309,
+        "n_pre_break": 158,
+        "n_post_break": 66,
+        "interpretation": "Structural break detected at index 158 (p=0.0073)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2020-03-01",
+        "break_index": 158,
+        "pre_break_period": "2007-01-01 to 2020-02-01",
+        "post_break_period": "2020-03-01 to 2025-11-01",
+        "event_name": "COVID-19 lockdown"
+      },
+      {
+        "f_statistic": 11.458966004658771,
+        "p_value": 0.0008412253065949171,
+        "reject_null": true,
+        "df1": 1,
+        "df2": 222,
+        "ssr_full": 11570984.852747902,
+        "ssr_unrestricted": 11003041.267897904,
+        "n_pre_break": 183,
+        "n_post_break": 41,
+        "interpretation": "Structural break detected at index 183 (p=0.0008)",
+        "valid": true,
+        "significance_level": 0.05,
+        "break_date": "2022-04-01",
+        "break_index": 183,
+        "pre_break_period": "2007-01-01 to 2022-03-01",
+        "post_break_period": "2022-04-01 to 2025-11-01",
+        "event_name": "Sovereign default"
+      }
+    ],
+    "summary": {
+      "n_significant": 3,
+      "significant_breaks": [
+        {
+          "event": "Post-war recovery begins",
+          "date": "2009-06-01",
+          "p_value": 1.1138272526522996e-09,
+          "f_statistic": 40.495057287523984
+        },
+        {
+          "event": "COVID-19 lockdown",
+          "date": "2020-03-01",
+          "p_value": 0.007292043108558133,
+          "f_statistic": 7.334324518732482
+        },
+        {
+          "event": "Sovereign default",
+          "date": "2022-04-01",
+          "p_value": 0.0008412253065949171,
+          "f_statistic": 11.458966004658771
+        }
+      ]
+    }
+  }
+}

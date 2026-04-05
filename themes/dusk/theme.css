@@ -1,0 +1,142 @@
+/*
+ * Dusk — a dark, atmospheric theme for SLEPI
+ * Deep indigo-black base, warm teal/rose data accents
+ */
+
+:root {
+  --bg: #0e1117;
+  --bg-alt: #161b24;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.07);
+  --surface-hover: rgba(255, 255, 255, 0.1);
+  --ink: #e2e8f0;
+  --muted: #7d8898;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.15);
+  --support: #4ade80;
+  --pressure: #fb7185;
+  --critical: #f43f5e;
+  --shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+}
+
+html {
+  background:
+    radial-gradient(ellipse 90% 50% at 12% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 45% at 88% 100%, rgba(74, 222, 128, 0.05) 0%, transparent 60%),
+    #0e1117;
+  min-height: 100vh;
+}
+
+body {
+  color: var(--ink);
+}
+
+/* ── Header adjustments for Dusk ────────────────── */
+.site-header {
+  background: rgba(14, 17, 23, 0.88);
+  border-bottom-color: var(--line);
+}
+
+/* Logo is dark — invert to white on dark background */
+.site-header-brand img,
+.site-footer img {
+  filter: brightness(0) invert(1);
+}
+
+.site-footer img {
+  opacity: 0.45;
+}
+
+/* ── Card surfaces ───────────────────────────────── */
+.hero-card,
+.panel-card,
+.component-card,
+.metric-row {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: var(--shadow);
+}
+
+.hero-chart-card,
+.panel-card {
+  background: var(--surface-strong);
+}
+
+/* ── Sparkline colours ───────────────────────────── */
+.sparkline-grid-zero {
+  stroke: rgba(255, 255, 255, 0.18);
+}
+.sparkline-grid-line {
+  stroke: rgba(255, 255, 255, 0.06);
+}
+.sparkline-tick-label {
+  fill: rgba(255, 255, 255, 0.35);
+}
+.sparkline-area {
+  fill: rgba(251, 113, 133, 0.1);
+}
+.sparkline-line {
+  stroke: var(--ink);
+}
+.sparkline-dot {
+  fill: var(--pressure);
+}
+.sparkline-dot-halo {
+  fill: rgba(251, 113, 133, 0.18);
+}
+
+/* ── Gauge colours ───────────────────────────────── */
+.gauge-svg {
+  color: var(--ink);
+}
+
+/* ── Status pills ────────────────────────────────── */
+.status-pill.quiet {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+}
+
+.status-pill.supportive {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.2);
+  color: var(--support);
+}
+
+.status-pill.elevated {
+  background: rgba(251, 113, 133, 0.12);
+  border-color: rgba(251, 113, 133, 0.2);
+  color: var(--pressure);
+}
+
+.status-pill.critical {
+  background: rgba(244, 63, 94, 0.15);
+  border-color: rgba(244, 63, 94, 0.25);
+  color: var(--critical);
+}
+
+/* ── Component cards ─────────────────────────────── */
+.component-score.pressure { color: var(--pressure); }
+.component-score.support  { color: var(--support); }
+
+.component-fill.pressure {
+  background: linear-gradient(90deg, rgba(251, 113, 133, 0.3), var(--pressure));
+}
+
+.component-fill.support {
+  background: linear-gradient(90deg, rgba(74, 222, 128, 0.3), var(--support));
+}
+
+.component-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Delta arrows ────────────────────────────────── */
+.hero-delta.up   { color: var(--pressure); }
+.hero-delta.down { color: var(--support); }
+
+/* ── Info tooltip ────────────────────────────────── */
+.info-tooltip {
+  background: #1a1f2e;
+  border-color: var(--line-strong);
+}

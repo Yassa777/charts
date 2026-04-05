@@ -1,0 +1,26 @@
+{
+  "mcs": [
+    "Naive",
+    "BVAR",
+    "DMA",
+    "DMS",
+    "EqualWeight",
+    "MSE-Weight",
+    "GR-Convex"
+  ],
+  "eliminated": [
+    "MS-VECM",
+    "MS-VAR",
+    "VECM",
+    "ARIMA"
+  ],
+  "p_values": [
+    0.001,
+    0.001,
+    0.029,
+    0.031,
+    0.185
+  ],
+  "alpha": 0.1,
+  "n_obs": 27
+}

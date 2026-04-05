@@ -1,0 +1,5 @@
+comparison_type,anchor,forecast_1,forecast_2,n_obs,dm_statistic,p_value,mean_loss_diff,better_forecast,significance
+model,parsimonious,MS-VAR|parsimonious,XGBoost|parsimonious,27,-3.645744135690829,0.0002666191572600063,-402118.04651876714,Forecast 1,***
+model,bop,MS-VAR|bop,XGBoost|bop,27,-4.161450920986367,3.162319664218316e-05,-685851.0021336303,Forecast 1,***
+information,MS-VAR,MS-VAR|parsimonious,MS-VAR|bop,27,0.5844678773211699,0.5589055710252544,9632.1055451415,No significant difference,
+information,XGBoost,XGBoost|parsimonious,XGBoost|bop,27,-2.548876802235207,0.010807046993372982,-274100.8500697215,Forecast 1,**

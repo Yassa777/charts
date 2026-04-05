@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-03-13T06:02:55.360634Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "e116aa3aeec4d24a4465fd4247ac4a7f48b8b55b4f982819e4abf16b59684e51",
+  "config": {
+    "varset": "bop",
+    "n_regimes": 2,
+    "ar_order": 1,
+    "max_iter": 200,
+    "tol": 0.0001,
+    "fit_split": "full",
+    "train_end": "2019-12-01",
+    "valid_end": "2022-12-01",
+    "fit_start": null,
+    "fit_end": null,
+    "regime_grid": [
+      1,
+      2,
+      3
+    ],
+    "init_schemes": [
+      "vol_threshold",
+      "quantile_bins",
+      "zeros",
+      "perturbed_deterministic",
+      "random_iid",
+      "random_blocks"
+    ],
+    "starts_per_scheme": 8,
+    "random_seed": 42,
+    "output_dir": "data/regime_characterization"
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/run_regime_characterization.py",
+    "--varset",
+    "bop",
+    "--n-regimes",
+    "2",
+    "--ar-order",
+    "1",
+    "--max-iter",
+    "200",
+    "--fit-split",
+    "full",
+    "--regime-grid",
+    "1,2,3",
+    "--init-schemes",
+    "vol_threshold,quantile_bins,zeros,perturbed_deterministic,random_iid,random_blocks",
+    "--starts-per-scheme",
+    "8",
+    "--random-seed",
+    "42",
+    "--output-dir",
+    "data/regime_characterization"
+  ],
+  "extra": {
+    "n_obs": 193
+  }
+}

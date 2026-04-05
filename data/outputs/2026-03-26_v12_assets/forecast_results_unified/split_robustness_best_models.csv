@@ -1,0 +1,2 @@
+split_label,varset,best_model,split,horizon,segment,best_mae,best_rmse,best_mape,smape,mase,policy_loss,crps,log_score,coverage_80,coverage_95,n,window_mode,effective_start,effective_end,n_common_dates,train_end,valid_end,rank_within_split_varset
+baseline,parsimonious,MS-VAR,test,1,all,230.34294675268913,311.75255276496836,5.198383531027892,5.417654878549018,0.7717017839392808,408.41449726167485,186.6386827929951,-7.3250302031674295,0.9722222222222222,1.0,36,full,2023-01-01,2025-12-01,,2019-12-01,2022-12-01,1.0

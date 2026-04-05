@@ -1,0 +1,4 @@
+variable,bp_n_breaks,bp_break_dates,bp_optimal_bic,chow_significant_events,chow_n_significant,cusum_stable,cusumsq_stable,overall_stable
+gross_reserves_usd_m,4.0,"2009-10-01, 2012-12-01, 2016-01-01, 2021-01-01",3545.7716929657613,"Post-war recovery begins, Currency crisis onset, COVID-19 lockdown, Sovereign default",4.0,False,False,False
+usd_lkr,,,,,,,,
+trade_balance_usd_m,4.0,"2010-12-01, 2016-04-01, 2019-01-01, 2022-05-01",2305.5183884849944,"Post-war recovery begins, COVID-19 lockdown, Sovereign default",3.0,False,False,False

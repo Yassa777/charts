@@ -1,0 +1,105 @@
+{
+  "specification": "Spec 11 - Robustness Tables and Academic Output",
+  "phase": 5,
+  "executed_at": "2026-02-11T10:22:18",
+  "status": "COMPLETE",
+
+  "modules_created": [
+    "reserves_project/scripts/academic/robustness/__init__.py",
+    "reserves_project/scripts/academic/robustness/subsample_analysis.py",
+    "reserves_project/scripts/academic/robustness/horizon_analysis.py",
+    "reserves_project/scripts/academic/robustness/variable_set_analysis.py",
+    "reserves_project/scripts/academic/robustness/latex_tables.py",
+    "reserves_project/scripts/academic/robustness/publication_figures.py",
+    "reserves_project/scripts/academic/robustness/paper_statistics.py",
+    "reserves_project/scripts/academic/robustness/appendix_tables.py",
+    "reserves_project/scripts/academic/generate_robustness_tables.py"
+  ],
+
+  "outputs": {
+    "latex_tables": {
+      "directory": "data/robustness/tables/",
+      "files": [
+        "table1_accuracy.tex",
+        "table2_dm_tests.tex",
+        "table3_mcs.tex",
+        "table4_subsample.tex",
+        "table5_horizon.tex",
+        "table6_varset.tex",
+        "table_a1_dm_full.tex",
+        "table_a2_period_metrics.tex",
+        "table_a3_bvar_specs.tex"
+      ]
+    },
+    "figures": {
+      "directory": "data/robustness/figures/",
+      "files": [
+        "forecast_comparison.png",
+        "forecast_comparison.pdf",
+        "dma_weight_evolution.png",
+        "dma_weight_evolution.pdf",
+        "subsample_bar_chart.png",
+        "subsample_bar_chart.pdf",
+        "horizon_deterioration.png",
+        "horizon_deterioration.pdf"
+      ]
+    },
+    "summaries": {
+      "directory": "data/robustness/summary/",
+      "files": [
+        "paper_statistics.json",
+        "paper_statistics_formatted.json",
+        "statistics_summary.md",
+        "subsample_results.csv",
+        "horizon_results.csv",
+        "varset_results.csv"
+      ]
+    }
+  },
+
+  "robustness_analyses": {
+    "subsample": {
+      "periods_analyzed": ["Full Sample", "Post-Default"],
+      "n_models": 7,
+      "best_model": "combined_mse",
+      "most_consistent": "combined_equal"
+    },
+    "horizon": {
+      "horizons_tested": [1, 3, 6, 12],
+      "n_models": 2,
+      "best_model": "BVAR",
+      "deterioration_ratio": 4.87
+    },
+    "variable_set": {
+      "varsets_tested": ["Parsimonious", "Bop", "Monetary", "Pca", "Full"],
+      "best_specification": "Parsimonious",
+      "most_robust": "BVAR"
+    }
+  },
+
+  "key_findings": {
+    "best_model_overall": "MSE-Weight",
+    "best_rmse": 777.7,
+    "improvement_vs_naive_pct": 63.5,
+    "mcs_size": 7,
+    "mcs_members": ["Naive", "BVAR", "DMA", "DMS", "EqualWeight", "MSE-Weight", "GR-Convex"],
+    "dm_significant_pairs_10pct": 41,
+    "n_models_compared": 11,
+    "test_period": "2023-2025"
+  },
+
+  "figure_specifications": {
+    "dpi": 300,
+    "format": ["PNG", "PDF"],
+    "font": "serif",
+    "crisis_shading": true
+  },
+
+  "notes": [
+    "All tables use booktabs style for publication quality",
+    "Figures include both PNG (for manuscript) and PDF (for LaTeX)",
+    "Paper statistics JSON can be used for inline citations",
+    "BVAR is best across all horizons (h=1,3,6,12)",
+    "Parsimonious variable set performs best for BVAR"
+  ]
+}

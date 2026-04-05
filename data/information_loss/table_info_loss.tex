@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\caption{Information Loss from Flow Aggregation}
+\label{tab:info_loss}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lcccc}
+\toprule
+Period & Cancellation Index & Info.\ Loss & RMSE Gain & Share Improved \\
+\midrule
+All & 0.062 & 93.8\% & -1.66\% & 57.1\% \\
+Crisis window & 0.074 & 92.6\% & -1.63\% & 42.9\% \\
+Tranquil window & 0.059 & 94.1\% & -2.93\% & 42.9\% \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item \textit{Notes:} Cancellation Index = $|A_t|/\sum_j |x_{jt}|$ where $A_t$ is the signed net flow implied by the BoP components. Information Loss = $1 - \text{CI}$. RMSE Gain is the mean percentage change when moving from the aggregated specification to the disaggregated BoP specification; positive values indicate lower RMSE under disaggregation. Share Improved is the share of common models whose disaggregated RMSE is lower than their aggregated RMSE. The cancellation series is computed on monthly BoP levels from 2009:01--2025:03; crisis and tranquil rows correspond to 2020:03--2023:12 and its complement.
+\end{tablenotes}
+\end{table}

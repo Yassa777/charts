@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-02-10 07:33:30.201406",
+  "source": "data/merged/reserves_forecasting_panel.csv",
+  "varset": "baseline",
+  "missing_strategy": {
+    "method": "ffill_limit",
+    "limit": 3,
+    "drop_remaining": true
+  },
+  "splits": {
+    "train_end": "2019-12-01",
+    "validation_end": "2022-12-01",
+    "test_start": "2023-01-01"
+  },
+  "arima": {
+    "rows": 204,
+    "train_rows": 132,
+    "validation_rows": 36,
+    "test_rows": 36,
+    "d_recommendation": 1,
+    "arima_exog_vars": [
+      "exports_usd_m",
+      "imports_usd_m",
+      "remittances_usd_m",
+      "usd_lkr"
+    ],
+    "varset": "baseline",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  },
+  "vecm": {
+    "variables": [
+      "gross_reserves_usd_m",
+      "exports_usd_m",
+      "imports_usd_m",
+      "remittances_usd_m",
+      "usd_lkr"
+    ],
+    "rows_levels": 204,
+    "rows_state": 203,
+    "suitable_for_vecm": true,
+    "ect_metadata": {
+      "cointegration_vector": [
+        1.0,
+        -15.284847344864463,
+        1.1546365580436782,
+        -2.9094626540250186,
+        33.160299345396005
+      ],
+      "k_ar_diff": 11,
+      "trace_stats": [
+        73.45787661883524,
+        41.856634301795914,
+        22.156774475230968,
+        10.306234107688331,
+        0.3358555126681919
+      ],
+      "trace_cv_95": [
+        69.8189,
+        47.8545,
+        29.7961,
+        15.4943,
+        3.8415
+      ]
+    },
+    "varset": "baseline",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  },
+  "ms_var": {
+    "variables": [
+      "gross_reserves_usd_m",
+      "usd_lkr",
+      "exports_usd_m",
+      "imports_usd_m"
+    ],
+    "rows": 227,
+    "suitable_for_ms_var": true,
+    "standardized_on": "train_split",
+    "varset": "baseline",
+    "missing_strategy": {
+      "method": "ffill_limit",
+      "limit": 3,
+      "drop_remaining": true
+    }
+  }
+}

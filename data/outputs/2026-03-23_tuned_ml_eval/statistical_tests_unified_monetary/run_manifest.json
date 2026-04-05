@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-03-23T08:30:41.552831Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "43b57b78f6314082766d091018388b1f52b9de1a388f3d3d5122f0e91ca3d4c9",
+  "config": {
+    "use_unified": true,
+    "unified_varset": "monetary",
+    "unified_horizon": 1,
+    "unified_split": "test",
+    "min_obs": 12,
+    "significance_level": 0.1,
+    "loss_function": "squared",
+    "bootstrap_reps": 1000,
+    "forecast_horizon": 1,
+    "output_dir": "data/outputs/2026-03-23_tuned_ml_eval/statistical_tests_unified_monetary"
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/run_statistical_tests.py",
+    "--use-unified",
+    "--unified-varset",
+    "monetary",
+    "--unified-horizon",
+    "1",
+    "--unified-split",
+    "test",
+    "--min-obs",
+    "12",
+    "--output-dir",
+    "data/outputs/2026-03-23_tuned_ml_eval/statistical_tests_unified_monetary"
+  ]
+}

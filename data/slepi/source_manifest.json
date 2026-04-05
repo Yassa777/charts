@@ -1,0 +1,112 @@
+{
+  "built_at": "2026-04-01T03:46:54.649259+00:00",
+  "changed_sources": [
+    "current_account",
+    "exports",
+    "imports",
+    "tourism",
+    "remittances",
+    "reserve_history",
+    "services"
+  ],
+  "checked_at": "2026-04-01T03:46:54.649259+00:00",
+  "external_sector_url": "https://www.cbsl.gov.lk/en/statistics/statistical-tables/external-sector",
+  "release_lag_notes": {
+    "external_sector_tables": {
+      "description": "CBSL's 2026 advance release calendar schedules the broad external-sector release (trade, current account, tourism, services, reserve template and related press release) on the last business day of the following month.",
+      "examples": [
+        "January 2026 reference period -> February 27, 2026 release",
+        "February 2026 reference period -> March 31, 2026 release"
+      ],
+      "source": "https://www.cbsl.gov.lk/en/advance-release-calendar-2026"
+    },
+    "fx_intervention": {
+      "description": "CBSL's 2026 advance release calendar schedules monthly FX intervention data on the first Friday of the following month.",
+      "examples": [
+        "January 2026 reference period -> February 6, 2026 release",
+        "February 2026 reference period -> March 6, 2026 release"
+      ],
+      "source": "https://www.cbsl.gov.lk/en/advance-release-calendar-2026"
+    },
+    "workers_remittances": {
+      "description": "CBSL's 2026 advance release calendar schedules workers' remittances around the first or second Friday of the following month.",
+      "examples": [
+        "January 2026 reference period -> February 6, 2026 release",
+        "February 2026 reference period -> March 6, 2026 release"
+      ],
+      "source": "https://www.cbsl.gov.lk/en/advance-release-calendar-2026"
+    }
+  },
+  "sources": {
+    "current_account": {
+      "content_length": "122810",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/monthly_current_account_balance.xlsx",
+      "etag": "\"1dfba-64e53717db98b\"",
+      "label": "Monthly Current Account Balance (2023 January to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 15:15:53 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/monthly_current_account_balance_20260331_e.xlsx"
+    },
+    "exports": {
+      "content_length": "658376",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/exports_monthly.xlsx",
+      "etag": "\"a0bc8-64e538545591b\"",
+      "label": "Exports - Monthly (2006 to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 15:21:25 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.02_20260331_e.xlsx"
+    },
+    "imports": {
+      "content_length": "890024",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/imports_monthly.xlsx",
+      "etag": "\"d94a8-64e53806904af\"",
+      "label": "Imports - Monthly (2006 to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 15:20:03 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.04_20260331_e.xlsx"
+    },
+    "remittances": {
+      "content_length": "17480",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/remittances_monthly.xlsx",
+      "etag": "\"4448-64e55db869e55\"",
+      "label": "Workers Remittances (2009 January to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 18:08:42 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.14.2_20260331_e.xlsx"
+    },
+    "reserve_history": {
+      "content_length": "1430599",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/reserve_data_template_historical.xlsx",
+      "etag": "\"15d447-64e55e1e3f5b2\"",
+      "label": "Reserve Data Template - Historical",
+      "last_modified": "Tue, 31 Mar 2026 18:10:29 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.15.2_20260331_e.xlsx"
+    },
+    "services": {
+      "content_length": "100694",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/services_monthly.xlsx",
+      "etag": "\"18956-64e55e6a1e4d0\"",
+      "label": "Monthly Services Sector Data (2023 January to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 18:11:48 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.16.1_20260331_e.xlsx"
+    },
+    "tourism": {
+      "content_length": "15786",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/tourism_monthly.xlsx",
+      "etag": "\"3daa-64e55d8e01660\"",
+      "label": "Earnings from Tourism (2009 January to Latest)",
+      "last_modified": "Tue, 31 Mar 2026 18:07:58 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.14.1_20260331_e.xlsx"
+    }
+  }
+}

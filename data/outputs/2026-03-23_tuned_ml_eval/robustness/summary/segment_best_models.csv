@@ -1,0 +1,4 @@
+segment,best_model,best_rmse,best_varset
+all,MS-VAR,311.7525527649684,parsimonious
+crisis,LSTM,356.0850601019824,bop
+tranquil,MS-VAR,260.5796446134131,bop

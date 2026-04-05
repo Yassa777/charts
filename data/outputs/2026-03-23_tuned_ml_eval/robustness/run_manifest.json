@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-23T08:30:48.882664Z",
+  "python": "3.11.8",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "git_commit": "01caf3b340f02b4c4a9e82c0b143a3c0e8379932",
+  "config_hash": "cfeac99267e84c8f2f60f9cb4453a6dddb1c8962c641a07f7455a54e636e351f",
+  "config": {
+    "output_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/outputs/2026-03-23_tuned_ml_eval/robustness",
+    "tables_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/outputs/2026-03-23_tuned_ml_eval/robustness/tables",
+    "figures_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/outputs/2026-03-23_tuned_ml_eval/robustness/figures",
+    "summary_dir": "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/data/outputs/2026-03-23_tuned_ml_eval/robustness/summary",
+    "uses_unified_results": true,
+    "uses_unified_tests": true,
+    "uses_mechanism_synthesis": true
+  },
+  "argv": [
+    "/Users/dim/Desktop/Spill Projects/SL-FSI/reserves_project/reserves_project/pipelines/generate_robustness_tables.py",
+    "--run-id",
+    "2026-03-23_tuned_ml_eval"
+  ]
+}

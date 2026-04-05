@@ -1,0 +1,4 @@
+varset,n_vars,n_obs,mean_ess,min_ess,autocorr_lag1,backtest_mae,backtest_rmse,backtest_mape,backtest_dir_acc,coverage_80,n_forecasts
+parsimonious,3,218,484.947728241061,436.79419794567787,0.01617538064210156,,,,,,0
+bop,4,194,515.6451716315171,432.0640184142018,-0.01332049725721202,,,,,,0
+monetary,3,220,480.1544327572258,416.58584194313227,0.021767358558804014,,,,,,0

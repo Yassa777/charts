@@ -1,0 +1,55 @@
+{
+  "artifact_built_at": "2026-04-01T03:46:54.649259+00:00",
+  "blocking_months_after_latest_complete": [
+    {
+      "date": "2025-12-01",
+      "missing_requirements": [
+        "import_cover"
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "missing_requirements": [
+        "import_cover"
+      ]
+    },
+    {
+      "date": "2026-02-01",
+      "missing_requirements": [
+        "import_cover"
+      ]
+    },
+    {
+      "date": "2026-03-01",
+      "missing_requirements": [
+        "import_cover",
+        "current_account",
+        "buffer_inflows"
+      ]
+    }
+  ],
+  "latest_available_months": {
+    "buffer_inflows": "2026-02-01",
+    "current_account": "2026-02-01",
+    "fx_market_pressure": "2026-03-01",
+    "gross_reserves": "2025-12-01",
+    "imports": "2025-11-01",
+    "remittances": "2026-02-01",
+    "tourism": "2026-02-01"
+  },
+  "latest_complete_month": {
+    "date": "2025-11-01",
+    "slepi_adjusted": -0.04335063848253465
+  },
+  "latest_partial_month": "2026-03-01",
+  "pipeline_checked_at": "2026-04-01T03:46:54.649259+00:00",
+  "source_last_modified": {
+    "current_account": "Tue, 31 Mar 2026 15:15:53 GMT",
+    "exports": "Tue, 31 Mar 2026 15:21:25 GMT",
+    "imports": "Tue, 31 Mar 2026 15:20:03 GMT",
+    "remittances": "Tue, 31 Mar 2026 18:08:42 GMT",
+    "reserve_history": "Tue, 31 Mar 2026 18:10:29 GMT",
+    "services": "Tue, 31 Mar 2026 18:11:48 GMT",
+    "tourism": "Tue, 31 Mar 2026 18:07:58 GMT"
+  }
+}

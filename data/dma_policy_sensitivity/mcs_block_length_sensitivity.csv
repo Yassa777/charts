@@ -1,0 +1,6 @@
+block_length,n_obs,mcs_size,mcs_members,msvar_in_mcs,dma_in_mcs,msvecm_in_mcs,dms_in_mcs,final_p_value
+2,27,4,"DMA, DMS, MS-VAR, MS-VECM",True,True,True,True,0.295
+3,27,4,"DMA, DMS, MS-VAR, MS-VECM",True,True,True,True,0.238
+4,27,4,"DMA, DMS, MS-VAR, MS-VECM",True,True,True,True,0.219
+5,27,4,"DMA, DMS, MS-VAR, MS-VECM",True,True,True,True,0.186
+6,27,4,"DMA, DMS, MS-VAR, MS-VECM",True,True,True,True,0.178

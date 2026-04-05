@@ -1,0 +1,14 @@
+varset,model,mean_rmse,std_rmse,mean_rank,std_rank,n_splits
+parsimonious,MS-VAR,311.75255276496836,,1.0,,1
+parsimonious,DMA,357.6620471224261,,2.0,,1
+parsimonious,DMS,357.6873490452123,,3.0,,1
+parsimonious,MS-VECM,357.6873490452123,,3.0,,1
+parsimonious,XGBoost,639.315861509247,,5.0,,1
+parsimonious,XGB-Quantile,643.0639740670365,,6.0,,1
+parsimonious,LSTM,1087.8375733525004,,7.0,,1
+parsimonious,ARIMA,1170.390372884875,,8.0,,1
+parsimonious,Naive,1178.9472483420434,,9.0,,1
+parsimonious,VECM,1194.5289114704553,,10.0,,1
+parsimonious,BVAR,1212.888041812553,,11.0,,1
+parsimonious,LocalLevelSV,1227.1841223953104,,12.0,,1
+parsimonious,BoPIdentity,1604.3644122906574,,13.0,,1

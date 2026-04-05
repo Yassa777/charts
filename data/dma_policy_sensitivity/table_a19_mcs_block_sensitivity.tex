@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Model Confidence Set Sensitivity to Bootstrap Block Length}
+\label{tab:mcs_block_sensitivity}
+\begin{tabular}{cccl}
+\toprule
+Block length & $n$ & MCS size & Retained models \\
+\midrule
+2 & 27 & 4 & DMA, DMS, MS-VAR, MS-VECM \\
+3 & 27 & 4 & DMA, DMS, MS-VAR, MS-VECM \\
+4 & 27 & 4 & DMA, DMS, MS-VAR, MS-VECM \\
+5 & 27 & 4 & DMA, DMS, MS-VAR, MS-VECM \\
+6 & 27 & 4 & DMA, DMS, MS-VAR, MS-VECM \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} MCS uses squared loss, the BoP $h=1$ common-support test window, and 90\% confidence with the paper's baseline DMA configuration ($\alpha=0.99$, full seven-model pool). 
+\end{tablenotes}
+\end{table}

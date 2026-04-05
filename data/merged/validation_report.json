@@ -1,0 +1,896 @@
+{
+  "generated_at": "2026-01-09T07:29:42Z",
+  "framework": {
+    "hmm_config": {
+      "features": [
+        "awcmr",
+        "real_policy_rate",
+        "gross_reserves_usd_m",
+        "ncpi_yoy_pct"
+      ],
+      "n_states": 3,
+      "covariance_type": "diag",
+      "n_iter": 300,
+      "random_state": 42
+    },
+    "windows": {
+      "tactical_months": 1,
+      "strategic_months": 2,
+      "false_alarm_days": 60
+    },
+    "costs": {
+      "lambda_missed": 2.0,
+      "lambda_false": 1.0
+    },
+    "metrics": {
+      "tactical": {
+        "HMM": {
+          "hits": 11,
+          "misses": 1,
+          "total": 12,
+          "hit_rate": 0.9166666666666666,
+          "miss_rate": 0.08333333333333333,
+          "cost_weighted_score": 2.0
+        },
+        "Z-Score": {
+          "hits": 10,
+          "misses": 2,
+          "total": 12,
+          "hit_rate": 0.8333333333333334,
+          "miss_rate": 0.16666666666666666,
+          "cost_weighted_score": 4.0
+        }
+      },
+      "strategic": {
+        "HMM": {
+          "hits": 12,
+          "misses": 0,
+          "total": 12,
+          "hit_rate": 1.0,
+          "miss_rate": 0.0,
+          "cost_weighted_score": 0.0
+        },
+        "Z-Score": {
+          "hits": 11,
+          "misses": 1,
+          "total": 12,
+          "hit_rate": 0.9166666666666666,
+          "miss_rate": 0.08333333333333333,
+          "cost_weighted_score": 2.0
+        }
+      }
+    },
+    "false_alarm": {
+      "total_transitions": 5.0,
+      "justified": 4.0,
+      "false_alarms": 1.0,
+      "false_alarm_rate": 0.2
+    },
+    "transitions": [
+      {
+        "date": "2009-10-01",
+        "from": "STRESS",
+        "to": "CALM"
+      },
+      {
+        "date": "2021-03-01",
+        "from": "CALM",
+        "to": "STRESS"
+      },
+      {
+        "date": "2022-04-01",
+        "from": "STRESS",
+        "to": "CRISIS"
+      },
+      {
+        "date": "2023-04-01",
+        "from": "CRISIS",
+        "to": "STRESS"
+      },
+      {
+        "date": "2024-07-01",
+        "from": "STRESS",
+        "to": "CALM"
+      }
+    ],
+    "first_stress": {
+      "date": "2021-03-01",
+      "from": "CALM",
+      "to": "STRESS"
+    },
+    "first_crisis": {
+      "date": "2022-04-01",
+      "from": "STRESS",
+      "to": "CRISIS"
+    },
+    "event_alignment": {
+      "tactical": [
+        {
+          "date": "2022-01-18",
+          "name": "$500M ISB Repayment",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-03-07",
+          "name": "FX Float (CBSL abandons peg)",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-04-12",
+          "name": "External Debt Suspension (Default)",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-09-01",
+          "name": "IMF Staff-Level Agreement",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-03-20",
+          "name": "IMF EFF Approval",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-06-28",
+          "name": "Domestic Debt Restructuring Plan",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-06-26",
+          "name": "Official Creditor Committee Agreement",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS",
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-09-19",
+          "name": "Bondholder Agreement-in-Principle",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2019-04-21",
+          "name": "Easter Sunday Attacks",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2020-03-20",
+          "name": "COVID Lockdown Begins",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2021-04-22",
+          "name": "Fertilizer Import Ban",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS"
+          ],
+          "hit": false
+        },
+        {
+          "date": "2022-07-14",
+          "name": "President Resigns",
+          "type": "shock",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        }
+      ],
+      "strategic": [
+        {
+          "date": "2022-01-18",
+          "name": "$500M ISB Repayment",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-03-07",
+          "name": "FX Float (CBSL abandons peg)",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-04-12",
+          "name": "External Debt Suspension (Default)",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-09-01",
+          "name": "IMF Staff-Level Agreement",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-03-20",
+          "name": "IMF EFF Approval",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-06-28",
+          "name": "Domestic Debt Restructuring Plan",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-06-26",
+          "name": "Official Creditor Committee Agreement",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "STRESS",
+          "all_in_window": [
+            "STRESS",
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-09-19",
+          "name": "Bondholder Agreement-in-Principle",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2019-04-21",
+          "name": "Easter Sunday Attacks",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2020-03-20",
+          "name": "COVID Lockdown Begins",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2021-04-22",
+          "name": "Fertilizer Import Ban",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "STRESS",
+          "all_in_window": [
+            "CALM",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-07-14",
+          "name": "President Resigns",
+          "type": "shock",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        }
+      ],
+      "baseline_tactical": [
+        {
+          "date": "2022-01-18",
+          "name": "$500M ISB Repayment",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": false
+        },
+        {
+          "date": "2022-03-07",
+          "name": "FX Float (CBSL abandons peg)",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-04-12",
+          "name": "External Debt Suspension (Default)",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "CALM",
+            "STRESS"
+          ],
+          "hit": false
+        },
+        {
+          "date": "2022-09-01",
+          "name": "IMF Staff-Level Agreement",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-03-20",
+          "name": "IMF EFF Approval",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-06-28",
+          "name": "Domestic Debt Restructuring Plan",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "STRESS",
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-06-26",
+          "name": "Official Creditor Committee Agreement",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-09-19",
+          "name": "Bondholder Agreement-in-Principle",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2019-04-21",
+          "name": "Easter Sunday Attacks",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2020-03-20",
+          "name": "COVID Lockdown Begins",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2021-04-22",
+          "name": "Fertilizer Import Ban",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-07-14",
+          "name": "President Resigns",
+          "type": "shock",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        }
+      ],
+      "baseline_strategic": [
+        {
+          "date": "2022-01-18",
+          "name": "$500M ISB Repayment",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": false
+        },
+        {
+          "date": "2022-03-07",
+          "name": "FX Float (CBSL abandons peg)",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-04-12",
+          "name": "External Debt Suspension (Default)",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "STRESS",
+          "all_in_window": [
+            "CALM",
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-09-01",
+          "name": "IMF Staff-Level Agreement",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-03-20",
+          "name": "IMF EFF Approval",
+          "type": "anchor",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "CRISIS",
+            "STRESS"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2023-06-28",
+          "name": "Domestic Debt Restructuring Plan",
+          "type": "anchor",
+          "expected": "STRESS",
+          "detected": "CALM",
+          "all_in_window": [
+            "STRESS",
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-06-26",
+          "name": "Official Creditor Committee Agreement",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2024-09-19",
+          "name": "Bondholder Agreement-in-Principle",
+          "type": "anchor",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2019-04-21",
+          "name": "Easter Sunday Attacks",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2020-03-20",
+          "name": "COVID Lockdown Begins",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2021-04-22",
+          "name": "Fertilizer Import Ban",
+          "type": "shock",
+          "expected": "CALM",
+          "detected": "CALM",
+          "all_in_window": [
+            "CALM"
+          ],
+          "hit": true
+        },
+        {
+          "date": "2022-07-14",
+          "name": "President Resigns",
+          "type": "shock",
+          "expected": "CRISIS",
+          "detected": "CRISIS",
+          "all_in_window": [
+            "STRESS",
+            "CRISIS"
+          ],
+          "hit": true
+        }
+      ]
+    }
+  },
+  "enhanced": {
+    "tau": 0.7,
+    "k": 3,
+    "tactical_months": 1,
+    "strategic_months": 2,
+    "tactical_hit_rate": 0.5454545454545454,
+    "strategic_hit_rate": 0.7272727272727273,
+    "tactical_results": [
+      {
+        "date": "2022-01-18",
+        "event": "$500M ISB Repayment",
+        "type": "anchor",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 2.2722548567195505e-52,
+        "sustained_count": 0,
+        "reason": "Max prob 0.0% < 70% or not sustained"
+      },
+      {
+        "date": "2022-03-07",
+        "event": "FX Float (CBSL abandons peg)",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2022-04-12",
+        "event": "Sovereign Default",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2022-09-01",
+        "event": "IMF Staff-Level Agreement",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2023-03-20",
+        "event": "IMF EFF Approval",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2023-06-28",
+        "event": "Domestic Debt Restructuring",
+        "type": "anchor",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 1.0,
+        "sustained_count": 0,
+        "reason": "Max prob 100.0% < 70% or not sustained"
+      },
+      {
+        "date": "2024-06-26",
+        "event": "Official Creditor Agreement",
+        "type": "anchor",
+        "expected_regime": "CALM",
+        "is_hit": true,
+        "max_prob": 0.9999999999323136,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2019-04-21",
+        "event": "Easter Sunday Attacks",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 0.999999999989317,
+        "sustained_count": 0,
+        "reason": "Max prob 100.0% < 70% or not sustained"
+      },
+      {
+        "date": "2020-03-20",
+        "event": "COVID Lockdown",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 0.0006151958731573,
+        "sustained_count": 0,
+        "reason": "Max prob 0.1% < 70% or not sustained"
+      },
+      {
+        "date": "2021-04-22",
+        "event": "Fertilizer Import Ban",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 2.696712222769016e-19,
+        "sustained_count": 0,
+        "reason": "Max prob 0.0% < 70% or not sustained"
+      },
+      {
+        "date": "2022-07-14",
+        "event": "President Resigns",
+        "type": "shock",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      }
+    ],
+    "strategic_results": [
+      {
+        "date": "2022-01-18",
+        "event": "$500M ISB Repayment",
+        "type": "anchor",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 2.2722548567195505e-52,
+        "sustained_count": 0,
+        "reason": "Max prob 0.0% < 70% or not sustained"
+      },
+      {
+        "date": "2022-03-07",
+        "event": "FX Float (CBSL abandons peg)",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 3,
+        "reason": "Hit"
+      },
+      {
+        "date": "2022-04-12",
+        "event": "Sovereign Default",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 3,
+        "reason": "Hit"
+      },
+      {
+        "date": "2022-09-01",
+        "event": "IMF Staff-Level Agreement",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 3,
+        "reason": "Hit"
+      },
+      {
+        "date": "2023-03-20",
+        "event": "IMF EFF Approval",
+        "type": "anchor",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 3,
+        "reason": "Hit"
+      },
+      {
+        "date": "2023-06-28",
+        "event": "Domestic Debt Restructuring",
+        "type": "anchor",
+        "expected_regime": "STRESS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2024-06-26",
+        "event": "Official Creditor Agreement",
+        "type": "anchor",
+        "expected_regime": "CALM",
+        "is_hit": true,
+        "max_prob": 0.9999999999997726,
+        "sustained_count": 2,
+        "reason": "Hit"
+      },
+      {
+        "date": "2019-04-21",
+        "event": "Easter Sunday Attacks",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 1,
+        "reason": "Hit"
+      },
+      {
+        "date": "2020-03-20",
+        "event": "COVID Lockdown",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 1.0,
+        "sustained_count": 0,
+        "reason": "Max prob 100.0% < 70% or not sustained"
+      },
+      {
+        "date": "2021-04-22",
+        "event": "Fertilizer Import Ban",
+        "type": "shock",
+        "expected_regime": "STRESS",
+        "is_hit": false,
+        "max_prob": 0.9993345839782432,
+        "sustained_count": 0,
+        "reason": "Max prob 99.9% < 70% or not sustained"
+      },
+      {
+        "date": "2022-07-14",
+        "event": "President Resigns",
+        "type": "shock",
+        "expected_regime": "CRISIS",
+        "is_hit": true,
+        "max_prob": 1.0,
+        "sustained_count": 3,
+        "reason": "Hit"
+      }
+    ]
+  }
+}

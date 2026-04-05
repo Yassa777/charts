@@ -1,0 +1,20 @@
+[
+  {
+    "Factor": "PC1",
+    "Variance_Explained_Pct": 46.0805359576264,
+    "Top_Loadings": "m2_usd_m(+0.47), tourism_usd_m(+0.44), usd_lkr(+0.42), imports_usd_m(+0.37)",
+    "Interpretation": "Monetary/Exchange rate conditions"
+  },
+  {
+    "Factor": "PC2",
+    "Variance_Explained_Pct": 20.74536303940521,
+    "Top_Loadings": "trade_balance_usd_m(+0.69), imports_usd_m(-0.48), cse_net_usd_m(-0.33), exports_usd_m(+0.28)",
+    "Interpretation": "Trade balance dynamics"
+  },
+  {
+    "Factor": "PC3",
+    "Variance_Explained_Pct": 12.64739310707444,
+    "Top_Loadings": "cse_net_usd_m(+0.66), remittances_usd_m(+0.53), exports_usd_m(+0.37), trade_balance_usd_m(+0.31)",
+    "Interpretation": "Trade balance dynamics"
+  }
+]

@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+\centering
+\caption{MS-VAR Regime Characterisation: BoP Specification}
+\label{tab:regime_char}
+\begin{tabular}{lcc}
+\toprule
+& Regime 0 (Accumulation) & Regime 1 (Crisis) \\
+\midrule
+Self-transition probability & 0.983 & 0.943 \\
+Expected duration (months) & 57.2 & 17.6 \\
+Share of observations & 69.9\% & 30.1\% \\
+\midrule
+\multicolumn{3}{l}{\textit{Classification Quality}} \\
+Mean max probability & \multicolumn{2}{c}{0.997} \\
+Share with $\Pr \geq 0.90$ & \multicolumn{2}{c}{99.5\%} \\
+Mean entropy & \multicolumn{2}{c}{0.012} \\
+\midrule
+\multicolumn{3}{l}{\textit{Estimation Diagnostics}} \\
+Converged & \multicolumn{2}{c}{Yes} \\
+Log-likelihood & \multicolumn{2}{c}{-5762.70} \\
+BIC & \multicolumn{2}{c}{12009.6} \\
+Observations (differenced) & \multicolumn{2}{c}{194} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item \textit{Notes:} Transition probabilities and durations are reported for the selected two-regime BoP fit estimated with a higher EM cap (200 iterations). Expected duration = $1/(1-p_{ii})$, with durations computed from full-precision transition probabilities. The ergodic distribution implied by the transition matrix is 76.5\% (Regime 0) and 23.5\% (Regime 1).
+\end{tablenotes}
+\end{table}

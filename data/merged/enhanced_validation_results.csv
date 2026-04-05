@@ -1,0 +1,12 @@
+date,event,type,expected_regime,is_hit,max_prob,sustained_count,reason
+2022-01-18,$500M ISB Repayment,anchor,STRESS,False,2.2722548567195505e-52,0,Max prob 0.0% < 70% or not sustained
+2022-03-07,FX Float (CBSL abandons peg),anchor,CRISIS,True,1.0,3,Hit
+2022-04-12,Sovereign Default,anchor,CRISIS,True,1.0,3,Hit
+2022-09-01,IMF Staff-Level Agreement,anchor,CRISIS,True,1.0,3,Hit
+2023-03-20,IMF EFF Approval,anchor,CRISIS,True,1.0,3,Hit
+2023-06-28,Domestic Debt Restructuring,anchor,STRESS,True,1.0,1,Hit
+2024-06-26,Official Creditor Agreement,anchor,CALM,True,0.9999999999997726,2,Hit
+2019-04-21,Easter Sunday Attacks,shock,STRESS,True,1.0,1,Hit
+2020-03-20,COVID Lockdown,shock,STRESS,False,1.0,0,Max prob 100.0% < 70% or not sustained
+2021-04-22,Fertilizer Import Ban,shock,STRESS,False,0.9993345839782432,0,Max prob 99.9% < 70% or not sustained
+2022-07-14,President Resigns,shock,CRISIS,True,1.0,3,Hit

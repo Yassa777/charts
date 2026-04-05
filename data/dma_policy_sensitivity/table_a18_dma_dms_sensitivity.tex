@@ -1,0 +1,36 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{DMA/DMS Sensitivity to Forgetting Factor and Model Pool}
+\label{tab:dma_dms_sensitivity}
+\begin{tabular}{lcccc}
+\toprule
+$\alpha$ & Pool & DMA RMSE (rank) & DMS RMSE (rank) & Best individual \\
+\midrule
+0.900 & Full seven-model pool & 319.5 (2) & 322.9 (3) & MS-VAR \\
+0.900 & Regime-only pool & 319.5 (2) & 322.9 (3) & MS-VAR \\
+0.900 & Pool excluding regime models & 1085.8 (5) & 1081.1 (4) & MS-VAR \\
+0.900 & Linear/Bayesian pool only & 1334.3 (6) & 1323.8 (5) & MS-VAR \\
+0.950 & Full seven-model pool & 320.3 (2) & 326.0 (4) & MS-VAR \\
+0.950 & Regime-only pool & 320.3 (2) & 326.0 (4) & MS-VAR \\
+0.950 & Pool excluding regime models & 1200.4 (4) & 1234.6 (5) & MS-VAR \\
+0.950 & Linear/Bayesian pool only & 1332.7 (5) & 1333.9 (6) & MS-VAR \\
+0.970 & Full seven-model pool & 320.9 (2) & 326.0 (4) & MS-VAR \\
+0.970 & Regime-only pool & 320.9 (2) & 326.0 (4) & MS-VAR \\
+0.970 & Pool excluding regime models & 1291.3 (5) & 1316.7 (6) & MS-VAR \\
+0.970 & Linear/Bayesian pool only & 1337.2 (6) & 1337.0 (5) & MS-VAR \\
+0.990 & Full seven-model pool & 321.7 (2) & 326.0 (4) & MS-VAR \\
+0.990 & Regime-only pool & 321.7 (2) & 326.0 (4) & MS-VAR \\
+0.990 & Pool excluding regime models & 1344.9 (5) & 1349.9 (6) & MS-VAR \\
+0.990 & Linear/Bayesian pool only & 1344.9 (5) & 1349.9 (6) & MS-VAR \\
+0.995 & Full seven-model pool & 321.9 (2) & 323.4 (3) & MS-VAR \\
+0.995 & Regime-only pool & 321.9 (2) & 323.4 (3) & MS-VAR \\
+0.995 & Pool excluding regime models & 1346.8 (5) & 1350.8 (6) & MS-VAR \\
+0.995 & Linear/Bayesian pool only & 1346.8 (5) & 1350.8 (6) & MS-VAR \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Entries are computed on the BoP $h=1$ common-support test window. Pools are: Full seven-model pool = Na\"{\i}ve, ARIMA, VECM, BVAR, XGBoost, MS-VAR, MS-VECM; Regime-only = MS-VAR and MS-VECM; Pool excluding regime models = Na\"{\i}ve, ARIMA, VECM, BVAR, XGBoost; Linear/Bayesian only = Na\"{\i}ve, ARIMA, VECM, BVAR. Ranks are within the full evaluated model set after recomputing DMA and DMS under the stated pool.
+\end{tablenotes}
+\end{table}

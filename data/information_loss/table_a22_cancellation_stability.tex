@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Cancellation-Index Stability Diagnostics}
+\label{tab:cancellation_stability}
+\begin{tabular}{lccccc}
+\toprule
+Period & SD & Lag-1 AC & 12m roll min & 12m roll max & Trend/year ($p$) \\
+\midrule
+All & 0.046 & 0.263 & 0.028 & 0.117 & 0.001 (0.127) \\
+Crisis (2020:03--2023:12) & 0.057 & 0.055 & 0.046 & 0.088 & -0.001 (0.936) \\
+Tranquil complement & 0.042 & 0.356 & 0.028 & 0.117 & 0.001 (0.456) \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} ``12m roll'' reports the minimum and maximum of the 12-month rolling mean within each segment. Trend/year is the HAC-robust slope from a linear time trend in the cancellation index.
+\end{tablenotes}
+\end{table}

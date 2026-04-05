@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Dispersion of Two-Regime Diagnostics Across Seeded Starts}
+\label{tab:regime_diagnostic_dispersion}
+\begin{tabular}{lcccc}
+\toprule
+Metric & Baseline & Median & P05 & P95 \\
+\midrule
+Persistence $p_{00}$ & 0.983 & 0.975 & 0.971 & 0.987 \\
+Persistence $p_{11}$ & 0.943 & 0.925 & 0.905 & 0.955 \\
+Duration regime 0 (months) & 57.2 & 39.3 & 34.1 & 95.9 \\
+Duration regime 1 (months) & 17.6 & 13.2 & 10.6 & 23.5 \\
+Mean max probability & 0.997 & 0.996 & 0.991 & 1.000 \\
+Mean entropy & 0.012 & 0.010 & 0.000 & 0.023 \\
+Share with max prob $\geq 0.90$ & 0.995 & 0.990 & 0.973 & 1.000 \\
+Correlation with baseline low-state probability & 1.000 & 0.911 & 0.888 & 0.942 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Percentile bands summarise dispersion across all seeded $K=2$ sensitivity runs. These are initialization-dispersion intervals, not sampling-theory confidence intervals.
+\end{tablenotes}
+\end{table}

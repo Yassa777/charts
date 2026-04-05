@@ -1,0 +1,201 @@
+{
+  "generated_at_utc": "2026-03-17T07:55:19.541741+00:00",
+  "series": {
+    "gross_reserves_usd_m": {
+      "output_name": "gross_reserves_usd_m",
+      "description": "Total reserves including gold at market value",
+      "flow": "IL",
+      "indicator": "TRGMV_REVS",
+      "transform": "USD",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/IL/PAK.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01",
+      "n_obs": 313,
+      "start_date": "2000-01-01",
+      "end_date": "2026-01-01",
+      "attempts": [
+        {
+          "indicator": "TRGMV_REVS",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/IL/PAK.TRGMV_REVS.USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 313
+        }
+      ]
+    },
+    "exports_usd_m": {
+      "output_name": "exports_usd_m",
+      "description": "Goods exports, FOB basis with PBS backfill after IMF coverage gaps",
+      "flow": "ITG+PBS",
+      "indicator": "XG+summary_trade_usd",
+      "transform": "FOB_USD",
+      "scale_to_millions": true,
+      "source_url": "https://www.pbs.gov.pk/external-trade-statistics/",
+      "n_obs": 217,
+      "start_date": "2008-01-01",
+      "end_date": "2026-02-01",
+      "attempts": [
+        {
+          "indicator": "XG",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ITG/PAK.XG.FOB_USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 159
+        },
+        {
+          "date": "2024-08-01",
+          "file_name": "Summary_August_2024_Updated.pdf",
+          "url": "https://www.pbs.gov.pk/sites/default/files/external_trade/monthly_external_trade/2024/August/Summary_August_2024_Updated.pdf",
+          "error": "PBS PDF candidate did not return a PDF payload."
+        },
+        {
+          "date": "2024-09-01",
+          "file_name": "Summary_September_2024_Revised.pdf",
+          "url": "https://www.pbs.gov.pk/sites/default/files/external_trade/monthly_external_trade/2024/September/Summary_September_2024_Revised.pdf",
+          "error": "PBS PDF candidate did not return a PDF payload."
+        },
+        {
+          "source": "pbs",
+          "missing_periods": [
+            "2021-11-01"
+          ]
+        }
+      ],
+      "source_details": {
+        "imf": {
+          "start_date": "2008-01-01",
+          "end_date": "2021-03-01",
+          "n_obs": 159,
+          "source_url": "https://api.imf.org/external/sdmx/2.1/data/ITG/PAK.XG.FOB_USD.M?detail=full&startPeriod=2000-01"
+        },
+        "pbs": {
+          "start_date": "2021-01-01",
+          "end_date": "2026-02-01",
+          "n_obs": 61,
+          "source_url": "https://www.pbs.gov.pk/external-trade-statistics/",
+          "missing_periods": [
+            "2021-11-01"
+          ]
+        }
+      }
+    },
+    "imports_usd_m": {
+      "output_name": "imports_usd_m",
+      "description": "Goods imports, CIF basis with PBS backfill after IMF coverage gaps",
+      "flow": "ITG+PBS",
+      "indicator": "MG+summary_trade_usd",
+      "transform": "CIF_USD",
+      "scale_to_millions": true,
+      "source_url": "https://www.pbs.gov.pk/external-trade-statistics/",
+      "n_obs": 217,
+      "start_date": "2008-01-01",
+      "end_date": "2026-02-01",
+      "attempts": [
+        {
+          "indicator": "MG",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ITG/PAK.MG.CIF_USD.M?detail=full&startPeriod=2000-01",
+          "n_obs": 159
+        },
+        {
+          "date": "2024-08-01",
+          "file_name": "Summary_August_2024_Updated.pdf",
+          "url": "https://www.pbs.gov.pk/sites/default/files/external_trade/monthly_external_trade/2024/August/Summary_August_2024_Updated.pdf",
+          "error": "PBS PDF candidate did not return a PDF payload."
+        },
+        {
+          "date": "2024-09-01",
+          "file_name": "Summary_September_2024_Revised.pdf",
+          "url": "https://www.pbs.gov.pk/sites/default/files/external_trade/monthly_external_trade/2024/September/Summary_September_2024_Revised.pdf",
+          "error": "PBS PDF candidate did not return a PDF payload."
+        },
+        {
+          "source": "pbs",
+          "missing_periods": [
+            "2021-11-01"
+          ]
+        }
+      ],
+      "source_details": {
+        "imf": {
+          "start_date": "2008-01-01",
+          "end_date": "2021-03-01",
+          "n_obs": 159,
+          "source_url": "https://api.imf.org/external/sdmx/2.1/data/ITG/PAK.MG.CIF_USD.M?detail=full&startPeriod=2000-01"
+        },
+        "pbs": {
+          "start_date": "2021-01-01",
+          "end_date": "2026-02-01",
+          "n_obs": 61,
+          "source_url": "https://www.pbs.gov.pk/external-trade-statistics/",
+          "missing_periods": [
+            "2021-11-01"
+          ]
+        }
+      }
+    },
+    "usd_lcy": {
+      "output_name": "usd_lcy",
+      "description": "End-of-period domestic currency per U.S. dollar",
+      "flow": "ER",
+      "indicator": "XDC_USD",
+      "transform": "EOP_RT",
+      "scale_to_millions": false,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/ER/PAK.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01",
+      "n_obs": 313,
+      "start_date": "2000-01-01",
+      "end_date": "2026-01-01",
+      "attempts": [
+        {
+          "indicator": "XDC_USD",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/ER/PAK.XDC_USD.EOP_RT.M?detail=full&startPeriod=2000-01",
+          "n_obs": 313
+        }
+      ]
+    },
+    "m2_lcy_m": {
+      "output_name": "m2_lcy_m",
+      "description": "Broad money in domestic currency",
+      "flow": "MFS_MA",
+      "indicator": "BM_MAI",
+      "transform": "XDC",
+      "scale_to_millions": true,
+      "source_url": "https://api.imf.org/external/sdmx/2.1/data/MFS_MA/PAK.BM_MAI.XDC.M?detail=full&startPeriod=2000-01",
+      "n_obs": 288,
+      "start_date": "2001-12-01",
+      "end_date": "2025-11-01",
+      "attempts": [
+        {
+          "indicator": "BM_MAI",
+          "url": "https://api.imf.org/external/sdmx/2.1/data/MFS_MA/PAK.BM_MAI.XDC.M?detail=full&startPeriod=2000-01",
+          "n_obs": 288
+        }
+      ]
+    }
+  },
+  "merged_panel": {
+    "n_rows": 314,
+    "start_date": "2000-01-01",
+    "end_date": "2026-02-01",
+    "columns": [
+      "date",
+      "gross_reserves_usd_m",
+      "exports_usd_m",
+      "imports_usd_m",
+      "usd_lcy",
+      "m2_lcy_m",
+      "country",
+      "country_code",
+      "trade_balance_usd_m",
+      "m2_usd_m",
+      "reserve_change_usd_m",
+      "reserve_change_pct"
+    ]
+  },
+  "varset_windows": {
+    "parsimonious": {
+      "n_obs": 216,
+      "start_date": "2008-01-01",
+      "end_date": "2026-01-01"
+    },
+    "monetary": {
+      "n_obs": 288,
+      "start_date": "2001-12-01",
+      "end_date": "2025-11-01"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{MS-VAR Initialization-Scheme Sensitivity (BoP, $K=2$)}
+\label{tab:multistart}
+\begin{tabular}{lcccccc}
+\toprule
+Scheme & Runs & Conv. & Med. log-lik & Med. $p_{00}/p_{11}$ & Med. dur. 0/1 & Med. max $\Pr$ \\
+\midrule
+Random block states & 8 & 100\% & -5558.9 & 0.978 / 0.925 & 46.3 / 13.2 & 1.000 \\
+All-zero states & 8 & 100\% & -5558.9 & 0.978 / 0.925 & 46.3 / 13.2 & 1.000 \\
+Rolling-vol quantiles & 8 & 100\% & -5661.8 & 0.971 / 0.905 & 34.1 / 10.6 & 0.997 \\
+Rolling-vol threshold & 8 & 100\% & -5762.1 & 0.975 / 0.934 & 39.3 / 15.1 & 0.996 \\
+Perturbed deterministic & 8 & 100\% & -5762.1 & 0.975 / 0.934 & 39.3 / 15.1 & 0.996 \\
+Random IID states & 8 & 100\% & -5786.3 & 0.973 / 0.920 & 36.7 / 12.9 & 0.995 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item \textit{Notes:} Each scheme is estimated from seeded starts with a 200-iteration EM cap. Deterministic schemes vary the initial transition matrix across starts; stochastic schemes also vary the initial state path. Persistence and duration columns report regime 0 / regime 1 medians after ordering states by the implied mean reserve change. Full percentile dispersion summaries appear in Appendix Table~\ref{tab:regime_diagnostic_dispersion}.
+\end{tablenotes}
+\end{table}

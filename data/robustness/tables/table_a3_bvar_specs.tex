@@ -1,0 +1,21 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{BVAR Specification Comparison}
+\label{tab:bvar_specs}
+\begin{tabular}{lcccc}
+\toprule
+Variable Set & N Obs & RMSE & MAE & MAPE (\%) \\
+\midrule
+Parsimonious & 26 & \textbf{510.0} & 427.0 & 9.92 \\
+Bop & 26 & 511.3 & 435.3 & 10.21 \\
+Pca & 10 & 809.3 & 673.7 & 12.71 \\
+Full & 13 & 850.4 & 559.8 & 10.68 \\
+Monetary & 13 & 904.0 & 621.8 & 11.88 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Notes: All specifications use h=1 month horizon, test period only.
+\end{tablenotes}
+\end{table}

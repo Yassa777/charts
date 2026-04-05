@@ -1,0 +1,34 @@
+{
+  "data_sufficiency": {
+    "long_backtest_end": "2026-03-01",
+    "long_backtest_start": "2005-01-01",
+    "official_current_account_non_null_months": 38,
+    "official_reserve_non_null_months": 146
+  },
+  "proxy_fit": {
+    "intercept": -101.54381652876403,
+    "official_overlap_end": "2025-11-01",
+    "official_overlap_start": "2023-01-01",
+    "overlap_correlation": 0.8831377174943505,
+    "overlap_months": 35,
+    "slope": 1.11773422437959
+  },
+  "sample_end": "2025-12-01",
+  "sample_start": "2014-01-01",
+  "slepi_adjusted": {
+    "auc_for_top_15pct_future_stress_event": 0.5781578947368421,
+    "available_months": 138,
+    "correlation_with_future_external_stress_3m": 0.26280238418017243,
+    "crisis_window_peak_date": "2022-04-01",
+    "crisis_window_peak_value": 2.7977424458159486
+  },
+  "slepi_user_spec": {
+    "auc_for_top_15pct_future_stress_event": 0.5678947368421052,
+    "available_months": 138,
+    "correlation_with_future_external_stress_3m": 0.29023901266963326,
+    "crisis_window_peak_date": "2022-04-01",
+    "crisis_window_peak_value": 3.172402956155143
+  },
+  "stress_event_quantile": 0.85,
+  "stress_event_threshold": 0.552758208194665
+}
