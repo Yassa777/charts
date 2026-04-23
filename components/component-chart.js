@@ -2,6 +2,13 @@
 import { useState } from "react";
 import { useHover } from "./hover-context";
 
+const REGIME_MARKER_COLORS = {
+  Acute:      "#b91c1c",
+  Elevated:   "#d97706",
+  Neutral:    "#64748b",
+  Supportive: "#059669",
+};
+
 const SERIES = [
   { key: "reserve_block_z",                         label: "Import cover",    color: "#6366f1" },
   { key: "fx_market_pressure_z",                    label: "FX pressure",     color: "#f59e0b" },
@@ -52,6 +59,7 @@ export function ComponentChart({ history }) {
   const [visible, setVisible] = useState(
     () => Object.fromEntries(SERIES.map((s) => [s.key, true]))
   );
+  const [hoveredCrossing, setHoveredCrossing] = useState(null);
   const { hovered } = useHover();
 
   if (!history || history.length < 2) return null;
@@ -177,25 +185,64 @@ export function ComponentChart({ history }) {
           </text>
         ))}
 
-        {/* Regime-crossing markers (on the composite SLEPI) */}
+        {/* Regime-crossing markers — small dot at top, label + line on hover only */}
         {crossings.map((c) => {
           const x = toX(c.idx, n);
           const d = new Date(c.date);
-          const label = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+          const monthLbl = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+          const isActive = hoveredCrossing === c.idx;
+          const markerColor = REGIME_MARKER_COLORS[c.to] ?? "var(--muted)";
+          const tipText = `${monthLbl}  ·  ${c.from} → ${c.to}`;
+
+          const TIP_X_MARGIN = 8;
+          const TIP_W = 7 * tipText.length + 16;
+          const flipLeft = x + TIP_W + TIP_X_MARGIN > W - PAD.right;
+          const tipX = flipLeft ? x - TIP_X_MARGIN - TIP_W : x + TIP_X_MARGIN;
+
           return (
-            <g key={c.idx} className="comp-chart-crossing">
-              <line
-                x1={x} x2={x} y1={PAD.top} y2={PAD.top + cH}
-                stroke="var(--line-strong)" strokeWidth="0.75" strokeDasharray="3 3"
+            <g
+              key={c.idx}
+              className="comp-chart-crossing"
+              onMouseEnter={() => setHoveredCrossing(c.idx)}
+              onMouseLeave={() => setHoveredCrossing(null)}
+            >
+              {/* Invisible hit zone */}
+              <rect
+                x={x - 10} y={PAD.top - 6}
+                width={20} height={cH + 12}
+                fill="transparent"
+                style={{ cursor: "pointer" }}
               />
-              <text
-                x={x + 3} y={PAD.top + 9}
-                fontSize="8"
-                letterSpacing="0.05em"
-                style={{ fill: "var(--muted)", fontFamily: "var(--font-sans), sans-serif" }}
-              >
-                → {c.to}
-              </text>
+              {/* Dashed vertical line — only while hovered */}
+              {isActive && (
+                <line
+                  x1={x} x2={x} y1={PAD.top} y2={PAD.top + cH}
+                  stroke="var(--line-strong)" strokeWidth="1" strokeDasharray="3 3"
+                />
+              )}
+              {/* Persistent mini-dot at top edge */}
+              <circle cx={x} cy={PAD.top - 4} r={isActive ? 4 : 2.75} fill={markerColor} opacity={isActive ? 1 : 0.7} />
+              {isActive && (
+                <g>
+                  <rect
+                    x={tipX} y={PAD.top - 16}
+                    width={TIP_W} height={20}
+                    rx="4"
+                    fill="var(--ink)"
+                    opacity="0.95"
+                  />
+                  <text
+                    x={tipX + TIP_W / 2} y={PAD.top - 2}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fontWeight="500"
+                    fill="#f8fafc"
+                    fontFamily="var(--font-sans), sans-serif"
+                  >
+                    {tipText}
+                  </text>
+                </g>
+              )}
             </g>
           );
         })}

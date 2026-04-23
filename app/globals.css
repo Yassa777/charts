@@ -11,6 +11,13 @@ body {
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(ellipse 28rem 18rem at 12% 16%, rgba(245, 158, 11, 0.11) 0%, transparent 72%),
+    radial-gradient(ellipse 26rem 20rem at 84% 14%, rgba(99, 102, 241, 0.07) 0%, transparent 74%),
+    radial-gradient(ellipse 22rem 18rem at 8% 42%, rgba(5, 150, 105, 0.07) 0%, transparent 76%),
+    #ffffff;
+  background-attachment: fixed;
+  overflow-x: hidden;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -89,6 +96,7 @@ a { color: inherit; text-decoration: none; }
 .page-shell {
   width: min(1160px, calc(100% - 4rem));
   margin: 0 auto;
+  background: transparent;
 }
 
 /* ── Page title ──────────────────────────────────── */
@@ -140,16 +148,21 @@ a { color: inherit; text-decoration: none; }
   isolation: isolate;
 }
 
-/* Regime-tinted radial backdrop — the "mood" behind the hero */
+/* Regime-tinted radial backdrop — spans the full viewport width so the
+   gradient flows off-page instead of forming a content-sized rectangle. */
 .hero-backdrop {
   position: absolute;
-  inset: -1rem -3rem -1rem -3rem;
+  top: -3rem;
+  bottom: -3rem;
+  left: 50%;
+  width: 112vw;
+  transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 70% at 18% 52%, var(--regime-glow) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 80% at 85% 40%, var(--regime-tint) 0%, transparent 75%);
-  opacity: 0.85;
+    radial-gradient(ellipse 38% 64% at 32% 50%, var(--regime-glow) 0%, transparent 74%),
+    radial-gradient(ellipse 32% 76% at 72% 45%, var(--regime-tint) 0%, transparent 78%);
+  opacity: 0.72;
   animation: hero-glow 12s ease-in-out infinite alternate;
 }
 

@@ -210,22 +210,42 @@ export function HeroChart({ history, crisisPeakDate }) {
           {/* Crisis peak annotation */}
           {crisisIdx != null && crisisIdx !== n - 1 && (() => {
             const [cx, cy] = points[crisisIdx];
+            const isCrisisActive = hoverIdx === crisisIdx;
             const labelAbove = cy > PAD.top + 40;
             const ly = labelAbove ? cy - 16 : cy + 22;
             return (
               <g className="hero-annotation">
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r="14"
+                  fill="transparent"
+                />
                 <circle cx={cx} cy={cy} r="4.5" fill="#8a1538" />
                 <circle cx={cx} cy={cy} r="9" fill="#8a1538" fillOpacity="0.18" />
-                <line x1={cx} x2={cx} y1={cy + (labelAbove ? -8 : 8)} y2={ly + (labelAbove ? 2 : -8)} stroke="#8a1538" strokeWidth="1" strokeDasharray="2 3" />
-                <text
-                  x={cx} y={ly}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fontWeight="600"
-                  style={{ fill: "#8a1538", fontFamily: "var(--font-sans), sans-serif" }}
-                >
-                  2022 crisis peak
-                </text>
+                {isCrisisActive && (
+                  <>
+                    <line
+                      x1={cx}
+                      x2={cx}
+                      y1={cy + (labelAbove ? -8 : 8)}
+                      y2={ly + (labelAbove ? 2 : -8)}
+                      stroke="#8a1538"
+                      strokeWidth="1"
+                      strokeDasharray="2 3"
+                    />
+                    <text
+                      x={cx}
+                      y={ly}
+                      textAnchor="middle"
+                      fontSize="10"
+                      fontWeight="600"
+                      style={{ fill: "#8a1538", fontFamily: "var(--font-sans), sans-serif" }}
+                    >
+                      2022 crisis peak
+                    </text>
+                  </>
+                )}
               </g>
             );
           })()}
