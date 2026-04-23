@@ -219,7 +219,12 @@ export default async function HomePage() {
         <div className="hero-right">
           <div className="page-title">
             <Image src={flag} alt="Sri Lanka" height={38} className="page-title-flag" />
-            <span className="page-title-text">SLEPI</span>
+            <div className="page-title-copy">
+              <span className="page-title-text">SLEPI</span>
+              <span className="page-title-tagline">
+                The pressure on the Sri Lankan economy in real-time
+              </span>
+            </div>
           </div>
           <MiniSparkline values={snapshot.sparklineValues} startDate={snapshot.sparklineStart} />
         </div>
@@ -322,62 +327,72 @@ export default async function HomePage() {
         <ComponentChart history={componentHistory} />
       </section>
 
-      {/* ── Validation + Freshness ── */}
-      <section className="panels-section">
-        <div className="panels-grid">
-          <article className="panel-card">
-            <span className="panel-eyebrow">Validation</span>
-            <h2 className="panel-title">Backtest</h2>
-            <div className="backtest-grid">
-              <div>
-                <div className="backtest-item-label">AUC — top 15% stress</div>
-                <div className="backtest-item-value">
-                  {formatNumber(snapshot.metrics.slepi_adjusted.auc_for_top_15pct_future_stress_event, 3)}
-                </div>
-              </div>
-              <div>
-                <div className="backtest-item-label">3-month correlation</div>
-                <div className="backtest-item-value">
-                  {formatNumber(snapshot.metrics.slepi_adjusted.correlation_with_future_external_stress_3m, 3)}
-                </div>
-              </div>
-              <div>
-                <div className="backtest-item-label">Crisis peak</div>
-                <div className="backtest-item-value sm">
-                  {formatMonth(snapshot.metrics.slepi_adjusted.crisis_window_peak_date)}
-                </div>
-              </div>
-              <div>
-                <div className="backtest-item-label">Proxy overlap</div>
-                <div className="backtest-item-value sm">
-                  {snapshot.metrics.proxy_fit.overlap_months} months
-                </div>
-              </div>
-            </div>
-          </article>
+      {/* ── Advanced stats ── */}
+      <section className="advanced-section">
+        <details className="advanced-disclosure">
+          <summary className="advanced-summary">
+            <span className="advanced-summary-copy">
+              <span className="advanced-summary-label">Advanced stats</span>
+              <span className="advanced-summary-note">Validation, freshness, and pipeline status</span>
+            </span>
+            <span className="advanced-summary-icon" aria-hidden="true">▾</span>
+          </summary>
 
-          <article className="panel-card">
-            <span className="panel-eyebrow">Freshness</span>
-            <h2 className="panel-title">Data availability</h2>
-            <div className="freshness-grid">
-              <SourceRow source={snapshot.dataSource} />
-              <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
-              <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
-              <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
-              <FreshnessRow label="Reserves" date={freshness.latest_available_months.gross_reserves} />
-              <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
-            </div>
-            {firstBlocking && (
+          <div className="panels-grid">
+            <article className="panel-card">
+              <span className="panel-eyebrow">Validation</span>
+              <h2 className="panel-title">Backtest</h2>
+              <div className="backtest-grid">
+                <div>
+                  <div className="backtest-item-label">AUC — top 15% stress</div>
+                  <div className="backtest-item-value">
+                    {formatNumber(snapshot.metrics.slepi_adjusted.auc_for_top_15pct_future_stress_event, 3)}
+                  </div>
+                </div>
+                <div>
+                  <div className="backtest-item-label">3-month correlation</div>
+                  <div className="backtest-item-value">
+                    {formatNumber(snapshot.metrics.slepi_adjusted.correlation_with_future_external_stress_3m, 3)}
+                  </div>
+                </div>
+                <div>
+                  <div className="backtest-item-label">Crisis peak</div>
+                  <div className="backtest-item-value sm">
+                    {formatMonth(snapshot.metrics.slepi_adjusted.crisis_window_peak_date)}
+                  </div>
+                </div>
+                <div>
+                  <div className="backtest-item-label">Proxy overlap</div>
+                  <div className="backtest-item-value sm">
+                    {snapshot.metrics.proxy_fit.overlap_months} months
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article className="panel-card">
+              <span className="panel-eyebrow">Freshness</span>
+              <h2 className="panel-title">Data availability</h2>
+              <div className="freshness-grid">
+                <SourceRow source={snapshot.dataSource} />
+                <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
+                <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
+                <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
+                <FreshnessRow label="Reserves" date={freshness.latest_available_months.gross_reserves} />
+                <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
+              </div>
+              {firstBlocking && (
+                <p className="panel-note">
+                  Next window ({formatMonth(firstBlocking.date)}) pending:{" "}
+                  {firstBlocking.missing_requirements.join(", ")}.
+                </p>
+              )}
               <p className="panel-note">
-                Next window ({formatMonth(firstBlocking.date)}) pending:{" "}
-                {firstBlocking.missing_requirements.join(", ")}.
+                Pipeline last checked CBSL on {formatTimestamp(freshness.pipeline_checked_at)}.
               </p>
-            )}
-            <p className="panel-note">
-              Pipeline last checked CBSL on {formatTimestamp(freshness.pipeline_checked_at)}.
-            </p>
-          </article>
-        </div>
+            </article>
+          </div>
+        </details>
       </section>
 
     </main>
