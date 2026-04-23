@@ -54,6 +54,10 @@ SOURCE_LABELS = {
         "label": "Workers Remittances (2009 January to Latest)",
         "filename": "remittances_monthly.xlsx",
     },
+    "reserve_latest": {
+        "label": "Reserve Data Template - Latest",
+        "filename": "reserve_data_template_latest.xlsx",
+    },
     "reserve_history": {
         "label": "Reserve Data Template - Historical",
         "filename": "reserve_data_template_historical.xlsx",
@@ -319,6 +323,18 @@ def find_value_in_sheet(df: pd.DataFrame, patterns: list[str]) -> float | None:
     return None
 
 
+def find_value_by_first_cell(df: pd.DataFrame, patterns: list[str]) -> float | None:
+    normalized_patterns = [normalize_text(pattern) for pattern in patterns]
+    for idx in range(df.shape[0]):
+        first_text = first_nonempty_value(df.iloc[idx])
+        if all(pattern in first_text for pattern in normalized_patterns):
+            for value in reversed(df.iloc[idx].tolist()):
+                parsed = parse_number(value)
+                if parsed is not None:
+                    return parsed
+    return None
+
+
 def parse_total_series_sheet(path: Path, sheet_name: str, total_label: str, value_name: str) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name=sheet_name, header=None)
     header_row = find_row_by_first_value(df, "Category")
@@ -326,15 +342,15 @@ def parse_total_series_sheet(path: Path, sheet_name: str, total_label: str, valu
 
     rows: list[dict[str, Any]] = []
     for column in range(df.shape[1]):
-        date_value = df.iloc[header_row, column]
-        if not isinstance(date_value, (pd.Timestamp, datetime)):
+        date_value = parse_month_start(df.iloc[header_row, column])
+        if date_value is None:
             continue
         numeric_value = parse_number(df.iloc[total_row, column])
         if numeric_value is None:
             continue
         rows.append(
             {
-                "date": pd.to_datetime(date_value).normalize().replace(day=1),
+                "date": date_value,
                 value_name: numeric_value,
             }
         )
@@ -348,6 +364,29 @@ def parse_year_token(value: Any) -> int | None:
     if not match:
         return None
     return int(match.group(0))
+
+
+def parse_month_start(value: Any) -> pd.Timestamp | None:
+    if isinstance(value, (pd.Timestamp, datetime)):
+        return pd.to_datetime(value).normalize().replace(day=1)
+    if pd.isna(value):
+        return None
+
+    text = str(value).strip()
+    if not text:
+        return None
+
+    text = re.sub(r"\s*\([^)]+\)\s*$", "", text).strip()
+    for fmt in ("%b-%y", "%b-%Y", "%B-%y", "%B-%Y", "%Y-%m-%d", "%b %Y", "%B %Y"):
+        try:
+            return pd.to_datetime(datetime.strptime(text, fmt)).normalize().replace(day=1)
+        except ValueError:
+            continue
+
+    parsed = pd.to_datetime(text, errors="coerce")
+    if pd.isna(parsed):
+        return None
+    return parsed.normalize().replace(day=1)
 
 
 def parse_month_token(value: Any) -> int | None:
@@ -463,20 +502,22 @@ def parse_reserve_history(path: Path) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
 
     for sheet_name in workbook.sheet_names:
-        try:
-            date = pd.to_datetime(sheet_name, format="%b-%Y").normalize().replace(day=1)
-        except ValueError:
+        date = parse_month_start(sheet_name)
+        if date is None:
             continue
 
         df = pd.read_excel(path, sheet_name=sheet_name, header=None)
         rows.append(
             {
                 "date": date,
-                "gross_reserves_usd_m": find_value_in_sheet(df, ["Official Reserve Assets"]),
-                "fx_reserves_usd_m": find_value_in_sheet(df, ["Foreign currency reserves"]),
-                "imf_position_usd_m": find_value_in_sheet(df, ["Reserve position in the IMF"]),
-                "sdrs_usd_m": find_value_in_sheet(df, ["SDRs"]),
-                "gold_usd_m": find_value_in_sheet(df, ["Gold"]),
+                "gross_reserves_usd_m": find_value_by_first_cell(df, ["a.", "official reserve assets"]),
+                "fx_reserves_usd_m": find_value_by_first_cell(df, ["(1)", "foreign currency reserves"]),
+                "imf_position_usd_m": (
+                    find_value_by_first_cell(df, ["(2)", "imf reserve position"])
+                    or find_value_by_first_cell(df, ["(2)", "reserve position in the imf"])
+                ),
+                "sdrs_usd_m": find_value_by_first_cell(df, ["(3)", "sdrs"]),
+                "gold_usd_m": find_value_by_first_cell(df, ["(4)", "gold"]),
                 "other_reserves_usd_m": find_value_in_sheet(df, ["Other reserve assets"]),
             }
         )
@@ -484,6 +525,49 @@ def parse_reserve_history(path: Path) -> pd.DataFrame:
     result = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
     if result.empty:
         raise ValueError(f"Failed to parse reserve history workbook: {path.name}")
+    return result
+
+
+def parse_reserve_latest(path: Path) -> pd.DataFrame:
+    workbook = pd.ExcelFile(path)
+    rows: list[dict[str, Any]] = []
+
+    for sheet_name in workbook.sheet_names:
+        date = parse_month_start(sheet_name.replace("RDT", "").replace("(", "").replace(")", "").strip())
+        if date is None:
+            df = pd.read_excel(path, sheet_name=sheet_name, header=None)
+            date = None
+            for row_idx in range(min(df.shape[0], 12)):
+                for value in df.iloc[row_idx].tolist():
+                    parsed = parse_month_start(value)
+                    if parsed is not None:
+                        date = parsed
+                        break
+                if date is not None:
+                    break
+            if date is None:
+                continue
+        else:
+            df = pd.read_excel(path, sheet_name=sheet_name, header=None)
+
+        rows.append(
+            {
+                "date": date,
+                "gross_reserves_usd_m": find_value_by_first_cell(df, ["a.", "official reserve assets"]),
+                "fx_reserves_usd_m": find_value_by_first_cell(df, ["(1)", "foreign currency reserves"]),
+                "imf_position_usd_m": (
+                    find_value_by_first_cell(df, ["(2)", "imf reserve position"])
+                    or find_value_by_first_cell(df, ["(2)", "reserve position in the imf"])
+                ),
+                "sdrs_usd_m": find_value_by_first_cell(df, ["(3)", "sdrs"]),
+                "gold_usd_m": find_value_by_first_cell(df, ["(4)", "gold"]),
+                "other_reserves_usd_m": find_value_in_sheet(df, ["Other reserve assets"]),
+            }
+        )
+
+    result = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+    if result.empty:
+        raise ValueError(f"Failed to parse reserve latest workbook: {path.name}")
     return result
 
 
@@ -607,7 +691,13 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     official_tourism = parse_wide_month_year_sheet(raw_paths["tourism"], "tourism_earnings_usd_m")
     official_remittances = parse_wide_month_year_sheet(raw_paths["remittances"], "remittances_usd_m")
     official_current_account = parse_current_account_sheet(raw_paths["current_account"])
-    official_reserves = parse_reserve_history(raw_paths["reserve_history"])
+    official_reserve_history = parse_reserve_history(raw_paths["reserve_history"])
+    official_reserve_latest = parse_reserve_latest(raw_paths["reserve_latest"])
+    official_reserves = combine_series(
+        official_reserve_latest,
+        official_reserve_history,
+        ["gross_reserves_usd_m", "fx_reserves_usd_m", "imf_position_usd_m", "sdrs_usd_m", "gold_usd_m"],
+    )
     official_daily_fx = fetch_daily_usd_spot_rates(session, "2025-01-01", datetime.now().strftime("%Y-%m-%d"))
     official_monthly_fx = (
         official_daily_fx.assign(date=official_daily_fx["date"].values.astype("datetime64[M]"))
