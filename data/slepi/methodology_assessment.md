@@ -48,17 +48,17 @@ Source for all three timing notes: [https://www.cbsl.gov.lk/en/advance-release-c
 
 ## Backtest snapshot
 
-- Sample used for headline metrics: `2014-01-01` to `2025-12-01`
-- Raw user-spec SLEPI correlation with future 3-month external stress: `0.290`
-- Raw user-spec SLEPI AUC for top-15% future stress events: `0.568`
-- Adjusted SLEPI correlation with future 3-month external stress: `0.263`
-- Adjusted SLEPI AUC for top-15% future stress events: `0.578`
-- Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `1.118`, correlation `0.883`, overlap months `35`
+- Sample used for headline metrics: `2014-01-01` to `2026-01-01`
+- Raw user-spec SLEPI correlation with future 3-month external stress: `0.243`
+- Raw user-spec SLEPI AUC for top-15% future stress events: `0.535`
+- Adjusted SLEPI correlation with future 3-month external stress: `0.214`
+- Adjusted SLEPI AUC for top-15% future stress events: `0.547`
+- Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `1.099`, correlation `0.899`, overlap months `38`
 
 Both variants spike sharply into the 2021-2022 external crisis window, with crisis peaks on:
 
 - Raw user-spec SLEPI: `2022-04-01` at `3.17`
-- Adjusted SLEPI: `2022-04-01` at `2.80`
+- Adjusted SLEPI: `2022-04-01` at `2.79`
 
 ## Practical interpretation
 
@@ -68,4 +68,4 @@ Both variants spike sharply into the 2021-2022 external crisis window, with cris
 
 ## Latest observation
 
-The latest complete adjusted SLEPI observation is 2025-11-01 with a value of -0.04.
+The latest complete adjusted SLEPI observation is 2026-02-01 with a value of -0.36.

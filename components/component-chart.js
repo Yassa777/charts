@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useHover } from "./hover-context";
 
 const SERIES = [
   { key: "reserve_block_z",                         label: "Import cover",    color: "#6366f1" },
@@ -15,8 +16,8 @@ const ZONES = [
   { lo: -2.8, hi: -0.5, fill: "rgba(5,150,105,0.06)",    label: "Supportive", labelColor: "#059669" },
 ];
 
-const W = 640, H = 240;
-const PAD = { top: 20, right: 80, bottom: 40, left: 48 };
+const W = 720, H = 280;
+const PAD = { top: 22, right: 120, bottom: 44, left: 48 };
 const cW = W - PAD.left - PAD.right;
 const cH = H - PAD.top - PAD.bottom;
 const Y_MIN = -2.8, Y_MAX = 2.8;
@@ -24,10 +25,34 @@ const Y_MIN = -2.8, Y_MAX = 2.8;
 const toX = (i, n) => PAD.left + (i / Math.max(n - 1, 1)) * cW;
 const toY = (v) => PAD.top + cH - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * cH;
 
+function regimeForScore(s) {
+  if (s >= 1.5)  return "Acute";
+  if (s >= 0.5)  return "Elevated";
+  if (s <= -0.5) return "Supportive";
+  return "Neutral";
+}
+
+/* Find regime crossings on the composite SLEPI series to place as vertical annotation lines */
+function findCrossings(history) {
+  const crossings = [];
+  for (let i = 1; i < history.length; i++) {
+    const prev = history[i - 1]?.slepi_adjusted;
+    const curr = history[i]?.slepi_adjusted;
+    if (!Number.isFinite(prev) || !Number.isFinite(curr)) continue;
+    const rPrev = regimeForScore(prev);
+    const rCurr = regimeForScore(curr);
+    if (rPrev !== rCurr) {
+      crossings.push({ idx: i, from: rPrev, to: rCurr, date: history[i].date });
+    }
+  }
+  return crossings;
+}
+
 export function ComponentChart({ history }) {
   const [visible, setVisible] = useState(
     () => Object.fromEntries(SERIES.map((s) => [s.key, true]))
   );
+  const { hovered } = useHover();
 
   if (!history || history.length < 2) return null;
 
@@ -41,6 +66,8 @@ export function ComponentChart({ history }) {
 
   const xTicks = [0, Math.round(n / 3), Math.round((2 * n) / 3), n - 1];
   const yTicks = [-2, -1, 0, 1, 2];
+
+  const crossings = findCrossings(history);
 
   return (
     <div className="comp-chart-outer">
@@ -75,13 +102,15 @@ export function ComponentChart({ history }) {
             <g key={z.label}>
               <rect x={PAD.left} y={y1} width={cW} height={y2 - y1} fill={z.fill} />
               <text
-                x={W - PAD.right + 8}
-                y={midY + 4}
-                fontSize="9"
+                x={PAD.left + 6}
+                y={y1 + 11}
+                fontSize="8.5"
+                letterSpacing="0.08em"
                 fill={z.labelColor}
-                fillOpacity="0.8"
+                fillOpacity="0.55"
                 fontFamily="var(--font-sans), sans-serif"
-                fontWeight="500"
+                fontWeight="600"
+                style={{ textTransform: "uppercase" }}
               >
                 {z.label}
               </text>
@@ -120,6 +149,17 @@ export function ComponentChart({ history }) {
               >
                 {t > 0 ? `+${t}` : t}
               </text>
+              {isZero && (
+                <text
+                  x={W - PAD.right - 4} y={y - 4}
+                  textAnchor="end" fontSize="9"
+                  letterSpacing="0.08em"
+                  fontWeight="600"
+                  style={{ fill: "var(--muted)", fontFamily: "var(--font-sans), sans-serif", textTransform: "uppercase" }}
+                >
+                  neutral line
+                </text>
+              )}
             </g>
           );
         })}
@@ -137,6 +177,29 @@ export function ComponentChart({ history }) {
           </text>
         ))}
 
+        {/* Regime-crossing markers (on the composite SLEPI) */}
+        {crossings.map((c) => {
+          const x = toX(c.idx, n);
+          const d = new Date(c.date);
+          const label = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+          return (
+            <g key={c.idx} className="comp-chart-crossing">
+              <line
+                x1={x} x2={x} y1={PAD.top} y2={PAD.top + cH}
+                stroke="var(--line-strong)" strokeWidth="0.75" strokeDasharray="3 3"
+              />
+              <text
+                x={x + 3} y={PAD.top + 9}
+                fontSize="8"
+                letterSpacing="0.05em"
+                style={{ fill: "var(--muted)", fontFamily: "var(--font-sans), sans-serif" }}
+              >
+                → {c.to}
+              </text>
+            </g>
+          );
+        })}
+
         {/* Series lines */}
         {SERIES.map((s) => {
           if (!visible[s.key]) return null;
@@ -153,17 +216,44 @@ export function ComponentChart({ history }) {
           const lx = toX(n - 1, n);
           const ly = Number.isFinite(lv) ? toY(lv) : null;
 
+          const isFocused = hovered === s.key;
+          const isDimmed = hovered && !isFocused;
+
           return (
-            <g key={s.key}>
+            <g key={s.key} className={`comp-line ${isFocused ? "focus" : ""} ${isDimmed ? "dim" : ""}`}>
               <polyline
                 points={pts}
                 stroke={s.color}
-                strokeWidth="1.75"
+                strokeWidth={isFocused ? 2.75 : 1.75}
                 strokeLinejoin="round"
                 strokeLinecap="round"
+                opacity={isDimmed ? 0.18 : 1}
               />
               {ly !== null && (
-                <circle cx={lx} cy={ly} r="3.5" fill={s.color} />
+                <>
+                  <circle cx={lx} cy={ly} r={isFocused ? 4.5 : 3.5} fill={s.color} opacity={isDimmed ? 0.25 : 1} />
+                  {/* Right-edge snapshot label */}
+                  <text
+                    x={lx + 8} y={ly + 3}
+                    fontSize="10"
+                    fontWeight="500"
+                    fill={s.color}
+                    fillOpacity={isDimmed ? 0.35 : 1}
+                    fontFamily="var(--font-mono), monospace"
+                  >
+                    {lv > 0 ? "+" : ""}{lv.toFixed(2)}
+                  </text>
+                  <text
+                    x={lx + 8} y={ly + 14}
+                    fontSize="8.5"
+                    letterSpacing="0.03em"
+                    fill="var(--muted)"
+                    fillOpacity={isDimmed ? 0.35 : 0.85}
+                    fontFamily="var(--font-sans), sans-serif"
+                  >
+                    {s.label}
+                  </text>
+                </>
               )}
             </g>
           );

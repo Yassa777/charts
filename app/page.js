@@ -6,11 +6,27 @@ import {
   formatPercent,
   getSlepiSnapshot,
   getComponentHistory,
+  getScoreHistory,
+  getStatHistory,
 } from "@/lib/slepi";
-import { MiniSparkline } from "@/components/mini-sparkline";
+import { HeroChart } from "@/components/hero-chart";
 import { ComponentChart } from "@/components/component-chart";
+import { ComponentRow } from "@/components/component-row";
+import { StatBlock } from "@/components/stat-block";
+import { HoverProvider } from "@/components/hover-context";
+import { ScoreNumber } from "@/components/score-number";
+import { RegimeRibbon } from "@/components/regime-ribbon";
+import { BulletGauge } from "@/components/bullet-gauge";
+import { getRegime, regimeLabel } from "@/components/regime";
 
 export const dynamic = "force-dynamic";
+
+const COMPONENT_COLORS = {
+  reserve_block_z:                         "#6366f1",
+  fx_market_pressure_z:                    "#f59e0b",
+  external_balance_pressure_adjusted_z:    "#ec4899",
+  buffer_inflow_support_z:                 "#10b981",
+};
 
 /* ── Interpretive sentence ─────────────────────────────────────── */
 function interpret(snapshot) {
@@ -70,79 +86,15 @@ function interpret(snapshot) {
   return `${opening}${trend}${detail}.`;
 }
 
-/* ── MoM delta badge ───────────────────────────────────────────── */
-function MomBadge({ current, previous, invertColor }) {
-  if (previous === null || previous === undefined || !Number.isFinite(previous)) return null;
-  const delta = current - previous;
-  if (Math.abs(delta) < 0.04) return null;
-  // Positive delta = more pressure = red (bad), unless invertColor (for metrics like import cover)
-  const isUp = delta > 0;
-  const isBad = invertColor ? !isUp : isUp;
-  return (
-    <span className={`mom-badge ${isBad ? "bad" : "good"}`}>
-      {isUp ? "▲" : "▼"} {Math.abs(delta).toFixed(2)}
-    </span>
-  );
-}
-
 /* ── Status pill ───────────────────────────────────────────────── */
 function StatusPill({ score }) {
-  let tone = "quiet", label = "Calm";
-  if (score >= 1.5)       { tone = "critical";   label = "Acute pressure"; }
-  else if (score >= 0.5)  { tone = "elevated";   label = "Elevated pressure"; }
-  else if (score <= -0.5) { tone = "supportive"; label = "Supportive"; }
+  const regime = getRegime(score);
+  const toneMap = { neutral: "quiet", supportive: "supportive", elevated: "elevated", acute: "critical" };
   return (
-    <span className={`status-pill ${tone}`}>
+    <span className={`status-pill ${toneMap[regime]}`}>
       <span className="status-dot" />
-      {label}
+      {regimeLabel(regime)}
     </span>
-  );
-}
-
-/* ── Info icon ─────────────────────────────────────────────────── */
-function InfoIcon({ text }) {
-  return (
-    <span className="info-icon">
-      i<span className="info-tooltip">{text}</span>
-    </span>
-  );
-}
-
-/* ── Component row ─────────────────────────────────────────────── */
-function ComponentRow({ title, score, prevScore, value, unit, description }) {
-  const isPositive = score >= 0;
-  const pct = Math.min(Math.abs(score) / 2 * 50, 50);
-  const dir = isPositive ? "pressure" : "support";
-
-  return (
-    <div className="comp-row">
-      <div className="comp-name">
-        {title}
-        <InfoIcon text={description} />
-      </div>
-      <div className="comp-value-block">
-        <span className="comp-value">{value}</span>
-        <span className="comp-unit">{unit}</span>
-      </div>
-      <div className="comp-bar-wrap">
-        <div className="comp-bar-track">
-          <div className="comp-bar-center-tick" />
-          <div
-            className={`comp-bar-fill ${dir}`}
-            style={{
-              width: `${pct}%`,
-              ...(isPositive ? { left: "50%" } : { right: "50%" }),
-            }}
-          />
-        </div>
-      </div>
-      <div className={`comp-zscore-wrap`}>
-        <span className={`comp-zscore ${dir}`}>
-          {isPositive ? "+" : ""}{score.toFixed(2)}
-        </span>
-        <MomBadge current={score} previous={prevScore} />
-      </div>
-    </div>
   );
 }
 
@@ -178,9 +130,11 @@ function formatTimestamp(ts) {
 
 /* ── Page ──────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [snapshot, componentHistory] = await Promise.all([
+  const [snapshot, componentHistory, scoreHistory, statHistory] = await Promise.all([
     getSlepiSnapshot(),
-    Promise.resolve(getComponentHistory()),
+    Promise.resolve(getComponentHistory(24)),
+    Promise.resolve(getScoreHistory(60)),
+    Promise.resolve(getStatHistory(18)),
   ]);
 
   const freshness = snapshot.freshness;
@@ -189,212 +143,252 @@ export default async function HomePage() {
   const hasDelta = snapshot.delta !== null && snapshot.delta !== undefined;
   const firstBlocking = freshness.blocking_months_after_latest_complete?.[0];
   const sentence = interpret(snapshot);
+  const regime = getRegime(L.slepi_adjusted);
+  const crisisPeakDate = snapshot.metrics?.slepi_adjusted?.crisis_window_peak_date;
+
+  /* Map per-component z-score histories for mini-multiples */
+  const compValues = (key) => componentHistory.map((r) => r[key]);
 
   return (
-    <main className="page-shell">
+    <HoverProvider>
+      <main className="page-shell">
 
-      {/* ── Hero ── */}
-      <section className="hero">
-        <div className="hero-left">
-          <span className="eyebrow">Sri Lanka External Pressure Index</span>
+        {/* ── Hero ── */}
+        <section className="hero" data-regime={regime}>
+          <div className="hero-backdrop" aria-hidden="true" />
+          <div className="hero-left">
+            <span className="eyebrow">Sri Lanka External Pressure Index</span>
 
-          <div className="score-block">
-            <div className="score-number">{formatNumber(L.slepi_adjusted, 2)}</div>
-            <StatusPill score={L.slepi_adjusted} />
-          </div>
+            <div className="score-block">
+              <div className="score-frame">
+                <ScoreNumber value={L.slepi_adjusted} />
+              </div>
+              <StatusPill score={L.slepi_adjusted} />
+            </div>
 
-          <p className="interpretation">{sentence}</p>
+            <RegimeRibbon score={L.slepi_adjusted} />
 
-          <div className="hero-footnote">
-            {hasDelta && (
-              <span className={`hero-delta ${snapshot.delta >= 0 ? "up" : "down"}`}>
-                {snapshot.delta >= 0 ? "▲" : "▼"}{" "}
-                {Math.abs(snapshot.delta).toFixed(2)} vs previous month
-              </span>
-            )}
-            <span className="hero-date">Latest: {formatMonth(L.date)}</span>
-          </div>
-        </div>
+            <p className="interpretation">
+              <span className="interpretation-bar" aria-hidden="true" />
+              <span className="interpretation-text">{sentence}</span>
+            </p>
 
-        <div className="hero-right">
-          <div className="page-title">
-            <Image src={flag} alt="Sri Lanka" height={38} className="page-title-flag" />
-            <div className="page-title-copy">
-              <span className="page-title-text">SLEPI</span>
-              <span className="page-title-tagline">
-                The pressure on the Sri Lankan economy in real-time
-              </span>
+            <div className="hero-footnote">
+              {hasDelta && (
+                <span className={`hero-delta ${snapshot.delta >= 0 ? "up" : "down"}`}>
+                  {snapshot.delta >= 0 ? "▲" : "▼"}{" "}
+                  {Math.abs(snapshot.delta).toFixed(2)} vs previous month
+                </span>
+              )}
+              <span className="hero-date">Latest: {formatMonth(L.date)}</span>
             </div>
           </div>
-          <MiniSparkline values={snapshot.sparklineValues} startDate={snapshot.sparklineStart} />
-        </div>
-      </section>
 
-      {/* ── Key metrics ── */}
-      <div className="stats-strip">
-        <div className="stat-block">
-          <span className="stat-label">USD / LKR</span>
-          <div className="stat-value-row">
-            <span className="stat-value">{formatNumber(L.usd_lkr, 2)}</span>
-            <MomBadge current={L.usd_lkr} previous={P?.usd_lkr} invertColor={false} />
-          </div>
-          <span className="stat-unit">Spot rate — higher = weaker Rupee</span>
-        </div>
-        <div className="stat-block">
-          <span className="stat-label">Import cover</span>
-          <div className="stat-value-row">
-            <span className="stat-value">{formatNumber(L.import_cover_months, 2)}</span>
-            <MomBadge current={L.import_cover_months} previous={P?.import_cover_months} invertColor={true} />
-          </div>
-          <span className="stat-unit">Months of imports covered</span>
-        </div>
-        <div className="stat-block">
-          <span className="stat-label">Current account</span>
-          <div className="stat-value-row">
-            <span className="stat-value">{formatNumber(L.current_account_filled_usd_m, 0)}</span>
-            <MomBadge current={L.current_account_filled_usd_m} previous={P?.current_account_filled_usd_m} invertColor={true} />
-          </div>
-          <span className="stat-unit">USD mn — negative = deficit</span>
-        </div>
-        <div className="stat-block">
-          <span className="stat-label">Buffer inflows</span>
-          <div className="stat-value-row">
-            <span className="stat-value">{formatNumber(L.buffer_inflows_usd_m, 0)}</span>
-            <MomBadge current={L.buffer_inflows_usd_m} previous={P?.buffer_inflows_usd_m} invertColor={true} />
-          </div>
-          <span className="stat-unit">USD mn — remittances + tourism</span>
-        </div>
-      </div>
-
-      {/* ── Index components ── */}
-      <section className="section">
-        <div className="section-label">Index components</div>
-        <p className="section-note">
-          The SLEPI score is the equal-weighted average of four standardised component scores (z-scores).
-          <span className="pressure-text"> Positive values → pressure.</span>
-          <span className="support-text"> Negative values → support.</span>
-          {" "}Month-on-month changes are shown alongside each score.
-        </p>
-        <div className="components-table">
-          <div className="comp-row comp-row-header">
-            <span>Component</span>
-            <span>Latest reading</span>
-            <span>Contribution ← neutral →</span>
-            <span>Z-score / MoM</span>
-          </div>
-          <ComponentRow
-            title="Import cover"
-            score={L.reserve_block_z}
-            prevScore={P?.reserve_block_z}
-            value={`${formatNumber(L.import_cover_months, 2)} mo`}
-            unit="months of gross reserve cover"
-            description="Gross official reserves divided by monthly imports. Higher coverage means the central bank can sustain more months of imports — reducing external pressure."
-          />
-          <ComponentRow
-            title="FX market pressure"
-            score={L.fx_market_pressure_z}
-            prevScore={P?.fx_market_pressure_z}
-            value={formatPercent(L.fx_market_pressure_raw)}
-            unit="month-on-month USD/LKR change"
-            description="Month-on-month change in the USD/LKR exchange rate. Positive values indicate Rupee depreciation, adding to external pressure."
-          />
-          <ComponentRow
-            title="External balance"
-            score={L.external_balance_pressure_adjusted_z}
-            prevScore={P?.external_balance_pressure_adjusted_z}
-            value={formatPercent(L.external_balance_pressure_adjusted_raw)}
-            unit="current account / GDP, net of buffers"
-            description="Current account deficit as a share of GDP, net of remittances and tourism. Captures the underlying external financing gap after buffer inflows."
-          />
-          <ComponentRow
-            title="Buffer inflow support"
-            score={L.buffer_inflow_support_z}
-            prevScore={P?.buffer_inflow_support_z}
-            value={formatPercent(-L.buffer_inflow_support_raw)}
-            unit="remittances + tourism / GDP"
-            description="Remittances plus tourism earnings as a share of GDP. Strong inflows from these sources reduce pressure by providing a steady foreign exchange buffer."
-          />
-        </div>
-      </section>
-
-      {/* ── 24-month component history ── */}
-      <section className="section">
-        <div className="section-label">24-month component history</div>
-        <p className="section-note">
-          Each line shows a component's standardised score over time. Use the toggles to isolate individual drivers.
-          Coloured bands mark the same pressure zones as the index chart above.
-        </p>
-        <ComponentChart history={componentHistory} />
-      </section>
-
-      {/* ── Advanced stats ── */}
-      <section className="advanced-section">
-        <details className="advanced-disclosure">
-          <summary className="advanced-summary">
-            <span className="advanced-summary-copy">
-              <span className="advanced-summary-label">Advanced stats</span>
-              <span className="advanced-summary-note">Validation, freshness, and pipeline status</span>
-            </span>
-            <span className="advanced-summary-icon" aria-hidden="true">▾</span>
-          </summary>
-
-          <div className="panels-grid">
-            <article className="panel-card">
-              <span className="panel-eyebrow">Validation</span>
-              <h2 className="panel-title">Backtest</h2>
-              <div className="backtest-grid">
-                <div>
-                  <div className="backtest-item-label">AUC — top 15% stress</div>
-                  <div className="backtest-item-value">
-                    {formatNumber(snapshot.metrics.slepi_adjusted.auc_for_top_15pct_future_stress_event, 3)}
-                  </div>
-                </div>
-                <div>
-                  <div className="backtest-item-label">3-month correlation</div>
-                  <div className="backtest-item-value">
-                    {formatNumber(snapshot.metrics.slepi_adjusted.correlation_with_future_external_stress_3m, 3)}
-                  </div>
-                </div>
-                <div>
-                  <div className="backtest-item-label">Crisis peak</div>
-                  <div className="backtest-item-value sm">
-                    {formatMonth(snapshot.metrics.slepi_adjusted.crisis_window_peak_date)}
-                  </div>
-                </div>
-                <div>
-                  <div className="backtest-item-label">Proxy overlap</div>
-                  <div className="backtest-item-value sm">
-                    {snapshot.metrics.proxy_fit.overlap_months} months
-                  </div>
-                </div>
+          <div className="hero-right">
+            <div className="page-title">
+              <Image src={flag} alt="Sri Lanka" height={38} className="page-title-flag" />
+              <div className="page-title-copy">
+                <span className="page-title-text">SLEPI</span>
+                <span className="page-title-tagline">
+                  The pressure on the Sri Lankan economy in real-time
+                </span>
               </div>
-            </article>
+            </div>
+            <HeroChart history={scoreHistory} crisisPeakDate={crisisPeakDate} />
+          </div>
+        </section>
 
-            <article className="panel-card">
-              <span className="panel-eyebrow">Freshness</span>
-              <h2 className="panel-title">Data availability</h2>
-              <div className="freshness-grid">
-                <SourceRow source={snapshot.dataSource} />
-                <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
-                <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
-                <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
-                <FreshnessRow label="Reserves" date={freshness.latest_available_months.gross_reserves} />
-                <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
-              </div>
-              {firstBlocking && (
+        {/* ── Key metrics ── */}
+        <div className="stats-strip" data-regime={regime}>
+          <StatBlock
+            label="USD / LKR"
+            value={formatNumber(L.usd_lkr, 2)}
+            unit="Spot rate — higher = weaker Rupee"
+            current={L.usd_lkr}
+            previous={P?.usd_lkr}
+            invertColor={false}
+            history={statHistory}
+            anchor
+          />
+          <StatBlock
+            label="Import cover"
+            value={formatNumber(L.import_cover_months, 2)}
+            unit="Months of imports covered"
+            current={L.import_cover_months}
+            previous={P?.import_cover_months}
+            invertColor={true}
+            history={statHistory}
+          />
+          <StatBlock
+            label="Current account"
+            value={formatNumber(L.current_account_filled_usd_m, 0)}
+            unit="USD mn — negative = deficit"
+            current={L.current_account_filled_usd_m}
+            previous={P?.current_account_filled_usd_m}
+            invertColor={true}
+            history={statHistory}
+          />
+          <StatBlock
+            label="Buffer inflows"
+            value={formatNumber(L.buffer_inflows_usd_m, 0)}
+            unit="USD mn — remittances + tourism"
+            current={L.buffer_inflows_usd_m}
+            previous={P?.buffer_inflows_usd_m}
+            invertColor={true}
+            history={statHistory}
+          />
+        </div>
+
+        {/* ── Index components ── */}
+        <section className="section">
+          <div className="section-label">Index components</div>
+          <p className="section-note">
+            The SLEPI score is the equal-weighted average of four standardised component scores (z-scores).
+            <span className="pressure-text"> Positive values → pressure.</span>
+            <span className="support-text"> Negative values → support.</span>
+            {" "}Hover a row to highlight it in the 24-month chart below.
+          </p>
+          <div className="components-table">
+            <div className="comp-row comp-row-header">
+              <span>Component</span>
+              <span>Latest reading</span>
+              <span>24-month trajectory</span>
+              <span>Z-score / MoM</span>
+            </div>
+            <ComponentRow
+              componentKey="reserve_block_z"
+              glyph="reserves"
+              color={COMPONENT_COLORS.reserve_block_z}
+              title="Import cover"
+              score={L.reserve_block_z}
+              prevScore={P?.reserve_block_z}
+              value={`${formatNumber(L.import_cover_months, 2)} mo`}
+              unit="months of gross reserve cover"
+              description="Gross official reserves divided by monthly imports. Higher coverage means the central bank can sustain more months of imports — reducing external pressure."
+              history={compValues("reserve_block_z")}
+            />
+            <ComponentRow
+              componentKey="fx_market_pressure_z"
+              glyph="fx"
+              color={COMPONENT_COLORS.fx_market_pressure_z}
+              title="FX market pressure"
+              score={L.fx_market_pressure_z}
+              prevScore={P?.fx_market_pressure_z}
+              value={formatPercent(L.fx_market_pressure_raw)}
+              unit="month-on-month USD/LKR change"
+              description="Month-on-month change in the USD/LKR exchange rate. Positive values indicate Rupee depreciation, adding to external pressure."
+              history={compValues("fx_market_pressure_z")}
+            />
+            <ComponentRow
+              componentKey="external_balance_pressure_adjusted_z"
+              glyph="external"
+              color={COMPONENT_COLORS.external_balance_pressure_adjusted_z}
+              title="External balance"
+              score={L.external_balance_pressure_adjusted_z}
+              prevScore={P?.external_balance_pressure_adjusted_z}
+              value={formatPercent(L.external_balance_pressure_adjusted_raw)}
+              unit="current account / GDP, net of buffers"
+              description="Current account deficit as a share of GDP, net of remittances and tourism. Captures the underlying external financing gap after buffer inflows."
+              history={compValues("external_balance_pressure_adjusted_z")}
+            />
+            <ComponentRow
+              componentKey="buffer_inflow_support_z"
+              glyph="buffer"
+              color={COMPONENT_COLORS.buffer_inflow_support_z}
+              title="Buffer inflow support"
+              score={L.buffer_inflow_support_z}
+              prevScore={P?.buffer_inflow_support_z}
+              value={formatPercent(-L.buffer_inflow_support_raw)}
+              unit="remittances + tourism / GDP"
+              description="Remittances plus tourism earnings as a share of GDP. Strong inflows from these sources reduce pressure by providing a steady foreign exchange buffer."
+              history={compValues("buffer_inflow_support_z")}
+            />
+          </div>
+        </section>
+
+        {/* ── 24-month component history ── */}
+        <section className="section">
+          <div className="section-label">24-month component history</div>
+          <p className="section-note">
+            Each line shows a component's standardised score over time. Use the toggles to isolate individual drivers.
+            Coloured bands mark the same pressure zones as the index chart above; dashed vertical lines mark regime transitions.
+          </p>
+          <ComponentChart history={componentHistory} />
+        </section>
+
+        {/* ── Advanced stats ── */}
+        <section className="advanced-section">
+          <details className="advanced-disclosure">
+            <summary className="advanced-summary">
+              <span className="advanced-summary-copy">
+                <span className="advanced-summary-label">Advanced stats</span>
+                <span className="advanced-summary-note">Validation, freshness, and pipeline status</span>
+              </span>
+              <span className="advanced-summary-icon" aria-hidden="true">▾</span>
+            </summary>
+
+            <div className="panels-grid">
+              <article className="panel-card">
+                <span className="panel-eyebrow">Validation</span>
+                <h2 className="panel-title">Backtest</h2>
+
+                <div className="backtest-gauges">
+                  <BulletGauge
+                    label="AUC — top 15% stress"
+                    value={snapshot.metrics.slepi_adjusted.auc_for_top_15pct_future_stress_event}
+                    min={0.5} max={1} reference={0.5}
+                    format={(v) => v.toFixed(3)}
+                  />
+                  <BulletGauge
+                    label="3-month correlation"
+                    value={snapshot.metrics.slepi_adjusted.correlation_with_future_external_stress_3m}
+                    min={-1} max={1} reference={0}
+                    format={(v) => v.toFixed(3)}
+                  />
+                </div>
+
+                <div className="backtest-meta">
+                  <div>
+                    <div className="backtest-item-label">Crisis peak</div>
+                    <div className="backtest-item-value sm">
+                      {formatMonth(snapshot.metrics.slepi_adjusted.crisis_window_peak_date)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="backtest-item-label">Proxy overlap</div>
+                    <div className="backtest-item-value sm">
+                      {snapshot.metrics.proxy_fit.overlap_months} months
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article className="panel-card">
+                <span className="panel-eyebrow">Freshness</span>
+                <h2 className="panel-title">Data availability</h2>
+                <div className="freshness-grid">
+                  <SourceRow source={snapshot.dataSource} />
+                  <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
+                  <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
+                  <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
+                  <FreshnessRow label="Reserves" date={freshness.latest_available_months.gross_reserves} />
+                  <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
+                </div>
+                {firstBlocking && (
+                  <p className="panel-note">
+                    Next window ({formatMonth(firstBlocking.date)}) pending:{" "}
+                    {firstBlocking.missing_requirements.join(", ")}.
+                  </p>
+                )}
                 <p className="panel-note">
-                  Next window ({formatMonth(firstBlocking.date)}) pending:{" "}
-                  {firstBlocking.missing_requirements.join(", ")}.
+                  Pipeline last checked CBSL on {formatTimestamp(freshness.pipeline_checked_at)}.
                 </p>
-              )}
-              <p className="panel-note">
-                Pipeline last checked CBSL on {formatTimestamp(freshness.pipeline_checked_at)}.
-              </p>
-            </article>
-          </div>
-        </details>
-      </section>
+              </article>
+            </div>
+          </details>
+        </section>
 
-    </main>
+      </main>
+    </HoverProvider>
   );
 }
