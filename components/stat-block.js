@@ -78,10 +78,12 @@ export function StatBlock({
 
 function historyKey(label) {
   switch (label) {
-    case "USD / LKR":        return "usd_lkr";
-    case "Import cover":     return "import_cover_months";
-    case "Current account":  return "current_account_filled_usd_m";
-    case "Buffer inflows":   return "buffer_inflows_usd_m";
+    case "USD / LKR":          return "usd_lkr";
+    case "Usable cover":       return "adjusted_usable_reserve_cover_months";
+    case "ST debt / reserves": return "short_term_external_debt_to_reserves_raw";
+    case "Current account":    return "current_account_filled_usd_m";
+    case "Services balance":   return "services_balance_usd_m";
+    case "M2b / reserves":     return "m2b_to_adjusted_reserves_raw";
     default: return null;
   }
 }

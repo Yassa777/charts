@@ -22,10 +22,10 @@ import { getRegime, regimeLabel } from "@/components/regime";
 export const dynamic = "force-dynamic";
 
 const COMPONENT_COLORS = {
-  reserve_block_z:                         "#6366f1",
-  fx_market_pressure_z:                    "#f59e0b",
-  external_balance_pressure_adjusted_z:    "#ec4899",
-  buffer_inflow_support_z:                 "#10b981",
+  reserve_block_z:                    "#6366f1",
+  fx_market_pressure_z:               "#f59e0b",
+  external_financing_pressure_z:      "#ec4899",
+  current_account_pressure_z:         "#10b981",
 };
 
 /* ── Interpretive sentence ─────────────────────────────────────── */
@@ -42,17 +42,17 @@ function interpret(snapshot) {
 
   const factors = [
     { side: L.reserve_block_z > 0 ? "pressure" : "support", text: phrase(L.reserve_block_z,
-        "very thin reserve cover", "below-average reserve cover", "slightly thin reserve cover",
-        "adequate reserve cover", "solid import cover", "strong import cover") },
+        "very thin usable reserve cover", "below-average usable reserves", "slightly thin usable reserves",
+        "adequate usable reserves", "solid usable reserve cover", "strong usable reserve cover") },
     { side: L.fx_market_pressure_z > 0 ? "pressure" : "support", text: phrase(L.fx_market_pressure_z,
         "sharp Rupee depreciation", "Rupee depreciation", "mild FX pressure",
         "modest Rupee stability", "a stable exchange rate", "Rupee appreciation") },
-    { side: L.external_balance_pressure_adjusted_z > 0 ? "pressure" : "support", text: phrase(L.external_balance_pressure_adjusted_z,
-        "a severe current account deficit", "current account pressure", "mild external balance pressure",
-        "a narrowing current account gap", "improving external balance", "current account surplus") },
-    { side: L.buffer_inflow_support_z > 0 ? "pressure" : "support", text: phrase(L.buffer_inflow_support_z,
-        "very weak buffer inflows", "weak remittance and tourism inflows", "below-trend buffer inflows",
-        "supportive inflow trends", "strong remittance and tourism inflows", "very strong buffer inflows") },
+    { side: L.external_financing_pressure_z > 0 ? "pressure" : "support", text: phrase(L.external_financing_pressure_z,
+        "severe rollover pressure", "external financing pressure", "mild rollover pressure",
+        "manageable rollover needs", "easing external debt pressure", "strong rollover comfort") },
+    { side: L.current_account_pressure_z > 0 ? "pressure" : "support", text: phrase(L.current_account_pressure_z,
+        "a severe current account deficit", "current account pressure", "mild current account pressure",
+        "a narrowing current account gap", "improving current account conditions", "current account surplus") },
   ].filter((f) => f.text !== null);
 
   const pressures = factors.filter((f) => f.side === "pressure").map((f) => f.text);
@@ -211,12 +211,21 @@ export default async function HomePage() {
             anchor
           />
           <StatBlock
-            label="Import cover"
-            value={formatNumber(L.import_cover_months, 2)}
-            unit="Months of imports covered"
-            current={L.import_cover_months}
-            previous={P?.import_cover_months}
+            label="Usable cover"
+            value={formatNumber(L.adjusted_usable_reserve_cover_months, 2)}
+            unit="Months of imports after short-term drains"
+            current={L.adjusted_usable_reserve_cover_months}
+            previous={P?.adjusted_usable_reserve_cover_months}
             invertColor={true}
+            history={statHistory}
+          />
+          <StatBlock
+            label="ST debt / reserves"
+            value={formatNumber(L.short_term_external_debt_to_reserves_raw, 2)}
+            unit="Short-term external debt / GOR"
+            current={L.short_term_external_debt_to_reserves_raw}
+            previous={P?.short_term_external_debt_to_reserves_raw}
+            invertColor={false}
             history={statHistory}
           />
           <StatBlock
@@ -229,11 +238,11 @@ export default async function HomePage() {
             history={statHistory}
           />
           <StatBlock
-            label="Buffer inflows"
-            value={formatNumber(L.buffer_inflows_usd_m, 0)}
-            unit="USD mn — remittances + tourism"
-            current={L.buffer_inflows_usd_m}
-            previous={P?.buffer_inflows_usd_m}
+            label="Services balance"
+            value={formatNumber(L.services_balance_usd_m, 0)}
+            unit="USD mn — explanatory overlay"
+            current={L.services_balance_usd_m}
+            previous={P?.services_balance_usd_m}
             invertColor={true}
             history={statHistory}
           />
@@ -259,12 +268,12 @@ export default async function HomePage() {
               componentKey="reserve_block_z"
               glyph="reserves"
               color={COMPONENT_COLORS.reserve_block_z}
-              title="Import cover"
+              title="Adjusted usable reserves"
               score={L.reserve_block_z}
               prevScore={P?.reserve_block_z}
-              value={`${formatNumber(L.import_cover_months, 2)} mo`}
-              unit="months of gross reserve cover"
-              description="Gross official reserves divided by monthly imports. Higher coverage means the central bank can sustain more months of imports — reducing external pressure."
+              value={`${formatNumber(L.adjusted_usable_reserve_cover_months, 2)} mo`}
+              unit="months after short-term drains"
+              description="Gross official reserves less reserve-template short-term drains and FX forward/swap short positions, divided by trailing imports."
               history={compValues("reserve_block_z")}
             />
             <ComponentRow
@@ -275,33 +284,33 @@ export default async function HomePage() {
               score={L.fx_market_pressure_z}
               prevScore={P?.fx_market_pressure_z}
               value={formatPercent(L.fx_market_pressure_raw)}
-              unit="month-on-month USD/LKR change"
-              description="Month-on-month change in the USD/LKR exchange rate. Positive values indicate Rupee depreciation, adding to external pressure."
+              unit="USD/LKR MoM; NEER + reserves in z"
+              description="Composite of USD/LKR depreciation, NEER depreciation and reserve-change pressure. Positive values indicate pressure."
               history={compValues("fx_market_pressure_z")}
             />
             <ComponentRow
-              componentKey="external_balance_pressure_adjusted_z"
+              componentKey="external_financing_pressure_z"
               glyph="external"
-              color={COMPONENT_COLORS.external_balance_pressure_adjusted_z}
-              title="External balance"
-              score={L.external_balance_pressure_adjusted_z}
-              prevScore={P?.external_balance_pressure_adjusted_z}
-              value={formatPercent(L.external_balance_pressure_adjusted_raw)}
-              unit="current account / GDP, net of buffers"
-              description="Current account deficit as a share of GDP, net of remittances and tourism. Captures the underlying external financing gap after buffer inflows."
-              history={compValues("external_balance_pressure_adjusted_z")}
+              color={COMPONENT_COLORS.external_financing_pressure_z}
+              title="External financing"
+              score={L.external_financing_pressure_z}
+              prevScore={P?.external_financing_pressure_z}
+              value={formatNumber(L.short_term_external_debt_to_reserves_raw, 2)}
+              unit="short-term external debt / GOR"
+              description="Quarterly CBSL external debt is step-held monthly and combined with annual debt-service pressure as a rollover signal."
+              history={compValues("external_financing_pressure_z")}
             />
             <ComponentRow
-              componentKey="buffer_inflow_support_z"
+              componentKey="current_account_pressure_z"
               glyph="buffer"
-              color={COMPONENT_COLORS.buffer_inflow_support_z}
-              title="Buffer inflow support"
-              score={L.buffer_inflow_support_z}
-              prevScore={P?.buffer_inflow_support_z}
-              value={formatPercent(-L.buffer_inflow_support_raw)}
-              unit="remittances + tourism / GDP"
-              description="Remittances plus tourism earnings as a share of GDP. Strong inflows from these sources reduce pressure by providing a steady foreign exchange buffer."
-              history={compValues("buffer_inflow_support_z")}
+              color={COMPONENT_COLORS.current_account_pressure_z}
+              title="Current account"
+              score={L.current_account_pressure_z}
+              prevScore={P?.current_account_pressure_z}
+              value={formatPercent(L.current_account_pressure_raw)}
+              unit="current account / imports"
+              description="Monthly current account balance scaled by imports. Deficits add pressure; surpluses reduce pressure."
+              history={compValues("current_account_pressure_z")}
             />
           </div>
         </section>
@@ -371,7 +380,9 @@ export default async function HomePage() {
                   <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
                   <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
                   <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
-                  <FreshnessRow label="Reserves" date={freshness.latest_available_months.gross_reserves} />
+                  <FreshnessRow label="Usable reserves" date={freshness.latest_available_months.adjusted_usable_reserves} />
+                  <FreshnessRow label="External debt" date={freshness.latest_available_months.external_debt} />
+                  <FreshnessRow label="M2b / NFA" date={freshness.latest_available_months.m2b_nfa} />
                   <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
                 </div>
                 {firstBlocking && (

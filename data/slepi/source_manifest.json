@@ -1,11 +1,23 @@
 {
-  "built_at": "2026-04-23T05:38:53.349480+00:00",
-  "changed_sources": [
-    "reserve_latest"
-  ],
-  "checked_at": "2026-04-23T05:43:39.700255+00:00",
+  "built_at": "2026-04-24T04:06:17.703850+00:00",
+  "changed_sources": [],
+  "checked_at": "2026-04-24T04:12:04.271592+00:00",
   "external_sector_url": "https://www.cbsl.gov.lk/en/statistics/statistical-tables/external-sector",
   "release_lag_notes": {
+    "annual_debt_service_tables": {
+      "description": "The debt-service, amortisation and interest series are annual in the Economic and Social Statistics chapter and are therefore treated as slow-moving rollover context.",
+      "examples": [
+        "Annual debt-service data are forward-filled until the next annual release is available."
+      ],
+      "source": "https://www.cbsl.gov.lk/en/statistics/economic-and-social-statistics/chapter-4"
+    },
+    "external_debt_tables": {
+      "description": "CBSL external-debt workbooks are quarterly; the pipeline step-holds the latest quarterly value across monthly SLEPI observations.",
+      "examples": [
+        "Outstanding external debt and banking-sector external liabilities are available from 2012 Q4."
+      ],
+      "source": "https://www.cbsl.gov.lk/en/statistics/statistical-tables/external-sector"
+    },
     "external_sector_tables": {
       "description": "CBSL's 2026 advance release calendar schedules the broad external-sector release (trade, current account, tourism, services, reserve template and related press release) on the last business day of the following month.",
       "examples": [
@@ -21,6 +33,13 @@
         "February 2026 reference period -> March 6, 2026 release"
       ],
       "source": "https://www.cbsl.gov.lk/en/advance-release-calendar-2026"
+    },
+    "monetary_sector_tables": {
+      "description": "CBSL monetary-sector spreadsheets are updated independently from the external-sector monthly release and are used here for M2b and monetary-system NFA shadow indicators.",
+      "examples": [
+        "M2b and NFA are monthly, but are not forced into the headline SLEPI core."
+      ],
+      "source": "https://www.cbsl.gov.lk/en/statistics/statistical-tables/monetary-sector"
     },
     "workers_remittances": {
       "description": "CBSL's 2026 advance release calendar schedules workers' remittances around the first or second Friday of the following month.",
@@ -52,6 +71,26 @@
       "status_code": 200,
       "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.02_20260331_e.xlsx"
     },
+    "external_debt_quarterly": {
+      "content_length": "1067637",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/external_debt_quarterly.xlsx",
+      "etag": "\"104a75-64f7ee745dd8b\"",
+      "label": "Outstanding External Debt and Banking Sector External Liabilities (2012 Q4 to Latest)",
+      "last_modified": "Wed, 15 Apr 2026 12:32:04 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.12_20260415_e.xlsx"
+    },
+    "external_debt_service_annual": {
+      "content_length": "19048",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/external_debt_service_annual.xlsx",
+      "etag": "\"4a68-647f12da893bc\"",
+      "label": "External Debt and Debt Service Payments",
+      "last_modified": "Fri, 09 Jan 2026 09:30:38 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/ess_2025_table4.14_e.xlsx"
+    },
     "imports": {
       "content_length": "890024",
       "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -61,6 +100,26 @@
       "last_modified": "Tue, 31 Mar 2026 15:20:03 GMT",
       "status_code": 200,
       "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table2.04_20260331_e.xlsx"
+    },
+    "monetary_survey_monthly": {
+      "content_length": "183407",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/monetary_survey_monthly.xlsx",
+      "etag": "\"2cc6f-65006c65c790f\"",
+      "label": "Monetary Survey - Monthly (Dec 1995 to Latest) and Sectoral Private Sector Credit Survey",
+      "last_modified": "Wed, 22 Apr 2026 06:38:08 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/table4.02_20260422.xlsx"
+    },
+    "neer_reer": {
+      "content_length": "23996",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "download_path": "data/slepi/raw/neer_reer_monthly.xlsx",
+      "etag": "\"5dbc-64e742f7a9700\"",
+      "label": "Real Effective Exchange Rates (REER)",
+      "last_modified": "Thu, 02 Apr 2026 06:19:40 GMT",
+      "status_code": 200,
+      "url": "https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/statistics/sheets/IF_REER_March 2026.xlsx"
     },
     "remittances": {
       "content_length": "17480",

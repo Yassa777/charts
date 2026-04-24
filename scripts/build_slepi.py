@@ -29,42 +29,73 @@ FRESHNESS_PATH = OUTPUT_DIR / "freshness.json"
 SNAPSHOT_PATH = OUTPUT_DIR / "snapshot.json"
 
 EXTERNAL_SECTOR_URL = "https://www.cbsl.gov.lk/en/statistics/statistical-tables/external-sector"
+MONETARY_SECTOR_URL = "https://www.cbsl.gov.lk/en/statistics/statistical-tables/monetary-sector"
+EXCHANGE_RATES_URL = "https://www.cbsl.gov.lk/en/rates-and-indicators/exchange-rates"
+ECONOMIC_SOCIAL_CHAPTER4_URL = "https://www.cbsl.gov.lk/en/statistics/economic-and-social-statistics/chapter-4"
 ADVANCE_RELEASE_CALENDAR_URL = "https://www.cbsl.gov.lk/en/advance-release-calendar-2026"
 USD_SPOT_LOOKUP_URL = "https://www.cbsl.gov.lk/cbsl_custom/exrates/exrates_spot_mid.php"
 USD_SPOT_RESULTS_URL = "https://www.cbsl.gov.lk/cbsl_custom/exrates/exrates_results_spot_mid.php"
 
 SOURCE_LABELS = {
     "current_account": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Monthly Current Account Balance (2023 January to Latest)",
         "filename": "monthly_current_account_balance.xlsx",
     },
     "exports": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Exports - Monthly (2006 to Latest)",
         "filename": "exports_monthly.xlsx",
     },
     "imports": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Imports - Monthly (2006 to Latest)",
         "filename": "imports_monthly.xlsx",
     },
     "tourism": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Earnings from Tourism (2009 January to Latest)",
         "filename": "tourism_monthly.xlsx",
     },
     "remittances": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Workers Remittances (2009 January to Latest)",
         "filename": "remittances_monthly.xlsx",
     },
     "reserve_latest": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Reserve Data Template - Latest",
         "filename": "reserve_data_template_latest.xlsx",
     },
     "reserve_history": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Reserve Data Template - Historical",
         "filename": "reserve_data_template_historical.xlsx",
     },
     "services": {
+        "source_page": EXTERNAL_SECTOR_URL,
         "label": "Monthly Services Sector Data (2023 January to Latest)",
         "filename": "services_monthly.xlsx",
+    },
+    "external_debt_quarterly": {
+        "source_page": EXTERNAL_SECTOR_URL,
+        "label": "Outstanding External Debt and Banking Sector External Liabilities (2012 Q4 to Latest)",
+        "filename": "external_debt_quarterly.xlsx",
+    },
+    "monetary_survey_monthly": {
+        "source_page": MONETARY_SECTOR_URL,
+        "label": "Monetary Survey - Monthly (Dec 1995 to Latest) and Sectoral Private Sector Credit Survey",
+        "filename": "monetary_survey_monthly.xlsx",
+    },
+    "neer_reer": {
+        "source_page": EXCHANGE_RATES_URL,
+        "label": "Real Effective Exchange Rates (REER)",
+        "filename": "neer_reer_monthly.xlsx",
+    },
+    "external_debt_service_annual": {
+        "source_page": ECONOMIC_SOCIAL_CHAPTER4_URL,
+        "label": "External Debt and Debt Service Payments",
+        "filename": "external_debt_service_annual.xlsx",
     },
 }
 
@@ -111,6 +142,36 @@ RELEASE_LAG_NOTES = {
             "February 2026 reference period -> March 6, 2026 release",
         ],
         "source": ADVANCE_RELEASE_CALENDAR_URL,
+    },
+    "monetary_sector_tables": {
+        "description": (
+            "CBSL monetary-sector spreadsheets are updated independently from the external-sector "
+            "monthly release and are used here for M2b and monetary-system NFA shadow indicators."
+        ),
+        "examples": [
+            "M2b and NFA are monthly, but are not forced into the headline SLEPI core.",
+        ],
+        "source": MONETARY_SECTOR_URL,
+    },
+    "external_debt_tables": {
+        "description": (
+            "CBSL external-debt workbooks are quarterly; the pipeline step-holds the latest "
+            "quarterly value across monthly SLEPI observations."
+        ),
+        "examples": [
+            "Outstanding external debt and banking-sector external liabilities are available from 2012 Q4.",
+        ],
+        "source": EXTERNAL_SECTOR_URL,
+    },
+    "annual_debt_service_tables": {
+        "description": (
+            "The debt-service, amortisation and interest series are annual in the Economic and "
+            "Social Statistics chapter and are therefore treated as slow-moving rollover context."
+        ),
+        "examples": [
+            "Annual debt-service data are forward-filled until the next annual release is available.",
+        ],
+        "source": ECONOMIC_SOCIAL_CHAPTER4_URL,
     },
 }
 
@@ -201,19 +262,42 @@ def parse_number(value: Any) -> float | None:
         return None
 
 
+def parse_table_number(value: Any) -> float | None:
+    if pd.isna(value):
+        return None
+    if isinstance(value, (int, float, np.integer, np.floating)):
+        return float(value)
+    text = str(value).strip().replace(",", "")
+    text = re.sub(r"\([a-z]+\)", "", text, flags=re.I).strip()
+    if re.fullmatch(r"-?\d+(?:\.\d+)?", text):
+        return float(text)
+    return None
+
+
 def discover_source_urls(session: requests.Session) -> dict[str, dict[str, Any]]:
-    response = session.get(EXTERNAL_SECTOR_URL, timeout=60)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
+    pages: dict[str, BeautifulSoup] = {}
 
     discovered: dict[str, dict[str, Any]] = {}
     for key, spec in SOURCE_LABELS.items():
-        link = soup.find("a", string=spec["label"])
+        source_page = spec["source_page"]
+        if source_page not in pages:
+            response = session.get(source_page, timeout=60)
+            response.raise_for_status()
+            pages[source_page] = BeautifulSoup(response.text, "html.parser")
+
+        soup = pages[source_page]
+        target_label = normalize_text(spec["label"])
+        link = None
+        for candidate in soup.find_all("a"):
+            if normalize_text(candidate.get_text(" ", strip=True)) == target_label:
+                link = candidate
+                break
         if link is None or not link.get("href"):
             raise RuntimeError(f"Unable to discover CBSL link for: {spec['label']}")
-        url = requests.compat.urljoin(EXTERNAL_SECTOR_URL, link["href"])
+        url = requests.compat.urljoin(source_page, link["href"])
         discovered[key] = {
             "label": spec["label"],
+            "source_page": source_page,
             "url": url,
             "filename": spec["filename"],
         }
@@ -278,7 +362,7 @@ def refresh_sources(session: requests.Session, force: bool) -> dict[str, Any]:
         "built_at": checked_at if sources_changed or not previous else previous.get("built_at", checked_at),
         "external_sector_url": EXTERNAL_SECTOR_URL,
         "sources": manifest_sources,
-        "changed_sources": changed_sources if sources_changed or not previous else previous.get("changed_sources", []),
+        "changed_sources": changed_sources,
         "release_lag_notes": RELEASE_LAG_NOTES,
     }
     write_json(MANIFEST_PATH, manifest)
@@ -335,6 +419,41 @@ def find_value_by_first_cell(df: pd.DataFrame, patterns: list[str]) -> float | N
     return None
 
 
+def first_numeric_value(row: pd.Series) -> float | None:
+    for value in row.tolist():
+        parsed = parse_table_number(value)
+        if parsed is not None:
+            return parsed
+    return None
+
+
+def find_total_value_by_first_cell(df: pd.DataFrame, patterns: list[str]) -> float | None:
+    normalized_patterns = [normalize_text(pattern) for pattern in patterns]
+    for idx in range(df.shape[0]):
+        first_text = first_nonempty_value(df.iloc[idx])
+        if all(pattern in first_text for pattern in normalized_patterns):
+            return first_numeric_value(df.iloc[idx])
+    return None
+
+
+def find_total_value_after_heading(
+    df: pd.DataFrame,
+    heading_pattern: str,
+    row_patterns: list[str],
+) -> float | None:
+    try:
+        heading_idx = find_row_containing(df, heading_pattern)
+    except ValueError:
+        heading_idx = -1
+
+    normalized_patterns = [normalize_text(pattern) for pattern in row_patterns]
+    for idx in range(max(heading_idx + 1, 0), df.shape[0]):
+        row_text = " | ".join(normalize_text(value) for value in df.iloc[idx].tolist())
+        if all(pattern in row_text for pattern in normalized_patterns):
+            return first_numeric_value(df.iloc[idx])
+    return None
+
+
 def parse_total_series_sheet(path: Path, sheet_name: str, total_label: str, value_name: str) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name=sheet_name, header=None)
     header_row = find_row_by_first_value(df, "Category")
@@ -364,6 +483,20 @@ def parse_year_token(value: Any) -> int | None:
     if not match:
         return None
     return int(match.group(0))
+
+
+def parse_quarter_month(value: Any) -> pd.Timestamp | None:
+    if pd.isna(value):
+        return None
+    text = normalize_text(value)
+    year = parse_year_token(value)
+    if year is None:
+        return None
+    quarter_match = re.search(r"([1-4])(?:st|nd|rd|th)?\s*quarter|q([1-4])", text)
+    if not quarter_match:
+        return None
+    quarter = int(next(group for group in quarter_match.groups() if group))
+    return pd.Timestamp(year=year, month=quarter * 3, day=1)
 
 
 def parse_month_start(value: Any) -> pd.Timestamp | None:
@@ -519,6 +652,14 @@ def parse_reserve_history(path: Path) -> pd.DataFrame:
                 "sdrs_usd_m": find_value_by_first_cell(df, ["(3)", "sdrs"]),
                 "gold_usd_m": find_value_by_first_cell(df, ["(4)", "gold"]),
                 "other_reserves_usd_m": find_value_in_sheet(df, ["Other reserve assets"]),
+                "predetermined_short_term_net_drains_usd_m": find_total_value_by_first_cell(
+                    df, ["foreign currency loans", "securities", "deposits"]
+                ),
+                "fx_forward_short_positions_usd_m": find_total_value_after_heading(
+                    df,
+                    "aggregate short and long positions in forwards",
+                    ["short positions"],
+                ),
             }
         )
 
@@ -562,12 +703,225 @@ def parse_reserve_latest(path: Path) -> pd.DataFrame:
                 "sdrs_usd_m": find_value_by_first_cell(df, ["(3)", "sdrs"]),
                 "gold_usd_m": find_value_by_first_cell(df, ["(4)", "gold"]),
                 "other_reserves_usd_m": find_value_in_sheet(df, ["Other reserve assets"]),
+                "predetermined_short_term_net_drains_usd_m": find_total_value_by_first_cell(
+                    df, ["foreign currency loans", "securities", "deposits"]
+                ),
+                "fx_forward_short_positions_usd_m": find_total_value_after_heading(
+                    df,
+                    "aggregate short and long positions in forwards",
+                    ["short positions"],
+                ),
             }
         )
 
     result = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
     if result.empty:
         raise ValueError(f"Failed to parse reserve latest workbook: {path.name}")
+    return result
+
+
+def parse_services_sheet(path: Path) -> pd.DataFrame:
+    workbook = pd.ExcelFile(path)
+    sheet_map = {
+        "Services - Inflows": "services_inflows_usd_m",
+        "Services - Outflows ": "services_outflows_usd_m",
+        "Services - Net": "services_balance_usd_m",
+    }
+    merged: pd.DataFrame | None = None
+
+    for sheet_name, value_name in sheet_map.items():
+        if sheet_name not in workbook.sheet_names:
+            raise ValueError(f"Unable to find services sheet '{sheet_name}' in {path.name}")
+        df = pd.read_excel(path, sheet_name=sheet_name, header=None)
+        date_row = find_row_by_first_value(df, "Item")
+        total_row = find_row_by_first_value(df, "Services")
+
+        rows: list[dict[str, Any]] = []
+        for column in range(df.shape[1]):
+            date_value = parse_month_start(df.iloc[date_row, column])
+            if date_value is None:
+                continue
+            numeric_value = parse_number(df.iloc[total_row, column])
+            if numeric_value is None:
+                continue
+            rows.append({"date": date_value, value_name: numeric_value})
+
+        parsed = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+        if parsed.empty:
+            raise ValueError(f"Failed to parse services sheet '{sheet_name}' in {path.name}")
+        merged = parsed if merged is None else merged.merge(parsed, on="date", how="outer")
+
+    if merged is None or merged.empty:
+        raise ValueError(f"Failed to parse services workbook: {path.name}")
+    return merged.sort_values("date").drop_duplicates("date")
+
+
+def row_label(df: pd.DataFrame, idx: int) -> str:
+    values = [normalize_text(value) for value in df.iloc[idx].tolist()]
+    return " ".join(value for value in values if value)
+
+
+def find_row_with_label(
+    df: pd.DataFrame,
+    label: str,
+    start_idx: int = 0,
+    exact: bool = True,
+) -> int:
+    target = normalize_text(label)
+    for idx in range(start_idx, df.shape[0]):
+        cells = [normalize_text(value) for value in df.iloc[idx].tolist()]
+        matched = any(cell == target for cell in cells) if exact else any(target in cell for cell in cells)
+        if matched:
+            return idx
+    raise ValueError(f"Unable to find row for label: {label}")
+
+
+def extract_quarterly_row(df: pd.DataFrame, row_idx: int, value_name: str) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for column in range(df.shape[1]):
+        date = parse_quarter_month(df.iloc[1, column])
+        if date is None:
+            continue
+        value = parse_number(df.iloc[row_idx, column])
+        if value is None:
+            continue
+        rows.append({"date": date, value_name: value})
+    return pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+
+
+def extract_sum_of_quarterly_rows(df: pd.DataFrame, row_idxs: list[int], value_name: str) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for column in range(df.shape[1]):
+        date = parse_quarter_month(df.iloc[1, column])
+        if date is None:
+            continue
+        values = [parse_number(df.iloc[row_idx, column]) for row_idx in row_idxs]
+        clean = [value for value in values if value is not None]
+        if not clean:
+            continue
+        rows.append({"date": date, value_name: float(sum(clean))})
+    return pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+
+
+def parse_external_debt_quarterly(path: Path) -> pd.DataFrame:
+    market = pd.read_excel(path, sheet_name=" Ext Debt (Market Value)", header=None)
+    face = pd.read_excel(path, sheet_name="Ext Debt (Face Value)", header=None)
+
+    maturity_heading = find_row_with_label(market, "Gross External Debt Position - Maturity wise Breakdown")
+    market_rows = {
+        "gross_external_debt_market_usd_m": find_row_with_label(market, "Gross External Debt Position"),
+        "short_term_external_debt_market_usd_m": find_row_with_label(market, "Short-term", maturity_heading + 1),
+        "long_term_external_debt_market_usd_m": find_row_with_label(market, "Long-term", maturity_heading + 1),
+        "banking_sector_external_liabilities_market_usd_m": find_row_with_label(
+            market, "3. Deposit-Taking Corporations, except the Central Bank", exact=False
+        ),
+    }
+    face_rows = {
+        "gross_external_debt_face_usd_m": find_row_with_label(face, "Gross External Debt Position"),
+        "gross_external_debt_face_pct_gdp": find_row_with_label(face, "Gross  External Debt (face Value)", exact=False),
+    }
+    swap_labels = [
+        "RBI swap arrangement",
+        "Bank of Bangladesh swap arrangement",
+        "PBOC swap arrangement",
+        "RBI & ACU combined swap (Special Swap) Arrangement",
+        "Accrued interest to applicable swap arrangements",
+        "International Currency Swap Arrangements",
+    ]
+    swap_rows = []
+    for label in swap_labels:
+        try:
+            swap_rows.append(find_row_with_label(market, label, exact=False))
+        except ValueError:
+            continue
+
+    pieces = [extract_quarterly_row(market, row_idx, value_name) for value_name, row_idx in market_rows.items()]
+    pieces.extend(extract_quarterly_row(face, row_idx, value_name) for value_name, row_idx in face_rows.items())
+    if swap_rows:
+        pieces.append(extract_sum_of_quarterly_rows(market, swap_rows, "central_bank_external_swap_liabilities_usd_m"))
+
+    merged = pieces[0]
+    for piece in pieces[1:]:
+        merged = merged.merge(piece, on="date", how="outer")
+    return merged.sort_values("date").drop_duplicates("date")
+
+
+def parse_monetary_survey_sheet(path: Path) -> pd.DataFrame:
+    df = pd.read_excel(path, sheet_name="4.02", header=None)
+    rows: list[dict[str, Any]] = []
+    for idx in range(df.shape[0]):
+        date = parse_month_start(df.iloc[idx, 1])
+        if date is None:
+            continue
+        rows.append(
+            {
+                "date": date,
+                "reserve_money_rs_m": parse_number(df.iloc[idx, 2]),
+                "m2_rs_m": parse_number(df.iloc[idx, 3]),
+                "m2b_rs_m": parse_number(df.iloc[idx, 9]),
+                "nfa_monetary_authorities_rs_m": parse_number(df.iloc[idx, 11]),
+                "nfa_commercial_banks_rs_m": parse_number(df.iloc[idx, 12]),
+                "m2b_nfa_rs_m": parse_number(df.iloc[idx, 13]),
+            }
+        )
+    result = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+    if result.empty:
+        raise ValueError(f"Failed to parse monetary survey workbook: {path.name}")
+    return result
+
+
+def parse_neer_reer_sheet(path: Path) -> pd.DataFrame:
+    df = pd.read_excel(path, sheet_name="Monthly Average", header=None)
+    rows: list[dict[str, Any]] = []
+    for idx in range(df.shape[0]):
+        date = parse_month_start(df.iloc[idx, 1])
+        if date is None:
+            continue
+        rows.append(
+            {
+                "date": date,
+                "neer_index": parse_number(df.iloc[idx, 2]),
+                "reer_index": parse_number(df.iloc[idx, 3]),
+            }
+        )
+    result = pd.DataFrame(rows).sort_values("date").drop_duplicates("date")
+    if result.empty:
+        raise ValueError(f"Failed to parse NEER/REER workbook: {path.name}")
+    return result
+
+
+def parse_external_debt_service_annual(path: Path) -> pd.DataFrame:
+    df = pd.read_excel(path, sheet_name=0, header=None)
+    year_row = 3
+    years = {
+        column: parse_year_token(df.iloc[year_row, column])
+        for column in range(df.shape[1])
+        if parse_year_token(df.iloc[year_row, column]) is not None
+    }
+    label_rows = {
+        "external_debt_service_payments_usd_m": find_row_by_first_value(df, "Debt Service Payments"),
+        "external_debt_service_amortization_usd_m": find_row_by_first_value(df, "Amortization"),
+        "external_debt_service_interest_usd_m": find_row_by_first_value(df, "Interest Payments"),
+        "debt_service_to_exports_services_pct": find_row_by_first_value(
+            df, "Debt Service as a % of Exports and Services"
+        ),
+        "debt_service_to_external_receipts_pct": find_row_by_first_value(
+            df, "Debt Service as a % of Merchandise and Services, Income and Current Transfers"
+        ),
+    }
+
+    records: list[dict[str, Any]] = []
+    for column, year in years.items():
+        if year is None:
+            continue
+        record: dict[str, Any] = {"date": pd.Timestamp(year=year, month=1, day=1)}
+        for value_name, row_idx in label_rows.items():
+            record[value_name] = parse_number(df.iloc[row_idx, column])
+        records.append(record)
+
+    result = pd.DataFrame(records).sort_values("date").drop_duplicates("date")
+    if result.empty:
+        raise ValueError(f"Failed to parse annual debt-service workbook: {path.name}")
     return result
 
 
@@ -663,6 +1017,12 @@ def mean_if_complete(df: pd.DataFrame, columns: list[str]) -> pd.Series:
     return out
 
 
+def mean_if_min_available(df: pd.DataFrame, columns: list[str], min_count: int = 1) -> pd.Series:
+    out = df[columns].mean(axis=1, skipna=True)
+    out.loc[df[columns].notna().sum(axis=1) < min_count] = np.nan
+    return out
+
+
 def auc_score(y_true: pd.Series, score: pd.Series) -> float | None:
     frame = pd.DataFrame({"y": y_true, "score": score}).dropna()
     if frame["y"].nunique() < 2:
@@ -691,12 +1051,26 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     official_tourism = parse_wide_month_year_sheet(raw_paths["tourism"], "tourism_earnings_usd_m")
     official_remittances = parse_wide_month_year_sheet(raw_paths["remittances"], "remittances_usd_m")
     official_current_account = parse_current_account_sheet(raw_paths["current_account"])
+    official_services = parse_services_sheet(raw_paths["services"])
+    official_external_debt = parse_external_debt_quarterly(raw_paths["external_debt_quarterly"])
+    official_monetary = parse_monetary_survey_sheet(raw_paths["monetary_survey_monthly"])
+    official_neer_reer = parse_neer_reer_sheet(raw_paths["neer_reer"])
+    official_debt_service = parse_external_debt_service_annual(raw_paths["external_debt_service_annual"])
     official_reserve_history = parse_reserve_history(raw_paths["reserve_history"])
     official_reserve_latest = parse_reserve_latest(raw_paths["reserve_latest"])
+    reserve_columns = [
+        "gross_reserves_usd_m",
+        "fx_reserves_usd_m",
+        "imf_position_usd_m",
+        "sdrs_usd_m",
+        "gold_usd_m",
+        "predetermined_short_term_net_drains_usd_m",
+        "fx_forward_short_positions_usd_m",
+    ]
     official_reserves = combine_series(
         official_reserve_latest,
         official_reserve_history,
-        ["gross_reserves_usd_m", "fx_reserves_usd_m", "imf_position_usd_m", "sdrs_usd_m", "gold_usd_m"],
+        reserve_columns,
     )
     official_daily_fx = fetch_daily_usd_spot_rates(session, "2025-01-01", datetime.now().strftime("%Y-%m-%d"))
     official_monthly_fx = (
@@ -710,7 +1084,7 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     reserves = combine_series(
         official_reserves,
         local["reserves"],
-        ["gross_reserves_usd_m", "fx_reserves_usd_m", "imf_position_usd_m", "sdrs_usd_m", "gold_usd_m"],
+        reserve_columns,
     )
     exports = combine_series(official_exports, local["exports"], ["exports_usd_m"])
     imports = combine_series(official_imports, local["imports"], ["imports_usd_m"])
@@ -730,21 +1104,41 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         | set(remittances["date"])
         | set(fx["date"])
         | set(official_current_account["date"])
+        | set(official_services["date"])
+        | set(official_external_debt["date"])
+        | set(official_monetary["date"])
+        | set(official_neer_reer["date"])
+        | set(official_debt_service["date"])
     )
     panel = pd.DataFrame({"date": all_dates})
 
-    for dataset in [reserves, exports, imports, tourism, remittances, fx]:
+    for dataset in [reserves, exports, imports, tourism, remittances, fx, official_services, official_monetary, official_neer_reer]:
         panel = panel.merge(dataset, on="date", how="left")
     panel = panel.merge(
         official_current_account[["date", "current_account_usd_m", "current_account_plus_capital_usd_m"]],
         on="date",
         how="left",
     )
+    for dataset in [official_external_debt, official_debt_service]:
+        panel = panel.merge(dataset, on="date", how="left")
 
     panel = panel.sort_values("date").reset_index(drop=True)
 
+    step_hold_columns = [
+        *[column for column in official_external_debt.columns if column != "date"],
+        *[column for column in official_debt_service.columns if column != "date"],
+    ]
+    panel[step_hold_columns] = panel[step_hold_columns].ffill()
+
     panel["imports_trailing_3m_avg_usd_m"] = panel["imports_usd_m"].rolling(3, min_periods=3).mean()
     panel["import_cover_months"] = panel["gross_reserves_usd_m"] / panel["imports_trailing_3m_avg_usd_m"]
+    panel["reserve_net_drains_usd_m"] = panel[
+        ["predetermined_short_term_net_drains_usd_m", "fx_forward_short_positions_usd_m"]
+    ].fillna(0).sum(axis=1)
+    panel["adjusted_usable_reserves_usd_m"] = panel["gross_reserves_usd_m"] + panel["reserve_net_drains_usd_m"]
+    panel["adjusted_usable_reserve_cover_months"] = (
+        panel["adjusted_usable_reserves_usd_m"] / panel["imports_trailing_3m_avg_usd_m"]
+    )
     panel["trade_balance_usd_m"] = panel["exports_usd_m"] - panel["imports_usd_m"]
     panel["buffer_inflows_usd_m"] = panel["tourism_earnings_usd_m"] + panel["remittances_usd_m"]
     panel["buffer_inflows_share_imports"] = panel["buffer_inflows_usd_m"] / panel["imports_usd_m"]
@@ -766,35 +1160,83 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         panel["underlying_balance_proxy_usd_m"]
     )
 
-    panel["reserve_block_raw"] = -np.log(panel["import_cover_months"])
-    panel["fx_market_pressure_raw"] = np.log(panel["usd_lkr"]).diff()
+    reserve_cover_for_log = panel["adjusted_usable_reserve_cover_months"].clip(lower=0.05)
+    panel["reserve_block_raw"] = -np.log(reserve_cover_for_log)
+    panel["usd_lkr_depreciation_raw"] = np.log(panel["usd_lkr"]).diff()
+    panel["neer_depreciation_raw"] = -np.log(panel["neer_index"]).diff()
+    panel["reserve_change_pressure_raw"] = -np.log(
+        panel["gross_reserves_usd_m"] / panel["gross_reserves_usd_m"].shift(1)
+    )
+    panel["fx_market_pressure_raw"] = panel["usd_lkr_depreciation_raw"]
     panel["external_balance_pressure_user_raw"] = -panel["current_account_filled_usd_m"] / panel["imports_usd_m"]
     panel["external_balance_pressure_adjusted_raw"] = -panel["underlying_balance_filled_usd_m"] / panel["imports_usd_m"]
     panel["buffer_inflow_support_raw"] = -panel["buffer_inflows_share_imports"]
+    panel["current_account_pressure_raw"] = panel["external_balance_pressure_user_raw"]
+    panel["short_term_external_debt_to_reserves_raw"] = (
+        panel["short_term_external_debt_market_usd_m"] / panel["gross_reserves_usd_m"]
+    )
+    panel["external_debt_to_reserves_raw"] = panel["gross_external_debt_market_usd_m"] / panel["gross_reserves_usd_m"]
+    panel["debt_service_to_external_receipts_raw"] = panel["debt_service_to_external_receipts_pct"] / 100.0
+    panel["gross_reserves_lkr_m"] = panel["gross_reserves_usd_m"] * panel["usd_lkr"]
+    panel["adjusted_usable_reserves_lkr_m"] = panel["adjusted_usable_reserves_usd_m"] * panel["usd_lkr"]
+    panel["m2b_to_adjusted_reserves_raw"] = panel["m2b_rs_m"] / panel["adjusted_usable_reserves_lkr_m"].where(
+        panel["adjusted_usable_reserves_lkr_m"] > 0
+    )
+    panel["m2b_nfa_deterioration_raw"] = -panel["m2b_nfa_rs_m"].diff() / panel["m2b_rs_m"]
 
     for column in [
         "reserve_block_raw",
-        "fx_market_pressure_raw",
+        "usd_lkr_depreciation_raw",
+        "neer_depreciation_raw",
+        "reserve_change_pressure_raw",
         "external_balance_pressure_user_raw",
         "external_balance_pressure_adjusted_raw",
         "buffer_inflow_support_raw",
+        "current_account_pressure_raw",
+        "short_term_external_debt_to_reserves_raw",
+        "debt_service_to_external_receipts_raw",
+        "m2b_to_adjusted_reserves_raw",
+        "m2b_nfa_deterioration_raw",
     ]:
         panel[column.replace("_raw", "_z")] = realtime_zscore(panel[column].astype(float))
 
-    user_columns = [
+    panel["fx_market_pressure_z"] = mean_if_min_available(
+        panel,
+        ["usd_lkr_depreciation_z", "neer_depreciation_z", "reserve_change_pressure_z"],
+        min_count=2,
+    )
+    panel["external_financing_pressure_z"] = mean_if_min_available(
+        panel,
+        ["short_term_external_debt_to_reserves_z", "debt_service_to_external_receipts_z"],
+        min_count=1,
+    )
+    panel["resident_fx_liability_pressure_z"] = mean_if_min_available(
+        panel,
+        ["m2b_to_adjusted_reserves_z", "m2b_nfa_deterioration_z"],
+        min_count=1,
+    )
+
+    legacy_user_columns = [
         "reserve_block_z",
-        "fx_market_pressure_z",
+        "usd_lkr_depreciation_z",
         "external_balance_pressure_user_z",
         "buffer_inflow_support_z",
     ]
-    adjusted_columns = [
+    legacy_adjusted_columns = [
         "reserve_block_z",
-        "fx_market_pressure_z",
+        "usd_lkr_depreciation_z",
         "external_balance_pressure_adjusted_z",
         "buffer_inflow_support_z",
     ]
-    panel["slepi_user_spec"] = mean_if_complete(panel, user_columns)
-    panel["slepi_adjusted"] = mean_if_complete(panel, adjusted_columns)
+    headline_columns = [
+        "reserve_block_z",
+        "fx_market_pressure_z",
+        "external_financing_pressure_z",
+        "current_account_pressure_z",
+    ]
+    panel["slepi_user_spec"] = mean_if_complete(panel, legacy_user_columns)
+    panel["slepi_legacy_adjusted"] = mean_if_complete(panel, legacy_adjusted_columns)
+    panel["slepi_adjusted"] = mean_if_complete(panel, headline_columns)
 
     panel.attrs["proxy_intercept"] = float(intercept)
     panel.attrs["proxy_slope"] = float(slope)
@@ -805,6 +1247,12 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     )
     panel.attrs["official_current_account_end"] = (
         fit["date"].max().strftime("%Y-%m-%d") if not fit.empty else None
+    )
+    panel.attrs["latest_external_debt_actual"] = latest_non_null_month(
+        official_external_debt, "gross_external_debt_market_usd_m"
+    )
+    panel.attrs["latest_debt_service_actual"] = latest_non_null_month(
+        official_debt_service, "external_debt_service_payments_usd_m"
     )
     return panel
 
@@ -855,6 +1303,11 @@ def run_backtest(panel: pd.DataFrame) -> dict[str, Any]:
             "official_reserve_non_null_months": int(
                 panel.loc[panel["date"] >= pd.Timestamp("2013-11-01"), "gross_reserves_usd_m"].notna().sum()
             ),
+            "external_debt_quarterly_non_null_months": int(panel["gross_external_debt_market_usd_m"].notna().sum()),
+            "monetary_survey_non_null_months": int(panel["m2b_rs_m"].notna().sum()),
+            "neer_non_null_months": int(panel["neer_index"].notna().sum()),
+            "services_balance_non_null_months": int(panel["services_balance_usd_m"].notna().sum()),
+            "annual_debt_service_non_null_months": int(panel["external_debt_service_payments_usd_m"].notna().sum()),
             "long_backtest_start": panel["date"].min().strftime("%Y-%m-%d"),
             "long_backtest_end": panel["date"].max().strftime("%Y-%m-%d"),
         },
@@ -902,19 +1355,28 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
 
     latest_available = {
         "fx_market_pressure": latest_non_null_month(panel, "usd_lkr"),
+        "neer": latest_non_null_month(panel, "neer_index"),
         "current_account": latest_non_null_month(panel, "current_account_filled_usd_m"),
         "gross_reserves": latest_non_null_month(panel, "gross_reserves_usd_m"),
+        "adjusted_usable_reserves": latest_non_null_month(panel, "adjusted_usable_reserves_usd_m"),
+        "external_financing": latest_non_null_month(panel, "external_financing_pressure_z"),
+        "external_debt": panel.attrs.get("latest_external_debt_actual")
+        or latest_non_null_month(panel, "gross_external_debt_market_usd_m"),
+        "debt_service": panel.attrs.get("latest_debt_service_actual")
+        or latest_non_null_month(panel, "external_debt_service_payments_usd_m"),
         "imports": latest_non_null_month(panel, "imports_usd_m"),
         "tourism": latest_non_null_month(panel, "tourism_earnings_usd_m"),
         "remittances": latest_non_null_month(panel, "remittances_usd_m"),
         "buffer_inflows": latest_non_null_month(panel, "buffer_inflows_usd_m"),
+        "services_balance": latest_non_null_month(panel, "services_balance_usd_m"),
+        "m2b_nfa": latest_non_null_month(panel, "m2b_nfa_rs_m"),
     }
 
     required_columns = {
-        "fx_market_pressure": "usd_lkr",
-        "import_cover": "import_cover_months",
-        "current_account": "current_account_filled_usd_m",
-        "buffer_inflows": "buffer_inflows_usd_m",
+        "adjusted_usable_reserve_adequacy": "reserve_block_z",
+        "fx_market_pressure": "fx_market_pressure_z",
+        "external_financing": "external_financing_pressure_z",
+        "current_account": "current_account_pressure_z",
     }
     lag_summary: list[dict[str, Any]] = []
     if latest_complete_date is not None:
@@ -976,6 +1438,10 @@ def build_snapshot(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict
         "built_at": freshness["artifact_built_at"],
         "pipeline_checked_at": freshness["pipeline_checked_at"],
         "recommended_headline": "slepi_adjusted",
+        "headline_definition": (
+            "Equal-weighted CBSL-compatible core: adjusted usable reserve adequacy, FX market pressure, "
+            "external debt-service/rollover pressure, and current account pressure."
+        ),
         "latest": row_to_dict(latest),
         "previous": row_to_dict(previous),
         "delta": delta,
@@ -1001,15 +1467,37 @@ def write_outputs(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict[
     index_columns = [
         "date",
         "gross_reserves_usd_m",
+        "adjusted_usable_reserves_usd_m",
+        "reserve_net_drains_usd_m",
+        "adjusted_usable_reserve_cover_months",
         "imports_usd_m",
         "exports_usd_m",
         "usd_lkr",
+        "neer_index",
+        "reer_index",
         "import_cover_months",
         "current_account_usd_m",
         "current_account_filled_usd_m",
-        "underlying_balance_filled_usd_m",
+        "gross_external_debt_market_usd_m",
+        "short_term_external_debt_market_usd_m",
+        "short_term_external_debt_to_reserves_raw",
+        "external_debt_service_payments_usd_m",
+        "external_debt_service_amortization_usd_m",
+        "external_debt_service_interest_usd_m",
+        "debt_service_to_external_receipts_pct",
+        "services_balance_usd_m",
         "buffer_inflows_usd_m",
+        "m2b_rs_m",
+        "m2b_nfa_rs_m",
+        "m2b_to_adjusted_reserves_raw",
+        "m2b_nfa_deterioration_raw",
+        "reserve_block_z",
+        "fx_market_pressure_z",
+        "external_financing_pressure_z",
+        "current_account_pressure_z",
+        "resident_fx_liability_pressure_z",
         "slepi_user_spec",
+        "slepi_legacy_adjusted",
         "slepi_adjusted",
     ]
     panel[index_columns].to_csv(INDEX_PATH, index=False)
@@ -1123,11 +1611,11 @@ def build_methodology_note(panel: pd.DataFrame, metrics: dict[str, Any]) -> str:
     adjusted_metrics = metrics["slepi_adjusted"]
 
     latest = panel.dropna(subset=["slepi_adjusted"]).tail(1)
-    latest_line = "No complete adjusted SLEPI observation was produced."
+    latest_line = "No complete CBSL-compatible SLEPI observation was produced."
     if not latest.empty:
         row = latest.iloc[0]
         latest_line = (
-            f"The latest complete adjusted SLEPI observation is {row['date'].strftime('%Y-%m-%d')} "
+            f"The latest complete CBSL-compatible SLEPI observation is {row['date'].strftime('%Y-%m-%d')} "
             f"with a value of {row['slepi_adjusted']:.2f}."
         )
 
@@ -1135,35 +1623,52 @@ def build_methodology_note(panel: pd.DataFrame, metrics: dict[str, Any]) -> str:
 
 ## Recommendation
 
-Use `slepi_adjusted` as the headline series and keep `slepi_user_spec` as a shadow series.
+Use `slepi_adjusted` as the headline series. It now implements the CBSL-compatible
+core proposed in the latest specification:
 
-Reason:
+1. adjusted usable reserve adequacy
+2. FX market pressure
+3. external financing / rollover pressure
+4. current account pressure
 
-- the raw user specification counts remittances and tourism twice: once inside monthly current account balance and again inside the buffer-inflow support block
-- the adjusted version strips those inflows out of the external-balance block first, which makes the four blocks economically cleaner
-- in the rough historical backtest here, the adjusted variant is only marginally weaker than the raw variant, so the loss from de-duplication is small
+M2b, monetary-system NFA, imports, remittances, tourism and the services balance
+are kept in the panel as explanatory dashboard variables, not forced into the
+headline index.
 
 ## Current design verdict
 
-The four-block structure is defensible, but the clean implementation is:
+The current four-block structure is:
 
-1. reserve adequacy via import cover
-2. FX market pressure via monthly USD/LKR depreciation
-3. underlying external-balance pressure via current account excluding remittances and tourism
-4. buffer-inflow support via remittances plus tourism, scaled by imports
+- adjusted usable reserve adequacy: gross official reserves from the reserve data template, less predetermined short-term net drains and FX forward/swap short positions, scaled by trailing monthly imports
+- FX market pressure: USD/LKR depreciation, NEER depreciation and reserve-loss pressure
+- external financing pressure: short-term external debt relative to reserves, with annual debt-service pressure as a slow-moving rollover context
+- current account pressure: monthly current account balance scaled by imports
 
-That preserves the intent of your design while reducing overlap.
+This is a cleaner external-pressure index than the previous buffer-inflow core:
+remittances and tourism still matter, but mainly as explanatory flows around the
+current-account block rather than a separate core pillar.
 
 ## Data sufficiency
 
 - Official monthly current-account history starts in `2023-01`.
 - Official reserve-template history starts in `2013-11`.
-- The longer backtest therefore uses local backfill already present in this folder for pre-2023 current-account proxying and pre-2013 reserve history.
+- Quarterly external debt and banking-sector external liabilities start in `2012-Q4`.
+- Monthly NEER/REER starts in `2013-01`.
+- Monthly M2b and monetary-system NFA start in `1995-12`.
+- Monthly services balance starts in `2023-01`.
+- Annual debt-service, amortisation and interest are available in the Economic and Social Statistics table and are step-held across months.
+- The longer backtest still uses local backfill already present in this folder for pre-2023 current-account proxying and pre-2013 reserve history.
 - Monthly exports and imports are available from `2007-01`.
 - Monthly remittances and tourism earnings are available from `2009-01`.
 - Monthly FX history is available from `2005-01`.
 
-This means the folder is enough for a useful long proxy backtest, but not for a purely official monthly-current-account backtest before 2023.
+This means the folder is enough for a useful long proxy backtest from the reserve-template/external-debt era, but not for a purely official monthly-current-account backtest before 2023.
+
+## CBSL source verdict
+
+- Reliable automated core sources: reserve data template, monthly current account, exchange-rate/NEER workbooks, quarterly external debt, annual debt-service, monthly imports.
+- Reliable explanatory overlays: M2b, monetary-system NFA, services balance, imports, remittances and tourism.
+- Not yet promoted to headline: broad money / FX deposit pressure. The pipeline computes M2b-to-adjusted-reserves and M2b NFA deterioration, but leaves them as a shadow resident-pressure block pending predictive testing.
 
 ## CBSL release cadence
 
@@ -1182,22 +1687,22 @@ Source for all three timing notes: [{ADVANCE_RELEASE_CALENDAR_URL}]({ADVANCE_REL
 ## Backtest snapshot
 
 - Sample used for headline metrics: `{metrics['sample_start']}` to `{metrics['sample_end']}`
-- Raw user-spec SLEPI correlation with future 3-month external stress: `{user_metrics['correlation_with_future_external_stress_3m']:.3f}`
-- Raw user-spec SLEPI AUC for top-15% future stress events: `{user_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
-- Adjusted SLEPI correlation with future 3-month external stress: `{adjusted_metrics['correlation_with_future_external_stress_3m']:.3f}`
-- Adjusted SLEPI AUC for top-15% future stress events: `{adjusted_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
+- Legacy user-spec SLEPI correlation with future 3-month external stress: `{user_metrics['correlation_with_future_external_stress_3m']:.3f}`
+- Legacy user-spec SLEPI AUC for top-15% future stress events: `{user_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
+- CBSL-compatible SLEPI correlation with future 3-month external stress: `{adjusted_metrics['correlation_with_future_external_stress_3m']:.3f}`
+- CBSL-compatible SLEPI AUC for top-15% future stress events: `{adjusted_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
 - Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `{metrics['proxy_fit']['slope']:.3f}`, correlation `{metrics['proxy_fit']['overlap_correlation']:.3f}`, overlap months `{metrics['proxy_fit']['overlap_months']}`
 
-Both variants spike sharply into the 2021-2022 external crisis window, with crisis peaks on:
+Both variants spike into the 2021-2022 external crisis window, with crisis peaks on:
 
-- Raw user-spec SLEPI: `{user_metrics['crisis_window_peak_date']}` at `{user_metrics['crisis_window_peak_value']:.2f}`
-- Adjusted SLEPI: `{adjusted_metrics['crisis_window_peak_date']}` at `{adjusted_metrics['crisis_window_peak_value']:.2f}`
+- Legacy user-spec SLEPI: `{user_metrics['crisis_window_peak_date']}` at `{user_metrics['crisis_window_peak_value']:.2f}`
+- CBSL-compatible SLEPI: `{adjusted_metrics['crisis_window_peak_date']}` at `{adjusted_metrics['crisis_window_peak_value']:.2f}`
 
 ## Practical interpretation
 
-- If you want a clean policy dashboard, publish `slepi_adjusted`.
-- If you want a simple continuity check against the original idea, keep `slepi_user_spec` beside it.
-- If you later want a true daily nowcast, the next upgrade should be a daily FX sub-index plus step-held monthly external blocks, rather than forcing all four blocks into a fake daily frequency.
+- Publish `slepi_adjusted` as the least overfitted CBSL-compatible SLEPI v1.
+- Keep `slepi_user_spec`, `slepi_legacy_adjusted` and `resident_fx_liability_pressure_z` as shadow diagnostics.
+- The next research step is predictive testing of the resident-pressure shadow block before deciding whether it belongs in the headline index.
 
 ## Latest observation
 

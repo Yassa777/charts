@@ -10,10 +10,10 @@ const REGIME_MARKER_COLORS = {
 };
 
 const SERIES = [
-  { key: "reserve_block_z",                         label: "Import cover",    color: "#6366f1" },
-  { key: "fx_market_pressure_z",                    label: "FX pressure",     color: "#f59e0b" },
-  { key: "external_balance_pressure_adjusted_z",    label: "Ext. balance",    color: "#ec4899" },
-  { key: "buffer_inflow_support_z",                 label: "Buffer inflows",  color: "#10b981" },
+  { key: "reserve_block_z",                    label: "Usable reserves", color: "#6366f1" },
+  { key: "fx_market_pressure_z",               label: "FX pressure",     color: "#f59e0b" },
+  { key: "external_financing_pressure_z",      label: "Rollover",        color: "#ec4899" },
+  { key: "current_account_pressure_z",         label: "Current account", color: "#10b981" },
 ];
 
 const ZONES = [

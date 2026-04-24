@@ -1,9 +1,14 @@
 {
   "data_sufficiency": {
+    "annual_debt_service_non_null_months": 160,
+    "external_debt_quarterly_non_null_months": 161,
     "long_backtest_end": "2026-04-01",
-    "long_backtest_start": "2005-01-01",
+    "long_backtest_start": "1995-12-01",
+    "monetary_survey_non_null_months": 363,
+    "neer_non_null_months": 158,
     "official_current_account_non_null_months": 38,
-    "official_reserve_non_null_months": 148
+    "official_reserve_non_null_months": 148,
+    "services_balance_non_null_months": 38
   },
   "proxy_fit": {
     "intercept": -108.70155747251408,
@@ -16,19 +21,19 @@
   "sample_end": "2026-01-01",
   "sample_start": "2014-01-01",
   "slepi_adjusted": {
-    "auc_for_top_15pct_future_stress_event": 0.5469215491559086,
-    "available_months": 144,
-    "correlation_with_future_external_stress_3m": 0.21433639775015556,
+    "auc_for_top_15pct_future_stress_event": 0.6618075801749271,
+    "available_months": 133,
+    "correlation_with_future_external_stress_3m": 0.2191036209563809,
     "crisis_window_peak_date": "2022-04-01",
-    "crisis_window_peak_value": 2.7945019562094506
+    "crisis_window_peak_value": 1.8729727106256626
   },
   "slepi_user_spec": {
-    "auc_for_top_15pct_future_stress_event": 0.5350049652432969,
+    "auc_for_top_15pct_future_stress_event": 0.6362959285004965,
     "available_months": 144,
-    "correlation_with_future_external_stress_3m": 0.24332768152429815,
+    "correlation_with_future_external_stress_3m": 0.2974603550079451,
     "crisis_window_peak_date": "2022-04-01",
-    "crisis_window_peak_value": 3.174405317562205
+    "crisis_window_peak_value": 2.5596887782833653
   },
   "stress_event_quantile": 0.85,
-  "stress_event_threshold": 0.5245737573085948
+  "stress_event_threshold": 0.5245668835050462
 }

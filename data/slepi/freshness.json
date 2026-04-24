@@ -1,42 +1,53 @@
 {
-  "artifact_built_at": "2026-04-23T05:38:53.349480+00:00",
+  "artifact_built_at": "2026-04-24T04:06:17.703850+00:00",
   "blocking_months_after_latest_complete": [
     {
       "date": "2026-03-01",
       "missing_requirements": [
-        "import_cover",
-        "current_account",
-        "buffer_inflows"
+        "adjusted_usable_reserve_adequacy",
+        "fx_market_pressure",
+        "current_account"
       ]
     },
     {
       "date": "2026-04-01",
       "missing_requirements": [
-        "import_cover",
-        "current_account",
-        "buffer_inflows"
+        "adjusted_usable_reserve_adequacy",
+        "fx_market_pressure",
+        "current_account"
       ]
     }
   ],
   "latest_available_months": {
+    "adjusted_usable_reserves": "2026-02-01",
     "buffer_inflows": "2026-02-01",
     "current_account": "2026-02-01",
+    "debt_service": "2024-01-01",
+    "external_debt": "2025-12-01",
+    "external_financing": "2026-04-01",
     "fx_market_pressure": "2026-04-01",
     "gross_reserves": "2026-02-01",
     "imports": "2026-02-01",
+    "m2b_nfa": "2026-02-01",
+    "neer": "2026-02-01",
     "remittances": "2026-02-01",
+    "services_balance": "2026-02-01",
     "tourism": "2026-02-01"
   },
   "latest_complete_month": {
     "date": "2026-02-01",
-    "slepi_adjusted": -0.35888438665001504
+    "slepi_adjusted": -0.42905343567214327
   },
   "latest_partial_month": "2026-04-01",
-  "pipeline_checked_at": "2026-04-23T05:43:39.700255+00:00",
+  "pipeline_checked_at": "2026-04-24T04:12:04.271592+00:00",
   "source_last_modified": {
     "current_account": "Tue, 31 Mar 2026 15:15:53 GMT",
     "exports": "Tue, 31 Mar 2026 15:21:25 GMT",
+    "external_debt_quarterly": "Wed, 15 Apr 2026 12:32:04 GMT",
+    "external_debt_service_annual": "Fri, 09 Jan 2026 09:30:38 GMT",
     "imports": "Tue, 31 Mar 2026 15:20:03 GMT",
+    "monetary_survey_monthly": "Wed, 22 Apr 2026 06:38:08 GMT",
+    "neer_reer": "Thu, 02 Apr 2026 06:19:40 GMT",
     "remittances": "Tue, 31 Mar 2026 18:08:42 GMT",
     "reserve_history": "Tue, 31 Mar 2026 18:10:29 GMT",
     "reserve_latest": "Tue, 31 Mar 2026 18:09:41 GMT",
