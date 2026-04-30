@@ -4,6 +4,13 @@ import logo from "@/assets/logo2-transparent.png";
 import { SITE_DESCRIPTION, SITE_FULL_TITLE, SITE_ORGANIZATION, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
+const previewImage = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 627,
+  alt: "SLEPI live score and 24-month pressure chart",
+};
+
 const sansFont = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -39,11 +46,13 @@ export const metadata = {
     title: SITE_FULL_TITLE,
     description: SITE_DESCRIPTION,
     locale: "en_LK",
+    images: [previewImage],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: SITE_FULL_TITLE,
     description: SITE_DESCRIPTION,
+    images: [previewImage],
   },
   robots: {
     index: true,
