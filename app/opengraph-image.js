@@ -5,9 +5,15 @@ import { HEADLINE_DEFINITION } from "@/lib/methodology";
 import { getRegime, regimeLabel, regimeColor } from "@/components/regime";
 
 export const alt = "SLEPI live score and 24-month pressure chart";
-export const size = {
+const SCALE = 2;
+const DESIGN_SIZE = {
   width: 1200,
   height: 627,
+};
+
+export const size = {
+  width: DESIGN_SIZE.width * SCALE,
+  height: DESIGN_SIZE.height * SCALE,
 };
 export const contentType = "image/png";
 export const dynamic = "force-dynamic";
@@ -108,8 +114,8 @@ export default async function OpenGraphImage() {
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: DESIGN_SIZE.width,
+          height: DESIGN_SIZE.height,
           display: "flex",
           flexDirection: "column",
           padding: "46px 54px",
@@ -118,6 +124,8 @@ export default async function OpenGraphImage() {
           fontFamily: "Arial",
           position: "relative",
           overflow: "hidden",
+          transform: `scale(${SCALE})`,
+          transformOrigin: "top left",
         }}
       >
         <div

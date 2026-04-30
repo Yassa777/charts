@@ -6,8 +6,8 @@ import "./globals.css";
 
 const previewImage = {
   url: "/opengraph-image",
-  width: 1200,
-  height: 627,
+  width: 2400,
+  height: 1254,
   alt: "SLEPI live score and 24-month pressure chart",
 };
 
