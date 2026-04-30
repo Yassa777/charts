@@ -1023,6 +1023,117 @@ def mean_if_min_available(df: pd.DataFrame, columns: list[str], min_count: int =
     return out
 
 
+def divide_by_positive(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
+    return numerator / denominator.where(denominator > 0)
+
+
+def rolling_bias_adjusted_proxy(
+    proxy_raw: pd.Series,
+    official_raw: pd.Series,
+    *,
+    min_obs: int = 12,
+    window: int = 24,
+) -> pd.Series:
+    residual = (official_raw - proxy_raw).replace([np.inf, -np.inf], np.nan)
+    rolling_bias = residual.rolling(window=window, min_periods=min_obs).median().shift(1)
+    expanding_bias = residual.expanding(min_obs).median().shift(1)
+    bias = rolling_bias.combine_first(expanding_bias).fillna(0.0)
+    return proxy_raw + bias
+
+
+def proxy_fit_summary(panel: pd.DataFrame, proxy_column: str, official_column: str) -> dict[str, Any]:
+    fit = panel.dropna(subset=[proxy_column, official_column]).copy()
+    if fit.empty:
+        return {
+            "overlap_months": 0,
+            "overlap_start": None,
+            "overlap_end": None,
+            "correlation": None,
+            "median_official_minus_proxy": None,
+        }
+
+    correlation = None
+    if len(fit) >= 3 and fit[proxy_column].nunique(dropna=True) > 1 and fit[official_column].nunique(dropna=True) > 1:
+        correlation = float(fit[[proxy_column, official_column]].corr().iloc[0, 1])
+
+    residual = fit[official_column] - fit[proxy_column]
+    return {
+        "overlap_months": int(len(fit)),
+        "overlap_start": fit["date"].min().strftime("%Y-%m-%d"),
+        "overlap_end": fit["date"].max().strftime("%Y-%m-%d"),
+        "correlation": correlation,
+        "median_official_minus_proxy": float(residual.median()),
+    }
+
+
+def build_balance_pressure_block(panel: pd.DataFrame) -> None:
+    panel["goods_services_remittances_balance_usd_m"] = (
+        panel["trade_balance_usd_m"] + panel["services_balance_usd_m"] + panel["remittances_usd_m"]
+    )
+    panel["trade_tourism_remittances_balance_usd_m"] = (
+        panel["trade_balance_usd_m"] + panel["tourism_earnings_usd_m"] + panel["remittances_usd_m"]
+    )
+
+    panel["current_account_pressure_official_raw"] = -divide_by_positive(
+        panel["current_account_usd_m"], panel["imports_usd_m"]
+    )
+    panel["balance_pressure_services_raw"] = -divide_by_positive(
+        panel["goods_services_remittances_balance_usd_m"], panel["imports_usd_m"]
+    )
+    panel["balance_pressure_inflows_raw"] = -divide_by_positive(
+        panel["trade_tourism_remittances_balance_usd_m"], panel["imports_usd_m"]
+    )
+    panel["balance_pressure_trade_raw"] = -divide_by_positive(panel["trade_balance_usd_m"], panel["imports_usd_m"])
+
+    panel["balance_pressure_services_calibrated_raw"] = rolling_bias_adjusted_proxy(
+        panel["balance_pressure_services_raw"],
+        panel["current_account_pressure_official_raw"],
+    )
+    panel["balance_pressure_inflows_calibrated_raw"] = rolling_bias_adjusted_proxy(
+        panel["balance_pressure_inflows_raw"],
+        panel["current_account_pressure_official_raw"],
+    )
+    panel["balance_pressure_trade_calibrated_raw"] = rolling_bias_adjusted_proxy(
+        panel["balance_pressure_trade_raw"],
+        panel["current_account_pressure_official_raw"],
+    )
+
+    panel["current_account_pressure_raw"] = np.nan
+    panel["current_account_filled_usd_m"] = np.nan
+    panel["current_account_pressure_source"] = "missing"
+    panel["current_account_pressure_quality"] = 0.0
+
+    stages = [
+        ("official_current_account", "current_account_pressure_official_raw", 1.0),
+        ("goods_services_remittances_nowcast", "balance_pressure_services_calibrated_raw", 0.85),
+        ("trade_tourism_remittances_nowcast", "balance_pressure_inflows_calibrated_raw", 0.70),
+        ("trade_balance_fast_signal", "balance_pressure_trade_calibrated_raw", 0.55),
+    ]
+    for source, raw_column, quality in stages:
+        mask = panel["current_account_pressure_raw"].isna() & panel[raw_column].notna()
+        panel.loc[mask, "current_account_pressure_raw"] = panel.loc[mask, raw_column]
+        panel.loc[mask, "current_account_filled_usd_m"] = -panel.loc[mask, raw_column] * panel.loc[mask, "imports_usd_m"]
+        panel.loc[mask, "current_account_pressure_source"] = source
+        panel.loc[mask, "current_account_pressure_quality"] = quality
+
+    proxy_fits = {
+        "goods_services_remittances_nowcast": proxy_fit_summary(
+            panel, "balance_pressure_services_raw", "current_account_pressure_official_raw"
+        ),
+        "trade_tourism_remittances_nowcast": proxy_fit_summary(
+            panel, "balance_pressure_inflows_raw", "current_account_pressure_official_raw"
+        ),
+        "trade_balance_fast_signal": proxy_fit_summary(
+            panel, "balance_pressure_trade_raw", "current_account_pressure_official_raw"
+        ),
+    }
+    panel.attrs["balance_pressure_proxy_fits"] = proxy_fits
+    panel.attrs["balance_pressure_stage_counts"] = {
+        str(key): int(value)
+        for key, value in panel["current_account_pressure_source"].value_counts(dropna=False).sort_index().items()
+    }
+
+
 def auc_score(y_true: pd.Series, score: pd.Series) -> float | None:
     frame = pd.DataFrame({"y": y_true, "score": score}).dropna()
     if frame["y"].nunique() < 2:
@@ -1143,22 +1254,7 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     panel["buffer_inflows_usd_m"] = panel["tourism_earnings_usd_m"] + panel["remittances_usd_m"]
     panel["buffer_inflows_share_imports"] = panel["buffer_inflows_usd_m"] / panel["imports_usd_m"]
     panel["underlying_balance_official_usd_m"] = panel["current_account_usd_m"] - panel["buffer_inflows_usd_m"]
-
-    fit = panel.dropna(subset=["underlying_balance_official_usd_m", "trade_balance_usd_m"]).copy()
-    if len(fit) >= 12:
-        x = np.c_[np.ones(len(fit)), fit["trade_balance_usd_m"].to_numpy()]
-        y = fit["underlying_balance_official_usd_m"].to_numpy()
-        intercept, slope = np.linalg.lstsq(x, y, rcond=None)[0]
-        overlap_corr = float(fit[["trade_balance_usd_m", "underlying_balance_official_usd_m"]].corr().iloc[0, 1])
-    else:
-        intercept, slope, overlap_corr = 0.0, 1.0, None
-
-    panel["underlying_balance_proxy_usd_m"] = intercept + slope * panel["trade_balance_usd_m"]
-    panel["current_account_proxy_usd_m"] = panel["underlying_balance_proxy_usd_m"] + panel["buffer_inflows_usd_m"]
-    panel["current_account_filled_usd_m"] = panel["current_account_usd_m"].combine_first(panel["current_account_proxy_usd_m"])
-    panel["underlying_balance_filled_usd_m"] = panel["underlying_balance_official_usd_m"].combine_first(
-        panel["underlying_balance_proxy_usd_m"]
-    )
+    build_balance_pressure_block(panel)
 
     reserve_cover_for_log = panel["adjusted_usable_reserve_cover_months"].clip(lower=0.05)
     panel["reserve_block_raw"] = -np.log(reserve_cover_for_log)
@@ -1168,10 +1264,9 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         panel["gross_reserves_usd_m"] / panel["gross_reserves_usd_m"].shift(1)
     )
     panel["fx_market_pressure_raw"] = panel["usd_lkr_depreciation_raw"]
-    panel["external_balance_pressure_user_raw"] = -panel["current_account_filled_usd_m"] / panel["imports_usd_m"]
-    panel["external_balance_pressure_adjusted_raw"] = -panel["underlying_balance_filled_usd_m"] / panel["imports_usd_m"]
+    panel["external_balance_pressure_user_raw"] = panel["current_account_pressure_raw"]
+    panel["external_balance_pressure_adjusted_raw"] = panel["current_account_pressure_raw"]
     panel["buffer_inflow_support_raw"] = -panel["buffer_inflows_share_imports"]
-    panel["current_account_pressure_raw"] = panel["external_balance_pressure_user_raw"]
     panel["short_term_external_debt_to_reserves_raw"] = (
         panel["short_term_external_debt_market_usd_m"] / panel["gross_reserves_usd_m"]
     )
@@ -1189,6 +1284,13 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
         "usd_lkr_depreciation_raw",
         "neer_depreciation_raw",
         "reserve_change_pressure_raw",
+        "current_account_pressure_official_raw",
+        "balance_pressure_services_raw",
+        "balance_pressure_inflows_raw",
+        "balance_pressure_trade_raw",
+        "balance_pressure_services_calibrated_raw",
+        "balance_pressure_inflows_calibrated_raw",
+        "balance_pressure_trade_calibrated_raw",
         "external_balance_pressure_user_raw",
         "external_balance_pressure_adjusted_raw",
         "buffer_inflow_support_raw",
@@ -1238,15 +1340,12 @@ def build_panel(session: requests.Session, manifest: dict[str, Any]) -> pd.DataF
     panel["slepi_legacy_adjusted"] = mean_if_complete(panel, legacy_adjusted_columns)
     panel["slepi_adjusted"] = mean_if_complete(panel, headline_columns)
 
-    panel.attrs["proxy_intercept"] = float(intercept)
-    panel.attrs["proxy_slope"] = float(slope)
-    panel.attrs["proxy_overlap_corr"] = overlap_corr
-    panel.attrs["proxy_overlap_n"] = int(len(fit))
+    official_ca_fit = panel.dropna(subset=["current_account_usd_m", "current_account_pressure_raw"]).copy()
     panel.attrs["official_current_account_start"] = (
-        fit["date"].min().strftime("%Y-%m-%d") if not fit.empty else None
+        official_ca_fit["date"].min().strftime("%Y-%m-%d") if not official_ca_fit.empty else None
     )
     panel.attrs["official_current_account_end"] = (
-        fit["date"].max().strftime("%Y-%m-%d") if not fit.empty else None
+        official_ca_fit["date"].max().strftime("%Y-%m-%d") if not official_ca_fit.empty else None
     )
     panel.attrs["latest_external_debt_actual"] = latest_non_null_month(
         official_external_debt, "gross_external_debt_market_usd_m"
@@ -1291,15 +1390,19 @@ def run_backtest(panel: pd.DataFrame) -> dict[str, Any]:
         "stress_event_quantile": 0.85,
         "stress_event_threshold": stress_threshold,
         "proxy_fit": {
-            "intercept": panel.attrs.get("proxy_intercept"),
-            "slope": panel.attrs.get("proxy_slope"),
-            "overlap_correlation": panel.attrs.get("proxy_overlap_corr"),
-            "overlap_months": panel.attrs.get("proxy_overlap_n"),
+            "method": "official-current-account source ladder with rolling median bias adjustment for provisional stages",
+            "overlap_months": panel.attrs.get("balance_pressure_proxy_fits", {})
+            .get("trade_balance_fast_signal", {})
+            .get("overlap_months"),
+            "proxy_fits": panel.attrs.get("balance_pressure_proxy_fits", {}),
+            "stage_counts": panel.attrs.get("balance_pressure_stage_counts", {}),
             "official_overlap_start": panel.attrs.get("official_current_account_start"),
             "official_overlap_end": panel.attrs.get("official_current_account_end"),
         },
         "data_sufficiency": {
             "official_current_account_non_null_months": int(panel["current_account_usd_m"].notna().sum()),
+            "balance_pressure_non_null_months": int(panel["current_account_pressure_raw"].notna().sum()),
+            "balance_pressure_stage_counts": panel.attrs.get("balance_pressure_stage_counts", {}),
             "official_reserve_non_null_months": int(
                 panel.loc[panel["date"] >= pd.Timestamp("2013-11-01"), "gross_reserves_usd_m"].notna().sum()
             ),
@@ -1356,7 +1459,9 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
     latest_available = {
         "fx_market_pressure": latest_non_null_month(panel, "usd_lkr"),
         "neer": latest_non_null_month(panel, "neer_index"),
-        "current_account": latest_non_null_month(panel, "current_account_filled_usd_m"),
+        "current_account": latest_non_null_month(panel, "current_account_usd_m"),
+        "balance_pressure": latest_non_null_month(panel, "current_account_pressure_raw"),
+        "trade_balance": latest_non_null_month(panel, "trade_balance_usd_m"),
         "gross_reserves": latest_non_null_month(panel, "gross_reserves_usd_m"),
         "adjusted_usable_reserves": latest_non_null_month(panel, "adjusted_usable_reserves_usd_m"),
         "external_financing": latest_non_null_month(panel, "external_financing_pressure_z"),
@@ -1376,7 +1481,7 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
         "adjusted_usable_reserve_adequacy": "reserve_block_z",
         "fx_market_pressure": "fx_market_pressure_z",
         "external_financing": "external_financing_pressure_z",
-        "current_account": "current_account_pressure_z",
+        "external_balance": "current_account_pressure_z",
     }
     lag_summary: list[dict[str, Any]] = []
     if latest_complete_date is not None:
@@ -1405,6 +1510,7 @@ def build_freshness_summary(panel: pd.DataFrame, manifest: dict[str, Any]) -> di
         "latest_available_months": latest_available,
         "latest_partial_month": max((value for value in latest_available.values() if value is not None), default=None),
         "blocking_months_after_latest_complete": lag_summary,
+        "balance_pressure_stage_counts": panel.attrs.get("balance_pressure_stage_counts", {}),
         "source_last_modified": {
             key: value.get("last_modified")
             for key, value in manifest["sources"].items()
@@ -1440,7 +1546,7 @@ def build_snapshot(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict
         "recommended_headline": "slepi_adjusted",
         "headline_definition": (
             "Equal-weighted CBSL-compatible core: adjusted usable reserve adequacy, FX market pressure, "
-            "external debt-service/rollover pressure, and current account pressure."
+            "external debt-service/rollover pressure, and a staged external-balance/current-account pressure block."
         ),
         "latest": row_to_dict(latest),
         "previous": row_to_dict(previous),
@@ -1472,12 +1578,25 @@ def write_outputs(panel: pd.DataFrame, metrics: dict[str, Any], freshness: dict[
         "adjusted_usable_reserve_cover_months",
         "imports_usd_m",
         "exports_usd_m",
+        "trade_balance_usd_m",
         "usd_lkr",
         "neer_index",
         "reer_index",
         "import_cover_months",
         "current_account_usd_m",
         "current_account_filled_usd_m",
+        "current_account_pressure_source",
+        "current_account_pressure_quality",
+        "goods_services_remittances_balance_usd_m",
+        "trade_tourism_remittances_balance_usd_m",
+        "current_account_pressure_official_raw",
+        "balance_pressure_services_raw",
+        "balance_pressure_inflows_raw",
+        "balance_pressure_trade_raw",
+        "balance_pressure_services_calibrated_raw",
+        "balance_pressure_inflows_calibrated_raw",
+        "balance_pressure_trade_calibrated_raw",
+        "current_account_pressure_raw",
         "gross_external_debt_market_usd_m",
         "short_term_external_debt_market_usd_m",
         "short_term_external_debt_to_reserves_raw",
@@ -1609,6 +1728,13 @@ def publish_to_object_storage() -> list[str]:
 def build_methodology_note(panel: pd.DataFrame, metrics: dict[str, Any]) -> str:
     user_metrics = metrics["slepi_user_spec"]
     adjusted_metrics = metrics["slepi_adjusted"]
+    proxy_fits = metrics["proxy_fit"].get("proxy_fits", {})
+    trade_fit = proxy_fits.get("trade_balance_fast_signal", {})
+    inflow_fit = proxy_fits.get("trade_tourism_remittances_nowcast", {})
+    services_fit = proxy_fits.get("goods_services_remittances_nowcast", {})
+
+    def fmt_metric(value: Any, digits: int = 3) -> str:
+        return "n/a" if value is None else f"{value:.{digits}f}"
 
     latest = panel.dropna(subset=["slepi_adjusted"]).tail(1)
     latest_line = "No complete CBSL-compatible SLEPI observation was produced."
@@ -1629,7 +1755,7 @@ core proposed in the latest specification:
 1. adjusted usable reserve adequacy
 2. FX market pressure
 3. external financing / rollover pressure
-4. current account pressure
+4. staged external-balance / current-account pressure
 
 M2b, monetary-system NFA, imports, remittances, tourism and the services balance
 are kept in the panel as explanatory dashboard variables, not forced into the
@@ -1642,11 +1768,27 @@ The current four-block structure is:
 - adjusted usable reserve adequacy: gross official reserves from the reserve data template, less predetermined short-term net drains and FX forward/swap short positions, scaled by trailing monthly imports
 - FX market pressure: USD/LKR depreciation, NEER depreciation and reserve-loss pressure
 - external financing pressure: short-term external debt relative to reserves, with annual debt-service pressure as a slow-moving rollover context
-- current account pressure: monthly current account balance scaled by imports
+- external-balance/current-account pressure: official monthly current account scaled by imports when available; otherwise a provisional source ladder uses trade plus services and remittances, then trade plus tourism and remittances, then trade balance alone. Each provisional stage is adjusted by the rolling median gap to official current-account pressure over the previous official overlap.
 
 This is a cleaner external-pressure index than the previous buffer-inflow core:
 remittances and tourism still matter, but mainly as explanatory flows around the
-current-account block rather than a separate core pillar.
+external-balance block rather than a separate core pillar.
+
+## External-balance source ladder
+
+The current-account block now avoids waiting for the slowest official revision when faster
+goods-trade data are already available:
+
+1. `official_current_account`: official monthly current account / imports.
+2. `goods_services_remittances_nowcast`: exports minus imports plus services balance plus remittances / imports. Tourism is not added here because it is already inside the services balance.
+3. `trade_tourism_remittances_nowcast`: exports minus imports plus tourism earnings plus remittances / imports when full services data are not yet available.
+4. `trade_balance_fast_signal`: exports minus imports / imports as the earliest fallback.
+
+The staged design handles three main failure modes: double-counting tourism inside services,
+overfitting a short post-2023 current-account overlap, and introducing look-ahead bias in the
+live pipeline. The bias adjustment is deliberately simple: a rolling median residual against
+official current-account pressure, shifted by one month so the current observation never uses
+its own official current-account value.
 
 ## Data sufficiency
 
@@ -1666,7 +1808,7 @@ This means the folder is enough for a useful long proxy backtest from the reserv
 
 ## CBSL source verdict
 
-- Reliable automated core sources: reserve data template, monthly current account, exchange-rate/NEER workbooks, quarterly external debt, annual debt-service, monthly imports.
+- Reliable automated core sources: reserve data template, exports, imports, monthly current account, services balance, remittances, tourism, exchange-rate/NEER workbooks, quarterly external debt and annual debt-service.
 - Reliable explanatory overlays: M2b, monetary-system NFA, services balance, imports, remittances and tourism.
 - Not yet promoted to headline: broad money / FX deposit pressure. The pipeline computes M2b-to-adjusted-reserves and M2b NFA deterioration, but leaves them as a shadow resident-pressure block pending predictive testing.
 
@@ -1691,7 +1833,10 @@ Source for all three timing notes: [{ADVANCE_RELEASE_CALENDAR_URL}]({ADVANCE_REL
 - Legacy user-spec SLEPI AUC for top-15% future stress events: `{user_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
 - CBSL-compatible SLEPI correlation with future 3-month external stress: `{adjusted_metrics['correlation_with_future_external_stress_3m']:.3f}`
 - CBSL-compatible SLEPI AUC for top-15% future stress events: `{adjusted_metrics['auc_for_top_15pct_future_stress_event']:.3f}`
-- Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `{metrics['proxy_fit']['slope']:.3f}`, correlation `{metrics['proxy_fit']['overlap_correlation']:.3f}`, overlap months `{metrics['proxy_fit']['overlap_months']}`
+- Source-ladder stage counts: `{metrics['proxy_fit']['stage_counts']}`
+- Trade-balance fallback overlap with official current-account pressure: correlation `{fmt_metric(trade_fit.get('correlation'))}` over `{trade_fit.get('overlap_months')}` months
+- Tourism/remittances enriched fallback overlap: correlation `{fmt_metric(inflow_fit.get('correlation'))}` over `{inflow_fit.get('overlap_months')}` months
+- Services/remittances enriched fallback overlap: correlation `{fmt_metric(services_fit.get('correlation'))}` over `{services_fit.get('overlap_months')}` months
 
 Both variants spike into the 2021-2022 external crisis window, with crisis peaks on:
 

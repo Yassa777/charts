@@ -1,6 +1,7 @@
 import { IBM_Plex_Mono, Newsreader, Inter } from "next/font/google";
 import Image from "next/image";
 import logo from "@/assets/logo2-transparent.png";
+import { SITE_DESCRIPTION, SITE_FULL_TITLE, SITE_ORGANIZATION, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const sansFont = Inter({
@@ -22,8 +23,39 @@ const monoFont = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "SLEPI",
-  description: "Sri Lanka External Pressure Index",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_FULL_TITLE,
+    template: `%s | ${SITE_TITLE}`,
+  },
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_ORGANIZATION.name,
+    title: SITE_FULL_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_LK",
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_FULL_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {

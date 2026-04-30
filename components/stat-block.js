@@ -82,6 +82,8 @@ function historyKey(label) {
     case "Usable cover":       return "adjusted_usable_reserve_cover_months";
     case "ST debt / reserves": return "short_term_external_debt_to_reserves_raw";
     case "Current account":    return "current_account_filled_usd_m";
+    case "Balance signal":     return "current_account_filled_usd_m";
+    case "Trade balance":      return "trade_balance_usd_m";
     case "Services balance":   return "services_balance_usd_m";
     case "M2b / reserves":     return "m2b_to_adjusted_reserves_raw";
     default: return null;

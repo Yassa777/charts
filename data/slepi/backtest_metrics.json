@@ -1,6 +1,13 @@
 {
   "data_sufficiency": {
     "annual_debt_service_non_null_months": 160,
+    "balance_pressure_non_null_months": 229,
+    "balance_pressure_stage_counts": {
+      "missing": 136,
+      "official_current_account": 38,
+      "trade_balance_fast_signal": 24,
+      "trade_tourism_remittances_nowcast": 167
+    },
     "external_debt_quarterly_non_null_months": 161,
     "long_backtest_end": "2026-04-01",
     "long_backtest_start": "1995-12-01",
@@ -11,29 +18,56 @@
     "services_balance_non_null_months": 38
   },
   "proxy_fit": {
-    "intercept": -108.70155747251408,
+    "method": "official-current-account source ladder with rolling median bias adjustment for provisional stages",
     "official_overlap_end": "2026-02-01",
     "official_overlap_start": "2023-01-01",
-    "overlap_correlation": 0.8993528059257454,
     "overlap_months": 38,
-    "slope": 1.0987792451280258
+    "proxy_fits": {
+      "goods_services_remittances_nowcast": {
+        "correlation": 0.9137156247530467,
+        "median_official_minus_proxy": 0.12094758118706739,
+        "overlap_end": "2026-02-01",
+        "overlap_months": 38,
+        "overlap_start": "2023-01-01"
+      },
+      "trade_balance_fast_signal": {
+        "correlation": 0.7700713350495116,
+        "median_official_minus_proxy": -0.42395839906777205,
+        "overlap_end": "2026-02-01",
+        "overlap_months": 38,
+        "overlap_start": "2023-01-01"
+      },
+      "trade_tourism_remittances_nowcast": {
+        "correlation": 0.8818958969715682,
+        "median_official_minus_proxy": 0.08885413985294556,
+        "overlap_end": "2026-02-01",
+        "overlap_months": 38,
+        "overlap_start": "2023-01-01"
+      }
+    },
+    "stage_counts": {
+      "missing": 136,
+      "official_current_account": 38,
+      "trade_balance_fast_signal": 24,
+      "trade_tourism_remittances_nowcast": 167
+    }
   },
   "sample_end": "2026-01-01",
   "sample_start": "2014-01-01",
   "slepi_adjusted": {
-    "auc_for_top_15pct_future_stress_event": 0.6618075801749271,
+    "auc_for_top_15pct_future_stress_event": 0.6513119533527697,
     "available_months": 133,
-    "correlation_with_future_external_stress_3m": 0.2191036209563809,
-    "crisis_window_peak_date": "2022-04-01",
-    "crisis_window_peak_value": 1.8729727106256626
+    "correlation_with_future_external_stress_3m": 0.1932682736166835,
+    "crisis_window_peak_date": "2022-03-01",
+    "crisis_window_peak_value": 1.7560112247595119
   },
   "slepi_user_spec": {
-    "auc_for_top_15pct_future_stress_event": 0.6362959285004965,
+    "auc_for_top_15pct_future_stress_event": 0.6214001986097318,
     "available_months": 144,
-    "correlation_with_future_external_stress_3m": 0.2974603550079451,
+    "correlation_with_future_external_stress_3m": 0.27785206497415005,
     "crisis_window_peak_date": "2022-04-01",
-    "crisis_window_peak_value": 2.5596887782833653
+    "crisis_window_peak_value": 2.414908845846039
   },
   "stress_event_quantile": 0.85,
-  "stress_event_threshold": 0.5245668835050462
+  "stress_event_threshold": 0.524527704102461
 }

@@ -8,7 +8,7 @@ core proposed in the latest specification:
 1. adjusted usable reserve adequacy
 2. FX market pressure
 3. external financing / rollover pressure
-4. current account pressure
+4. staged external-balance / current-account pressure
 
 M2b, monetary-system NFA, imports, remittances, tourism and the services balance
 are kept in the panel as explanatory dashboard variables, not forced into the
@@ -21,11 +21,27 @@ The current four-block structure is:
 - adjusted usable reserve adequacy: gross official reserves from the reserve data template, less predetermined short-term net drains and FX forward/swap short positions, scaled by trailing monthly imports
 - FX market pressure: USD/LKR depreciation, NEER depreciation and reserve-loss pressure
 - external financing pressure: short-term external debt relative to reserves, with annual debt-service pressure as a slow-moving rollover context
-- current account pressure: monthly current account balance scaled by imports
+- external-balance/current-account pressure: official monthly current account scaled by imports when available; otherwise a provisional source ladder uses trade plus services and remittances, then trade plus tourism and remittances, then trade balance alone. Each provisional stage is adjusted by the rolling median gap to official current-account pressure over the previous official overlap.
 
 This is a cleaner external-pressure index than the previous buffer-inflow core:
 remittances and tourism still matter, but mainly as explanatory flows around the
-current-account block rather than a separate core pillar.
+external-balance block rather than a separate core pillar.
+
+## External-balance source ladder
+
+The current-account block now avoids waiting for the slowest official revision when faster
+goods-trade data are already available:
+
+1. `official_current_account`: official monthly current account / imports.
+2. `goods_services_remittances_nowcast`: exports minus imports plus services balance plus remittances / imports. Tourism is not added here because it is already inside the services balance.
+3. `trade_tourism_remittances_nowcast`: exports minus imports plus tourism earnings plus remittances / imports when full services data are not yet available.
+4. `trade_balance_fast_signal`: exports minus imports / imports as the earliest fallback.
+
+The staged design handles three main failure modes: double-counting tourism inside services,
+overfitting a short post-2023 current-account overlap, and introducing look-ahead bias in the
+live pipeline. The bias adjustment is deliberately simple: a rolling median residual against
+official current-account pressure, shifted by one month so the current observation never uses
+its own official current-account value.
 
 ## Data sufficiency
 
@@ -45,7 +61,7 @@ This means the folder is enough for a useful long proxy backtest from the reserv
 
 ## CBSL source verdict
 
-- Reliable automated core sources: reserve data template, monthly current account, exchange-rate/NEER workbooks, quarterly external debt, annual debt-service, monthly imports.
+- Reliable automated core sources: reserve data template, exports, imports, monthly current account, services balance, remittances, tourism, exchange-rate/NEER workbooks, quarterly external debt and annual debt-service.
 - Reliable explanatory overlays: M2b, monetary-system NFA, services balance, imports, remittances and tourism.
 - Not yet promoted to headline: broad money / FX deposit pressure. The pipeline computes M2b-to-adjusted-reserves and M2b NFA deterioration, but leaves them as a shadow resident-pressure block pending predictive testing.
 
@@ -66,16 +82,19 @@ Source for all three timing notes: [https://www.cbsl.gov.lk/en/advance-release-c
 ## Backtest snapshot
 
 - Sample used for headline metrics: `2014-01-01` to `2026-01-01`
-- Legacy user-spec SLEPI correlation with future 3-month external stress: `0.297`
-- Legacy user-spec SLEPI AUC for top-15% future stress events: `0.636`
-- CBSL-compatible SLEPI correlation with future 3-month external stress: `0.219`
-- CBSL-compatible SLEPI AUC for top-15% future stress events: `0.662`
-- Proxy fit linking trade balance to the adjusted external-balance block over the official overlap: slope `1.099`, correlation `0.899`, overlap months `38`
+- Legacy user-spec SLEPI correlation with future 3-month external stress: `0.278`
+- Legacy user-spec SLEPI AUC for top-15% future stress events: `0.621`
+- CBSL-compatible SLEPI correlation with future 3-month external stress: `0.193`
+- CBSL-compatible SLEPI AUC for top-15% future stress events: `0.651`
+- Source-ladder stage counts: `{'missing': 136, 'official_current_account': 38, 'trade_balance_fast_signal': 24, 'trade_tourism_remittances_nowcast': 167}`
+- Trade-balance fallback overlap with official current-account pressure: correlation `0.770` over `38` months
+- Tourism/remittances enriched fallback overlap: correlation `0.882` over `38` months
+- Services/remittances enriched fallback overlap: correlation `0.914` over `38` months
 
 Both variants spike into the 2021-2022 external crisis window, with crisis peaks on:
 
-- Legacy user-spec SLEPI: `2022-04-01` at `2.56`
-- CBSL-compatible SLEPI: `2022-04-01` at `1.87`
+- Legacy user-spec SLEPI: `2022-04-01` at `2.41`
+- CBSL-compatible SLEPI: `2022-03-01` at `1.76`
 
 ## Practical interpretation
 
@@ -85,4 +104,4 @@ Both variants spike into the 2021-2022 external crisis window, with crisis peaks
 
 ## Latest observation
 
-The latest complete CBSL-compatible SLEPI observation is 2026-02-01 with a value of -0.43.
+The latest complete CBSL-compatible SLEPI observation is 2026-02-01 with a value of -0.33.

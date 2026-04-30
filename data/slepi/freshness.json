@@ -1,12 +1,18 @@
 {
   "artifact_built_at": "2026-04-24T04:06:17.703850+00:00",
+  "balance_pressure_stage_counts": {
+    "missing": 136,
+    "official_current_account": 38,
+    "trade_balance_fast_signal": 24,
+    "trade_tourism_remittances_nowcast": 167
+  },
   "blocking_months_after_latest_complete": [
     {
       "date": "2026-03-01",
       "missing_requirements": [
         "adjusted_usable_reserve_adequacy",
         "fx_market_pressure",
-        "current_account"
+        "external_balance"
       ]
     },
     {
@@ -14,12 +20,13 @@
       "missing_requirements": [
         "adjusted_usable_reserve_adequacy",
         "fx_market_pressure",
-        "current_account"
+        "external_balance"
       ]
     }
   ],
   "latest_available_months": {
     "adjusted_usable_reserves": "2026-02-01",
+    "balance_pressure": "2026-02-01",
     "buffer_inflows": "2026-02-01",
     "current_account": "2026-02-01",
     "debt_service": "2024-01-01",
@@ -32,14 +39,15 @@
     "neer": "2026-02-01",
     "remittances": "2026-02-01",
     "services_balance": "2026-02-01",
-    "tourism": "2026-02-01"
+    "tourism": "2026-02-01",
+    "trade_balance": "2026-02-01"
   },
   "latest_complete_month": {
     "date": "2026-02-01",
-    "slepi_adjusted": -0.42905343567214327
+    "slepi_adjusted": -0.3335271588143059
   },
   "latest_partial_month": "2026-04-01",
-  "pipeline_checked_at": "2026-04-24T04:12:04.271592+00:00",
+  "pipeline_checked_at": "2026-04-30T03:48:14.750388+00:00",
   "source_last_modified": {
     "current_account": "Tue, 31 Mar 2026 15:15:53 GMT",
     "exports": "Tue, 31 Mar 2026 15:21:25 GMT",

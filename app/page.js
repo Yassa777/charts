@@ -18,6 +18,8 @@ import { ScoreNumber } from "@/components/score-number";
 import { RegimeRibbon } from "@/components/regime-ribbon";
 import { BulletGauge } from "@/components/bullet-gauge";
 import { getRegime, regimeLabel } from "@/components/regime";
+import { SITE_DESCRIPTION, SITE_FULL_TITLE, SITE_ORGANIZATION, SITE_URL } from "@/lib/site";
+import { HEADLINE_DEFINITION } from "@/lib/methodology";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +53,8 @@ function interpret(snapshot) {
         "severe rollover pressure", "external financing pressure", "mild rollover pressure",
         "manageable rollover needs", "easing external debt pressure", "strong rollover comfort") },
     { side: L.current_account_pressure_z > 0 ? "pressure" : "support", text: phrase(L.current_account_pressure_z,
-        "a severe current account deficit", "current account pressure", "mild current account pressure",
-        "a narrowing current account gap", "improving current account conditions", "current account surplus") },
+        "severe external-balance pressure", "external-balance pressure", "mild balance pressure",
+        "a narrowing external-balance gap", "improving external-balance conditions", "external-balance surplus") },
   ].filter((f) => f.text !== null);
 
   const pressures = factors.filter((f) => f.side === "pressure").map((f) => f.text);
@@ -128,6 +130,96 @@ function formatTimestamp(ts) {
   }).format(new Date(ts));
 }
 
+function balanceSourceLabel(source) {
+  switch (source) {
+    case "official_current_account":
+      return "official current account";
+    case "goods_services_remittances_nowcast":
+      return "trade + services + remittances nowcast";
+    case "trade_tourism_remittances_nowcast":
+      return "trade + tourism + remittances nowcast";
+    case "trade_balance_fast_signal":
+      return "trade-balance fast signal";
+    default:
+      return "balance signal";
+  }
+}
+
+function buildStructuredData(snapshot) {
+  const latest = snapshot.latest;
+  const freshness = snapshot.freshness;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: SITE_FULL_TITLE,
+    alternateName: "SLEPI",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    creator: {
+      "@type": "Organization",
+      name: SITE_ORGANIZATION.name,
+      url: SITE_ORGANIZATION.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_ORGANIZATION.name,
+      url: SITE_ORGANIZATION.url,
+    },
+    dateModified: freshness?.pipeline_checked_at || snapshot.built_at,
+    measurementTechnique: HEADLINE_DEFINITION,
+    temporalCoverage: snapshot.metrics?.sample_start && snapshot.metrics?.sample_end
+      ? `${snapshot.metrics.sample_start}/${snapshot.metrics.sample_end}`
+      : undefined,
+    variableMeasured: [
+      {
+        "@type": "PropertyValue",
+        name: "SLEPI adjusted headline score",
+        value: latest?.slepi_adjusted,
+        unitText: "standardised index score",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Adjusted usable reserve adequacy",
+        value: latest?.reserve_block_z,
+        unitText: "z-score",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "FX market pressure",
+        value: latest?.fx_market_pressure_z,
+        unitText: "z-score",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "External financing pressure",
+        value: latest?.external_financing_pressure_z,
+        unitText: "z-score",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "External-balance pressure",
+        value: latest?.current_account_pressure_z,
+        unitText: "z-score",
+      },
+    ],
+    distribution: [
+      {
+        "@type": "DataDownload",
+        encodingFormat: "application/json",
+        contentUrl: `${SITE_URL}/summary.json`,
+      },
+      snapshot.dataSource?.url
+        ? {
+            "@type": "DataDownload",
+            encodingFormat: "application/json",
+            contentUrl: snapshot.dataSource.url,
+          }
+        : null,
+    ].filter(Boolean),
+  };
+}
+
 /* ── Page ──────────────────────────────────────────────────────── */
 export default async function HomePage() {
   const [snapshot, componentHistory, scoreHistory, statHistory] = await Promise.all([
@@ -145,12 +237,17 @@ export default async function HomePage() {
   const sentence = interpret(snapshot);
   const regime = getRegime(L.slepi_adjusted);
   const crisisPeakDate = snapshot.metrics?.slepi_adjusted?.crisis_window_peak_date;
+  const structuredData = buildStructuredData(snapshot);
 
   /* Map per-component z-score histories for mini-multiples */
   const compValues = (key) => componentHistory.map((r) => r[key]);
 
   return (
     <HoverProvider>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <main className="page-shell">
 
         {/* ── Hero ── */}
@@ -229,9 +326,9 @@ export default async function HomePage() {
             history={statHistory}
           />
           <StatBlock
-            label="Current account"
+            label="Balance signal"
             value={formatNumber(L.current_account_filled_usd_m, 0)}
-            unit="USD mn — negative = deficit"
+            unit={`USD mn — ${balanceSourceLabel(L.current_account_pressure_source)}`}
             current={L.current_account_filled_usd_m}
             previous={P?.current_account_filled_usd_m}
             invertColor={true}
@@ -304,12 +401,12 @@ export default async function HomePage() {
               componentKey="current_account_pressure_z"
               glyph="buffer"
               color={COMPONENT_COLORS.current_account_pressure_z}
-              title="Current account"
+              title="External balance"
               score={L.current_account_pressure_z}
               prevScore={P?.current_account_pressure_z}
               value={formatPercent(L.current_account_pressure_raw)}
-              unit="current account / imports"
-              description="Monthly current account balance scaled by imports. Deficits add pressure; surpluses reduce pressure."
+              unit={balanceSourceLabel(L.current_account_pressure_source)}
+              description="Uses official current account when available, otherwise a bias-adjusted ladder from services/remittances, tourism/remittances, or trade balance."
               history={compValues("current_account_pressure_z")}
             />
           </div>
@@ -379,11 +476,12 @@ export default async function HomePage() {
                   <SourceRow source={snapshot.dataSource} />
                   <FreshnessRow label="Latest complete index" date={freshness.latest_complete_month.date} />
                   <FreshnessRow label="FX" date={freshness.latest_available_months.fx_market_pressure} />
-                  <FreshnessRow label="Current account" date={freshness.latest_available_months.current_account} />
+                  <FreshnessRow label="Balance pressure" date={freshness.latest_available_months.balance_pressure} />
+                  <FreshnessRow label="Official current account" date={freshness.latest_available_months.current_account} />
                   <FreshnessRow label="Usable reserves" date={freshness.latest_available_months.adjusted_usable_reserves} />
                   <FreshnessRow label="External debt" date={freshness.latest_available_months.external_debt} />
                   <FreshnessRow label="M2b / NFA" date={freshness.latest_available_months.m2b_nfa} />
-                  <FreshnessRow label="Imports" date={freshness.latest_available_months.imports} />
+                  <FreshnessRow label="Trade balance" date={freshness.latest_available_months.trade_balance} />
                 </div>
                 {firstBlocking && (
                   <p className="panel-note">

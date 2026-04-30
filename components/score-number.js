@@ -3,11 +3,20 @@ import { useEffect, useRef, useState } from "react";
 
 /* Count-up score. Preserves sign + 2 decimals, easing from 0 to target on mount. */
 export function ScoreNumber({ value }) {
-  const [display, setDisplay] = useState(0);
+  const initialValue = Number.isFinite(value) ? value : 0;
+  const [display, setDisplay] = useState(initialValue);
+  const displayRef = useRef(initialValue);
   const frame = useRef(null);
 
   useEffect(() => {
     const target = Number.isFinite(value) ? value : 0;
+    const startValue = displayRef.current;
+
+    if (startValue === target) {
+      setDisplay(target);
+      return;
+    }
+
     const start = performance.now();
     const duration = 900;
 
@@ -15,7 +24,9 @@ export function ScoreNumber({ value }) {
       const t = Math.min((now - start) / duration, 1);
       // easeOutCubic
       const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(target * eased);
+      const next = startValue + (target - startValue) * eased;
+      displayRef.current = next;
+      setDisplay(next);
       if (t < 1) frame.current = requestAnimationFrame(tick);
     };
 

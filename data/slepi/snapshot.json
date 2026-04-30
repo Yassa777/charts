@@ -1,15 +1,21 @@
 {
   "built_at": "2026-04-24T04:06:17.703850+00:00",
-  "delta": 0.10928614936717318,
+  "delta": 0.0762252071548491,
   "freshness": {
     "artifact_built_at": "2026-04-24T04:06:17.703850+00:00",
+    "balance_pressure_stage_counts": {
+      "missing": 136,
+      "official_current_account": 38,
+      "trade_balance_fast_signal": 24,
+      "trade_tourism_remittances_nowcast": 167
+    },
     "blocking_months_after_latest_complete": [
       {
         "date": "2026-03-01",
         "missing_requirements": [
           "adjusted_usable_reserve_adequacy",
           "fx_market_pressure",
-          "current_account"
+          "external_balance"
         ]
       },
       {
@@ -17,12 +23,13 @@
         "missing_requirements": [
           "adjusted_usable_reserve_adequacy",
           "fx_market_pressure",
-          "current_account"
+          "external_balance"
         ]
       }
     ],
     "latest_available_months": {
       "adjusted_usable_reserves": "2026-02-01",
+      "balance_pressure": "2026-02-01",
       "buffer_inflows": "2026-02-01",
       "current_account": "2026-02-01",
       "debt_service": "2024-01-01",
@@ -35,14 +42,15 @@
       "neer": "2026-02-01",
       "remittances": "2026-02-01",
       "services_balance": "2026-02-01",
-      "tourism": "2026-02-01"
+      "tourism": "2026-02-01",
+      "trade_balance": "2026-02-01"
     },
     "latest_complete_month": {
       "date": "2026-02-01",
-      "slepi_adjusted": -0.42905343567214327
+      "slepi_adjusted": -0.3335271588143059
     },
     "latest_partial_month": "2026-04-01",
-    "pipeline_checked_at": "2026-04-24T04:12:04.271592+00:00",
+    "pipeline_checked_at": "2026-04-30T03:48:14.750388+00:00",
     "source_last_modified": {
       "current_account": "Tue, 31 Mar 2026 15:15:53 GMT",
       "exports": "Tue, 31 Mar 2026 15:21:25 GMT",
@@ -58,11 +66,23 @@
       "tourism": "Tue, 31 Mar 2026 18:07:58 GMT"
     }
   },
-  "headline_definition": "Equal-weighted CBSL-compatible core: adjusted usable reserve adequacy, FX market pressure, external debt-service/rollover pressure, and current account pressure.",
+  "headline_definition": "Equal-weighted CBSL-compatible core: adjusted usable reserve adequacy, FX market pressure, external debt-service/rollover pressure, and a staged external-balance/current-account pressure block.",
   "latest": {
     "adjusted_usable_reserve_cover_months": 0.6371493136117217,
     "adjusted_usable_reserves_lkr_m": 380574.9369311295,
     "adjusted_usable_reserves_usd_m": 1230.1859338522954,
+    "balance_pressure_inflows_calibrated_raw": -0.08203887913321366,
+    "balance_pressure_inflows_calibrated_z": -0.2687167529092536,
+    "balance_pressure_inflows_raw": -0.16626526066944072,
+    "balance_pressure_inflows_z": -0.7237559423042674,
+    "balance_pressure_services_calibrated_raw": -0.05107088541225871,
+    "balance_pressure_services_calibrated_z": 0.5252055332217113,
+    "balance_pressure_services_raw": -0.15975274228667455,
+    "balance_pressure_services_z": 0.49232748946732235,
+    "balance_pressure_trade_calibrated_raw": -0.011898068394379568,
+    "balance_pressure_trade_calibrated_z": -2.0252560788286056,
+    "balance_pressure_trade_raw": 0.42319764839838114,
+    "balance_pressure_trade_z": 0.31153353658515204,
     "banking_sector_external_liabilities_market_usd_m": 5519.821579590801,
     "buffer_inflow_support_raw": -0.589462909067822,
     "buffer_inflow_support_z": -1.3250997591165123,
@@ -71,9 +91,12 @@
     "central_bank_external_swap_liabilities_usd_m": 2071.5008928957104,
     "current_account_filled_usd_m": 117.20645290332868,
     "current_account_plus_capital_usd_m": 115.67172715262586,
+    "current_account_pressure_official_raw": -0.06391352397489221,
+    "current_account_pressure_official_z": 0.1939826273667478,
+    "current_account_pressure_quality": 1.0,
     "current_account_pressure_raw": -0.06391352397489221,
-    "current_account_pressure_z": -0.7612448323503411,
-    "current_account_proxy_usd_m": 119.54064041100764,
+    "current_account_pressure_source": "official_current_account",
+    "current_account_pressure_z": -0.37913972491899156,
     "current_account_usd_m": 117.20645290332868,
     "date": "2026-02-01",
     "debt_service_to_exports_services_pct": 21.093786659323502,
@@ -81,10 +104,10 @@
     "debt_service_to_external_receipts_raw": 0.154471792088412,
     "debt_service_to_external_receipts_z": -0.667235448358892,
     "exports_usd_m": 1057.756691433292,
-    "external_balance_pressure_adjusted_raw": 0.5255493850929297,
-    "external_balance_pressure_adjusted_z": 0.17437442138341988,
+    "external_balance_pressure_adjusted_raw": -0.06391352397489221,
+    "external_balance_pressure_adjusted_z": -0.37913972491899156,
     "external_balance_pressure_user_raw": -0.06391352397489221,
-    "external_balance_pressure_user_z": -0.7612448323503411,
+    "external_balance_pressure_user_z": -0.37913972491899156,
     "external_debt_service_amortization_usd_m": 3019.9150915285645,
     "external_debt_service_interest_usd_m": 1131.7753380565096,
     "external_debt_service_payments_usd_m": 4151.6904295850745,
@@ -95,6 +118,7 @@
     "fx_market_pressure_z": -0.2773198219750687,
     "fx_reserves_usd_m": 7062.716528629095,
     "gold_usd_m": 200.26953851997888,
+    "goods_services_remittances_balance_usd_m": 292.9591595099072,
     "gross_external_debt_face_pct_gdp": 51.596283980806454,
     "gross_external_debt_face_usd_m": 56155.61560708247,
     "gross_external_debt_market_usd_m": 54806.792624465525,
@@ -134,14 +158,13 @@
     "short_term_external_debt_market_usd_m": 5551.167679565233,
     "short_term_external_debt_to_reserves_raw": 0.7635718954009949,
     "short_term_external_debt_to_reserves_z": -0.679467105590877,
-    "slepi_adjusted": -0.42905343567214327,
-    "slepi_legacy_adjusted": -0.34346197821221736,
-    "slepi_user_spec": -0.5773667916456576,
+    "slepi_adjusted": -0.3335271588143059,
+    "slepi_legacy_adjusted": -0.4818405147878202,
+    "slepi_user_spec": -0.4818405147878202,
     "tourism_earnings_usd_m": 352.01193888,
     "trade_balance_usd_m": -776.0719822817118,
-    "underlying_balance_filled_usd_m": -963.767531836703,
+    "trade_tourism_remittances_balance_usd_m": 304.9020024583199,
     "underlying_balance_official_usd_m": -963.767531836703,
-    "underlying_balance_proxy_usd_m": -961.4333443290241,
     "usd_lkr": 309.36375263157896,
     "usd_lkr_depreciation_raw": -0.000938182789111508,
     "usd_lkr_depreciation_z": -0.2188247637274983
@@ -149,6 +172,13 @@
   "metrics": {
     "data_sufficiency": {
       "annual_debt_service_non_null_months": 160,
+      "balance_pressure_non_null_months": 229,
+      "balance_pressure_stage_counts": {
+        "missing": 136,
+        "official_current_account": 38,
+        "trade_balance_fast_signal": 24,
+        "trade_tourism_remittances_nowcast": 167
+      },
       "external_debt_quarterly_non_null_months": 161,
       "long_backtest_end": "2026-04-01",
       "long_backtest_start": "1995-12-01",
@@ -159,37 +189,76 @@
       "services_balance_non_null_months": 38
     },
     "proxy_fit": {
-      "intercept": -108.70155747251408,
+      "method": "official-current-account source ladder with rolling median bias adjustment for provisional stages",
       "official_overlap_end": "2026-02-01",
       "official_overlap_start": "2023-01-01",
-      "overlap_correlation": 0.8993528059257454,
       "overlap_months": 38,
-      "slope": 1.0987792451280258
+      "proxy_fits": {
+        "goods_services_remittances_nowcast": {
+          "correlation": 0.9137156247530467,
+          "median_official_minus_proxy": 0.12094758118706739,
+          "overlap_end": "2026-02-01",
+          "overlap_months": 38,
+          "overlap_start": "2023-01-01"
+        },
+        "trade_balance_fast_signal": {
+          "correlation": 0.7700713350495116,
+          "median_official_minus_proxy": -0.42395839906777205,
+          "overlap_end": "2026-02-01",
+          "overlap_months": 38,
+          "overlap_start": "2023-01-01"
+        },
+        "trade_tourism_remittances_nowcast": {
+          "correlation": 0.8818958969715682,
+          "median_official_minus_proxy": 0.08885413985294556,
+          "overlap_end": "2026-02-01",
+          "overlap_months": 38,
+          "overlap_start": "2023-01-01"
+        }
+      },
+      "stage_counts": {
+        "missing": 136,
+        "official_current_account": 38,
+        "trade_balance_fast_signal": 24,
+        "trade_tourism_remittances_nowcast": 167
+      }
     },
     "sample_end": "2026-01-01",
     "sample_start": "2014-01-01",
     "slepi_adjusted": {
-      "auc_for_top_15pct_future_stress_event": 0.6618075801749271,
+      "auc_for_top_15pct_future_stress_event": 0.6513119533527697,
       "available_months": 133,
-      "correlation_with_future_external_stress_3m": 0.2191036209563809,
-      "crisis_window_peak_date": "2022-04-01",
-      "crisis_window_peak_value": 1.8729727106256626
+      "correlation_with_future_external_stress_3m": 0.1932682736166835,
+      "crisis_window_peak_date": "2022-03-01",
+      "crisis_window_peak_value": 1.7560112247595119
     },
     "slepi_user_spec": {
-      "auc_for_top_15pct_future_stress_event": 0.6362959285004965,
+      "auc_for_top_15pct_future_stress_event": 0.6214001986097318,
       "available_months": 144,
-      "correlation_with_future_external_stress_3m": 0.2974603550079451,
+      "correlation_with_future_external_stress_3m": 0.27785206497415005,
       "crisis_window_peak_date": "2022-04-01",
-      "crisis_window_peak_value": 2.5596887782833653
+      "crisis_window_peak_value": 2.414908845846039
     },
     "stress_event_quantile": 0.85,
-    "stress_event_threshold": 0.5245668835050462
+    "stress_event_threshold": 0.524527704102461
   },
-  "pipeline_checked_at": "2026-04-24T04:12:04.271592+00:00",
+  "pipeline_checked_at": "2026-04-30T03:48:14.750388+00:00",
   "previous": {
     "adjusted_usable_reserve_cover_months": 0.4473442502767681,
     "adjusted_usable_reserves_lkr_m": 264898.3273986506,
     "adjusted_usable_reserves_usd_m": 855.4651882755243,
+    "balance_pressure_inflows_calibrated_raw": -0.1744976920427193,
+    "balance_pressure_inflows_calibrated_z": -0.8932466349452397,
+    "balance_pressure_inflows_raw": -0.26335183189566486,
+    "balance_pressure_inflows_z": -1.3556612990949506,
+    "balance_pressure_services_calibrated_raw": -0.16871348314235515,
+    "balance_pressure_services_calibrated_z": -0.24373376496279764,
+    "balance_pressure_services_raw": -0.27897496751249234,
+    "balance_pressure_services_z": -0.42545164517251877,
+    "balance_pressure_trade_calibrated_raw": -0.06493061007645806,
+    "balance_pressure_trade_calibrated_z": -2.3585010437129545,
+    "balance_pressure_trade_raw": 0.3629620592196434,
+    "balance_pressure_trade_z": -0.26331117740013343,
     "banking_sector_external_liabilities_market_usd_m": 5519.821579590801,
     "buffer_inflow_support_raw": -0.6263138911153082,
     "buffer_inflow_support_z": -1.6801584381164134,
@@ -198,9 +267,12 @@
     "central_bank_external_swap_liabilities_usd_m": 2071.5008928957104,
     "current_account_filled_usd_m": 369.6992034475834,
     "current_account_plus_capital_usd_m": 369.25972674688,
+    "current_account_pressure_official_raw": -0.2050168640075939,
+    "current_account_pressure_official_z": -0.869531427879723,
+    "current_account_pressure_quality": 1.0,
     "current_account_pressure_raw": -0.2050168640075939,
-    "current_account_pressure_z": -1.6474006561131014,
-    "current_account_proxy_usd_m": 301.53832029769023,
+    "current_account_pressure_source": "official_current_account",
+    "current_account_pressure_z": -1.1330517798324555,
     "current_account_usd_m": 369.6992034475834,
     "date": "2026-01-01",
     "debt_service_to_exports_services_pct": 21.093786659323502,
@@ -208,10 +280,10 @@
     "debt_service_to_external_receipts_raw": 0.154471792088412,
     "debt_service_to_external_receipts_z": -0.6703278036324715,
     "exports_usd_m": 1148.7465697634668,
-    "external_balance_pressure_adjusted_raw": 0.42129702710771433,
-    "external_balance_pressure_adjusted_z": -0.7748364534444588,
+    "external_balance_pressure_adjusted_raw": -0.2050168640075939,
+    "external_balance_pressure_adjusted_z": -1.1330517798324555,
     "external_balance_pressure_user_raw": -0.2050168640075939,
-    "external_balance_pressure_user_z": -1.6474006561131014,
+    "external_balance_pressure_user_z": -1.1330517798324555,
     "external_debt_service_amortization_usd_m": 3019.9150915285645,
     "external_debt_service_interest_usd_m": 1131.7753380565096,
     "external_debt_service_payments_usd_m": 4151.6904295850745,
@@ -222,6 +294,7 @@
     "fx_market_pressure_z": -0.03276100094571855,
     "fx_reserves_usd_m": 6687.085522342344,
     "gold_usd_m": 109.22240042995251,
+    "goods_services_remittances_balance_usd_m": 503.0650711122167,
     "gross_external_debt_face_pct_gdp": 51.596283980806454,
     "gross_external_debt_face_usd_m": 56155.61560708247,
     "gross_external_debt_market_usd_m": 54806.792624465525,
@@ -261,14 +334,13 @@
     "short_term_external_debt_market_usd_m": 5551.167679565233,
     "short_term_external_debt_to_reserves_raw": 0.81252454326189,
     "short_term_external_debt_to_reserves_z": -0.6375494354416215,
-    "slepi_adjusted": -0.5383395850393164,
-    "slepi_legacy_adjusted": -0.5992826938845066,
-    "slepi_user_spec": -0.8174237445516672,
+    "slepi_adjusted": -0.409752365969155,
+    "slepi_legacy_adjusted": -0.6888365254815058,
+    "slepi_user_spec": -0.6888365254815058,
     "tourism_earnings_usd_m": 378.27180938399994,
     "trade_balance_usd_m": -654.5158361715378,
-    "underlying_balance_filled_usd_m": -759.7090907155218,
+    "trade_tourism_remittances_balance_usd_m": 474.8924579915675,
     "underlying_balance_official_usd_m": -759.7090907155218,
-    "underlying_balance_proxy_usd_m": -827.869973865415,
     "usd_lkr": 309.6541285714286,
     "usd_lkr_depreciation_raw": 0.0014647328745347465,
     "usd_lkr_depreciation_z": -0.12287782041575462
@@ -277,29 +349,29 @@
   "sparklineEnd": "2026-02-01",
   "sparklineStart": "2024-03-01",
   "sparklineValues": [
-    -0.6430118428799321,
-    -0.5878162378711828,
-    -0.42009848505361924,
-    -0.4944011353310874,
-    -0.42127148960770067,
-    -0.6926530217882303,
-    -0.07653076029240935,
-    -0.6752770569595596,
-    -0.6797746328176132,
-    0.229599235986032,
-    -0.2081670558694192,
-    -0.5112967111721715,
-    -0.7639558621887671,
-    -0.2604518485271883,
-    -0.30957888779396403,
-    -0.11888972601337575,
-    -0.25016437042941136,
-    -0.49475876641536803,
-    0.024898854181242165,
-    0.030860453086398502,
-    0.030008099736909544,
-    -0.275505226142861,
-    -0.5383395850393164,
-    -0.42905343567214327
+    -0.49371055927619056,
+    -0.47454606586463527,
+    -0.29294312245736337,
+    -0.3599222482949388,
+    -0.3058168219539801,
+    -0.5415254150671809,
+    -0.011348930090810658,
+    -0.5649738493063158,
+    -0.5576917190893642,
+    0.2532380041996142,
+    -0.10088038667862953,
+    -0.35588204765698583,
+    -0.6016769073892794,
+    -0.14804392418420767,
+    -0.196042417575258,
+    -0.012246317455204048,
+    -0.13690092285358255,
+    -0.35956364110126093,
+    0.08745123229564325,
+    0.09173564595691841,
+    0.12182398265970608,
+    -0.19067325270908955,
+    -0.409752365969155,
+    -0.3335271588143059
   ]
 }
